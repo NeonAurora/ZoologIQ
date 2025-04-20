@@ -1,28 +1,38 @@
-import React, { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../Context/AuthContext';
+import { StyleSheet } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { useAuth } from '@/Context/AuthContext';
 
-export default function Index() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading) {
-      if (user) {
-        // If user is logged in, go to profile
-        router.replace('/profile');
-      } else {
-        // If no user, go to login
-        router.replace('/login');
-      }
-    }
-  }, [user, loading, router]);
-
-  // Show loading indicator while checking auth state
+export default function HomePage() {
+  const { user } = useAuth();
+  
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size="large" color="#0000ff" />
-    </View>
+    <ThemedView style={styles.container}>
+      <ThemedText type="title">Welcome to Home Page</ThemedText>
+      
+      {user ? (
+        <ThemedText style={styles.welcomeText}>
+          Hello, {user.name || user.email || 'User'}! You are signed in.
+        </ThemedText>
+      ) : (
+        <ThemedText style={styles.welcomeText}>
+          Sign in using the button in the header to access your profile.
+        </ThemedText>
+      )}
+    </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+  },
+  welcomeText: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 16,
+  }
+});
