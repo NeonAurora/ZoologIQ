@@ -1,18 +1,38 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme } from '@react-navigation/native';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import 'react-native-reanimated';
+import { StatusBar } from 'expo-status-bar';
 import { Pressable, Text, View, Image, Modal, TouchableWithoutFeedback } from 'react-native';
-import { useAuth } from '../Context/AuthContext';
-import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '../Context/AuthContext';
+import { Drawer } from 'expo-router/drawer';
+import { DrawerContent } from '@/components/DrawerContent';
+import { useAuth } from '../Context/AuthContext';
+import { useRouter } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// Create combined themes
+const CombinedLightTheme = {
+  ...NavigationDefaultTheme,
+  ...MD3LightTheme,
+  colors: {
+    ...NavigationDefaultTheme.colors,
+    ...MD3LightTheme.colors,
+  },
+};
+
+const CombinedDarkTheme = {
+  ...NavigationDarkTheme,
+  ...MD3DarkTheme,
+  colors: {
+    ...NavigationDarkTheme.colors,
+    ...MD3DarkTheme.colors,
+  },
+};
 
 // Custom Header Right Component
 function HeaderRight() {
@@ -73,7 +93,7 @@ function HeaderRight() {
             </View>
           )}
           <Text style={{ 
-            color: '#333', 
+            color: '#fff', 
             marginLeft: 10,
             fontWeight: '500'
           }}>
@@ -150,6 +170,8 @@ function HeaderRight() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? CombinedDarkTheme : CombinedLightTheme;
+  
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -166,54 +188,63 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack
+      <PaperProvider theme={theme}>
+        <Drawer
+          drawerContent={(props) => <DrawerContent {...props} />}
           screenOptions={{
             headerStyle: {
               backgroundColor: colorScheme === 'dark' ? '#121212' : '#fff',
             },
             headerTintColor: colorScheme === 'dark' ? '#fff' : '#000',
             headerRight: () => <HeaderRight />,
+            // The drawer already adds a hamburger icon by default
           }}
         >
-          <Stack.Screen 
+          <Drawer.Screen 
             name="index" 
             options={{ 
               title: "Home",
-              headerShown: true
+              drawerLabel: "Home"
             }} 
           />
-          <Stack.Screen 
+          <Drawer.Screen 
             name="profile" 
             options={{ 
               title: "Profile",
-              headerShown: true
+              drawerLabel: "Profile"
             }} 
           />
-          <Stack.Screen 
+          <Drawer.Screen 
             name="login" 
             options={{ 
-              headerShown: false 
+              headerShown: false,
+              drawerItemStyle: { display: 'none' }
             }} 
           />
-          <Stack.Screen 
+          <Drawer.Screen 
             name="logout" 
             options={{ 
               title: "Logged Out",
-              headerShown: true,
-              headerRight: () => null // Hide auth button on logout screen
+              headerRight: () => null, // Hide auth button on logout screen
+              drawerItemStyle: { display: 'none' }
             }} 
           />
-          <Stack.Screen 
+          <Drawer.Screen 
             name="callback" 
             options={{ 
-              headerShown: true, 
+              drawerItemStyle: { display: 'none' }
             }} 
           />
-          <Stack.Screen name="+not-found" options={{ title: "Not Found" }} />
-        </Stack>
+          <Drawer.Screen 
+            name="+not-found" 
+            options={{ 
+              title: "Not Found",
+              drawerItemStyle: { display: 'none' }
+            }} 
+          />
+        </Drawer>
         <StatusBar style="auto" />
-      </ThemeProvider>
+      </PaperProvider>
     </AuthProvider>
   );
 }
