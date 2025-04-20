@@ -22,7 +22,7 @@ export default function CallbackScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ActivityIndicator size="large" color="#0000ff" />
+      <ActivityIndicator size="large" color="#ff00ff" />
     </ThemedView>
   );
 }
