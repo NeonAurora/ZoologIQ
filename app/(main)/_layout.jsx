@@ -214,27 +214,6 @@ export default function RootLayout() {
             }} 
           />
           <Drawer.Screen 
-            name="login" 
-            options={{ 
-              headerShown: false,
-              drawerItemStyle: { display: 'none' }
-            }} 
-          />
-          <Drawer.Screen 
-            name="logout" 
-            options={{ 
-              title: "Logged Out",
-              headerRight: () => null, // Hide auth button on logout screen
-              drawerItemStyle: { display: 'none' }
-            }} 
-          />
-          <Drawer.Screen 
-            name="callback" 
-            options={{ 
-              drawerItemStyle: { display: 'none' }
-            }} 
-          />
-          <Drawer.Screen 
             name="+not-found" 
             options={{ 
               title: "Not Found",
