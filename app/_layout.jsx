@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, Text, View, Image, Modal, TouchableWithoutFeedback } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AuthProvider } from '../Context/AuthContext';
+import { AuthProvider } from '../context/AuthContext';
 import { Drawer } from 'expo-router/drawer';
 import { DrawerContent } from '@/components/DrawerContent';
-import { useAuth } from '../Context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

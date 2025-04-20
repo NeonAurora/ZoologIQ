@@ -1,52 +1,62 @@
 import React from 'react';
-import { StyleSheet, Pressable, Image } from 'react-native';
-import { useAuth } from '@/Context/AuthContext';
+import { StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native';
+import { useAuth } from '@/context/AuthContext';
+import { useUserData } from '@/hooks/useUserData';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { user, signOut, loading } = useAuth();
+  const { signOut, loading: authLoading } = useAuth();
+  const { userData, loading: dataLoading } = useUserData();
   const router = useRouter();
 
-  // If not authenticated, redirect to home
-  React.useEffect(() => {
-    if (!user && !loading) {
-      router.replace('/');
-    }
-  }, [user, loading]);
+  const loading = authLoading || dataLoading;
 
-  const handleSignOut = async () => {
-    console.log("Sign out initiated");
-    await signOut();
-    
-    // Navigate to the logout page
-    console.log("Sign out completed, navigating to Home Page");
-  };
-
-  if (loading || !user) {
+  // If loading, show spinner
+  if (loading) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText>Loading...</ThemedText>
+        <ActivityIndicator size="large" color="#0a7ea4" />
+        <ThemedText style={{ marginTop: 20 }}>Loading profile...</ThemedText>
       </ThemedView>
     );
   }
+
+  // If no user data, redirect to home
+  if (!userData) {
+    React.useEffect(() => {
+      router.replace('/');
+    }, []);
+    return null;
+  }
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace('/logout');
+  };
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">Profile</ThemedText>
       
       <ThemedView style={styles.card}>
-        <ThemedText type="subtitle">Welcome, {user.name || user.email || 'User'}!</ThemedText>
+        <ThemedText type="subtitle">Welcome, {userData.name || userData.email || 'User'}!</ThemedText>
         
-        {user.email && (
-          <ThemedText style={styles.detail}>Email: {user.email}</ThemedText>
+        {userData.email && (
+          <ThemedText style={styles.detail}>Email: {userData.email}</ThemedText>
         )}
         
-        {user.picture && (
+        {userData.lastLogin && (
+          <ThemedText style={styles.detail}>
+            Last login: {new Date(userData.lastLogin).toLocaleString()}
+          </ThemedText>
+        )}
+        
+        {userData.picture && (
           <ThemedView style={styles.pictureContainer}>
             <ThemedText style={styles.detail}>Profile Picture:</ThemedText>
-            <Image source={{ uri: user.picture }} style={styles.picture} />
+            <Image source={{ uri: userData.picture }} style={styles.picture} />
           </ThemedView>
         )}
       </ThemedView>
