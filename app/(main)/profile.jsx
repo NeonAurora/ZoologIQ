@@ -13,28 +13,31 @@ export default function ProfileScreen() {
 
   const loading = authLoading || dataLoading;
 
-  // If loading, show spinner
-  if (loading) {
+  React.useEffect(() => {
+    if (!loading && !userData) {
+      router.replace('/');
+    }
+  }, [loading, userData]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/'); // Ensure navigation after sign-out
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
+  };
+
+  if (loading || !userData) {
     return (
       <ThemedView style={styles.container}>
         <ActivityIndicator size="large" color="#0a7ea4" />
-        <ThemedText style={{ marginTop: 20 }}>Loading profile...</ThemedText>
+        <ThemedText style={{ marginTop: 20 }}>
+          {loading ? 'Loading profile...' : 'Redirecting...'}
+        </ThemedText>
       </ThemedView>
     );
   }
-
-  // If no user data, redirect to home
-  if (!userData) {
-    React.useEffect(() => {
-      router.replace('/');
-    }, []);
-    return null;
-  }
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.replace('/logout');
-  };
 
   return (
     <ThemedView style={styles.container}>
@@ -61,15 +64,13 @@ export default function ProfileScreen() {
         )}
       </ThemedView>
       
-      <Pressable 
-        style={styles.button} 
-        onPress={handleSignOut}
-      >
+      <Pressable style={styles.button} onPress={handleSignOut}>
         <ThemedText style={styles.buttonText}>Sign Out</ThemedText>
       </Pressable>
     </ThemedView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
