@@ -214,6 +214,13 @@ export default function RootLayout() {
             }} 
           />
           <Drawer.Screen 
+            name="createQuiz" 
+            options={{ 
+              title: "Create Quiz",
+              drawerLabel: "Create Quiz"
+            }} 
+          />
+          <Drawer.Screen 
             name="+not-found" 
             options={{ 
               title: "Not Found",
