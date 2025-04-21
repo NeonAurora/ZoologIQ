@@ -5,8 +5,14 @@ import QuizTitleSection from '@/components/createQuiz/QuizTitleSection';
 import QuestionsSection from '@/components/createQuiz/QuestionsSection';
 import QuizDetailsSection from '@/components/createQuiz/QuizDetails';
 import AddQuestionModal from '@/components/createQuiz/AddQuestionModal';
+import { database } from '@/services/firebase/config';
+import { ref, push, set } from 'firebase/database';
+import { useAuth } from '@/context/AuthContext';
 
 export default function CreateQuizPage() {
+
+  const { user } = useAuth();
+  const userId = user?.sub || "guest_user";
   // Quiz metadata
   const [quizTitle, setQuizTitle] = useState('');
   const [quizCategory, setQuizCategory] = useState('');
@@ -32,17 +38,31 @@ export default function CreateQuizPage() {
     }, 300);
   };
 
-  const saveQuiz = () => {
-    // Implement quiz saving functionality
-    alert('Quiz saved!');
-    console.log({
+  const saveQuiz = async () => {
+    if (!quizTitle || savedQuestions.length === 0) return;
+
+    const quizRef = push(ref(database, "quizes"));
+    const quizData = {
+      id: quizRef.key,
       title: quizTitle,
       category: quizCategory,
       grade: quizGrade,
       difficulty: quizDifficulty,
-      questions: savedQuestions
-    });
-  };
+      questions: savedQuestions,
+      createdBy: userId,
+      createdAt: new Date().toString(),
+    }
+
+    try {
+      await set(quizRef, quizData);
+      alert("Quiz Saved");
+      console.log("Saved Quiz. Data: ", quizData);
+      
+    } catch (error) {
+      console.error("Failed to save quiz", error);
+      alert("Error saving quiz. Please try again.");
+    }
+  }
 
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>  
