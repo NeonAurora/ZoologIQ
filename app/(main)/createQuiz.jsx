@@ -41,7 +41,7 @@ export default function CreateQuizPage() {
   const saveQuiz = async () => {
     if (!quizTitle || savedQuestions.length === 0) return;
 
-    const quizRef = push(ref(database, "quizes"));
+    const quizRef = push(ref(database, "quizzes"));
     const quizData = {
       id: quizRef.key,
       title: quizTitle,

@@ -44,3 +44,22 @@ export const subscribeToUserData = (userId, callback) => {
   // Return unsubscribe function
   return () => off(userRef);
 };
+
+export const subscribeToQuizzes  = (callback) => {
+  const quizzesRef = ref(database, "quizzes");
+  onValue(quizzesRef, (snap) => {
+    callback(snap.val() || {});
+  });
+
+  return () => off(quizzesRef);
+}
+
+export const getAllQuizzes = async () => {
+  try {
+    const snap = await get(ref(database, "quizzes"));
+    return snap.exists() ? snap.val : {};    
+  } catch (error) {
+    console.log("Error Fetching Quizzes: ", error);
+    return {};
+  }
+}
