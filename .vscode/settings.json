@@ -1,7 +1,12 @@
 {
     "cSpell.words": [
         "createquiz",
+        "mobileprovision",
         "Pressable",
-        "quizzes"
+        "quizzes",
+        "supabase"
+    ],
+    "cSpell.ignoreWords": [
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
     ]
 }

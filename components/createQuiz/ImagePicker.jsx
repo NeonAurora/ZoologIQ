@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useColorScheme } from 'react-native';
 
-export default function ImagePicker({ image, onPickImage }) {
+export default function ImagePicker({ image, onPickImage, isUploading = false }) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -10,6 +10,7 @@ export default function ImagePicker({ image, onPickImage }) {
     <TouchableOpacity 
       style={[styles.imageSelector, isDark && styles.imageSelectorDark]}
       onPress={onPickImage}
+      disabled={isUploading}
     >
       {image ? (
         <Image 
@@ -22,6 +23,13 @@ export default function ImagePicker({ image, onPickImage }) {
           <Text style={[styles.imagePickerText, isDark && styles.textLight]}>
             Tap to add an image
           </Text>
+        </View>
+      )}
+      
+      {isUploading && (
+        <View style={styles.uploadingOverlay}>
+          <ActivityIndicator size="large" color="#0a7ea4" />
+          <Text style={styles.uploadingText}>Uploading...</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -37,6 +45,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     overflow: 'hidden',
     backgroundColor: '#f9f9f9',
+    position: 'relative',
   },
   imageSelectorDark: {
     borderColor: '#444',
@@ -56,5 +65,21 @@ const styles = StyleSheet.create({
   },
   textLight: {
     color: '#eee',
+  },
+  uploadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  uploadingText: {
+    color: 'white',
+    marginTop: 10,
+    fontWeight: '500',
   },
 });

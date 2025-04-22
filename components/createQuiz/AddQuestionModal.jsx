@@ -13,6 +13,7 @@ import {
 import { useColorScheme } from 'react-native';
 import * as ExpoImagePicker from 'expo-image-picker';
 import ImagePicker from '@/components/createQuiz/ImagePicker';
+import { uploadImage } from "@/services/supabase/storage";
 import PointsControl from './PointsControl';
 
 export default function AddQuestionModal({ visible, onClose, onSubmit }) {
@@ -23,6 +24,7 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
   const [questionPoints, setQuestionPoints] = useState(10);
   const [questionPenalty, setQuestionPenalty] = useState(0);
   const [questionImage, setQuestionImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -63,19 +65,31 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
       return;
     }
   
-    // 2) Launch picker (note the `await` and string mediaTypes)
+    // 2) Launch picker
     const result = await ExpoImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'Images',  // use literal string to avoid the deprecated enum
+      mediaTypes: 'Images',
       quality: 0.7,
     });
   
-    // 3) Log it so you can see exactly what shape it has
-    console.log("Picker result:", result);
-  
-    // 4) New API has `canceled` and an `assets` array
+    // 3) Handle selection
     if (!result.cancelled && result.assets?.length > 0) {
-      console.log("Picked URI:", result.assets[0].uri);
-      setQuestionImage(result.assets[0].uri);
+      try {
+        setIsUploading(true);
+        
+        // Upload to Supabase and get URL
+        const imageUrl = await uploadImage(result.assets[0].uri);
+        
+        if (imageUrl) {
+          setQuestionImage(imageUrl);
+        } else {
+          alert("Failed to upload image. Please try again.");
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        alert("There was an error uploading your image.");
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -162,6 +176,7 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
             <ImagePicker
               image={questionImage}
               onPickImage={handlePickImage}
+              isUploading={isUploading}
             />
 
             {/* Options */}
