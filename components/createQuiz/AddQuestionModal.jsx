@@ -58,38 +58,22 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
   }, []);
 
   const handlePickImage = async () => {
-    // 1) Request permissions
+    // Request permissions
     const { status } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert("Please allow access to your photos.");
       return;
     }
   
-    // 2) Launch picker
+    // Launch picker
     const result = await ExpoImagePicker.launchImageLibraryAsync({
       mediaTypes: 'Images',
       quality: 0.7,
     });
   
-    // 3) Handle selection
+    // Handle selection - just store the local URI, don't upload yet
     if (!result.cancelled && result.assets?.length > 0) {
-      try {
-        setIsUploading(true);
-        
-        // Upload to Supabase and get URL
-        const imageUrl = await uploadImage(result.assets[0].uri);
-        
-        if (imageUrl) {
-          setQuestionImage(imageUrl);
-        } else {
-          alert("Failed to upload image. Please try again.");
-        }
-      } catch (error) {
-        console.error("Upload error:", error);
-        alert("There was an error uploading your image.");
-      } finally {
-        setIsUploading(false);
-      }
+      setQuestionImage(result.assets[0].uri);
     }
   };
 
@@ -100,7 +84,8 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
       options: optionsInputs,
       points: questionPoints,
       penalty: questionPenalty,
-      image: questionImage
+      image: questionImage,
+      imageIsLocal: questionImage ? true : false  // Flag to indicate this is a local URI
     };
     
     onSubmit(questionData);

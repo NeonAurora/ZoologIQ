@@ -8,6 +8,8 @@ import AddQuestionModal from '@/components/createQuiz/AddQuestionModal';
 import { database } from '@/services/firebase/config';
 import { ref, push, set } from 'firebase/database';
 import { useAuth } from '@/context/AuthContext';
+import { uploadImage } from '@/services/supabase/storage';
+import { ActivityIndicator } from 'react-native-paper';
 
 export default function CreateQuizPage() {
 
@@ -18,12 +20,9 @@ export default function CreateQuizPage() {
   const [quizCategory, setQuizCategory] = useState('');
   const [quizGrade, setQuizGrade] = useState('');
   const [quizDifficulty, setQuizDifficulty] = useState('Medium');
-
-  // Questions state
   const [savedQuestions, setSavedQuestions] = useState([]);
-  
-  // Modal state
   const [modalVisible, setModalVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const scrollViewRef = useRef();
   const colorScheme = useColorScheme();
@@ -40,27 +39,63 @@ export default function CreateQuizPage() {
 
   const saveQuiz = async () => {
     if (!quizTitle || savedQuestions.length === 0) return;
-
-    const quizRef = push(ref(database, "quizzes"));
-    const quizData = {
-      id: quizRef.key,
-      title: quizTitle,
-      category: quizCategory,
-      grade: quizGrade,
-      difficulty: quizDifficulty,
-      questions: savedQuestions,
-      createdBy: userId,
-      createdAt: new Date().toString(),
-    }
-
+  
+    // Show loading state
+    setIsSaving(true);
+  
     try {
+      // Process questions and upload images if needed
+      const processedQuestions = await Promise.all(
+        savedQuestions.map(async (question) => {
+          // If question has no image or image is already a URL, return as is
+          if (!question.image || !question.imageIsLocal) {
+            return question;
+          }
+  
+          // Upload image and get URL
+          const imageUrl = await uploadImage(question.image);
+          
+          if (!imageUrl) {
+            console.error("Failed to upload image for question:", question.question);
+            // Return question without image if upload failed
+            return { ...question, image: null, imageIsLocal: false };
+          }
+  
+          // Return question with uploaded image URL
+          return { 
+            ...question, 
+            image: imageUrl,
+            imageIsLocal: false
+          };
+        })
+      );
+  
+      // Create quiz reference
+      const quizRef = push(ref(database, "quizzes"));
+      const quizData = {
+        id: quizRef.key,
+        title: quizTitle,
+        category: quizCategory,
+        grade: quizGrade,
+        difficulty: quizDifficulty,
+        questions: processedQuestions,
+        createdBy: userId,
+        createdAt: new Date().toString(),
+      }
+  
+      // Save quiz to Firebase
       await set(quizRef, quizData);
       alert("Quiz Saved");
       console.log("Saved Quiz. Data: ", quizData);
       
+      // Reset form or navigate away
+      // resetForm(); // If you want to reset after saving
+      
     } catch (error) {
       console.error("Failed to save quiz", error);
       alert("Error saving quiz. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -94,12 +129,16 @@ export default function CreateQuizPage() {
         <TouchableOpacity 
           style={[
             styles.saveQuizButton,
-            (!quizTitle || savedQuestions.length === 0) && styles.saveQuizButtonDisabled
+            (isSaving || !quizTitle || savedQuestions.length === 0) && styles.saveQuizButtonDisabled
           ]}
-          disabled={!quizTitle || savedQuestions.length === 0}
+          disabled={isSaving || !quizTitle || savedQuestions.length === 0}
           onPress={saveQuiz}
         >
-          <Text style={styles.saveQuizButtonText}>Save Quiz</Text>
+          {isSaving ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.saveQuizButtonText}>Save Quiz</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
 
