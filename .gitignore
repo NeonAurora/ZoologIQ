@@ -20,6 +20,8 @@ expo-env.d.ts
 /ios
 /android
 
+/services/firebase/config.js
+
 # Metro
 .metro-health-check*
 
