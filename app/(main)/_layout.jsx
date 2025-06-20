@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, Text, View, Image, Modal, TouchableWithoutFeedback } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { Drawer } from 'expo-router/drawer';
 import { DrawerContent } from '@/components/DrawerContent';
 import { useRouter } from 'expo-router';

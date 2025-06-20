@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 
 export default function CallbackScreen() {

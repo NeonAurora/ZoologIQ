@@ -7,7 +7,7 @@ import QuizDetailsSection from '@/components/createQuiz/QuizDetails';
 import AddQuestionModal from '@/components/createQuiz/AddQuestionModal';
 import { database } from '@/services/firebase/config';
 import { ref, push, set } from 'firebase/database';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { uploadImage } from '@/services/supabase/storage';
 import { ActivityIndicator } from 'react-native-paper';
 

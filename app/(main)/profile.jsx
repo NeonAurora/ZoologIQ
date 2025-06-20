@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useUserData } from '@/hooks/useUserData';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';

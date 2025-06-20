@@ -15,7 +15,7 @@ import { database } from '@/services/firebase/database';
 import { ref, push, set } from 'firebase/database';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useQuiz } from '@/hooks/useQuiz';
 
 const windowWidth = Dimensions.get('window').width;
