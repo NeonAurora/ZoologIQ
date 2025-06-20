@@ -8,12 +8,16 @@ import {
   ScrollView, 
   Pressable, 
   TouchableOpacity,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { useColorScheme } from 'react-native';
 import * as ExpoImagePicker from 'expo-image-picker';
-import ImagePicker from '@/components/createQuiz/ImagePicker';
-import { uploadImage } from "@/services/supabase/storage";
+import { ActivityIndicator } from 'react-native-paper';
+
+// Updated imports - using centralized services
+import { uploadImage } from '@/services/supabase/storage';
+import ImagePicker from './ImagePicker';
 import PointsControl from './PointsControl';
 
 export default function AddQuestionModal({ visible, onClose, onSubmit }) {
@@ -25,6 +29,7 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
   const [questionPenalty, setQuestionPenalty] = useState(0);
   const [questionImage, setQuestionImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [explanation, setExplanation] = useState('');
 
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -37,6 +42,7 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
     setQuestionPoints(10);
     setQuestionPenalty(0);
     setQuestionImage(null);
+    setExplanation('');
   };
 
   const handleOptionsCountChange = useCallback((text) => {
@@ -58,36 +64,116 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
   }, []);
 
   const handlePickImage = async () => {
-    // Request permissions
-    const { status } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert("Please allow access to your photos.");
-      return;
-    }
-  
-    // Launch picker
-    const result = await ExpoImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'Images',
-      quality: 0.7,
-    });
-  
-    // Handle selection - just store the local URI, don't upload yet
-    if (!result.cancelled && result.assets?.length > 0) {
-      setQuestionImage(result.assets[0].uri);
+    try {
+      // Request permissions
+      const { status } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          "Permission Required", 
+          "Please allow access to your photos to add images to questions."
+        );
+        return;
+      }
+    
+      // Launch picker
+      const result = await ExpoImagePicker.launchImageLibraryAsync({
+        mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
+        quality: 0.7,
+        allowsEditing: true,
+        aspect: [16, 9],
+      });
+    
+      // Handle selection
+      if (!result.canceled && result.assets?.length > 0) {
+        const imageUri = result.assets[0].uri;
+        console.log('Image selected:', imageUri);
+        
+        // Set the local image URI (will be uploaded when question is saved)
+        setQuestionImage(imageUri);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert("Error", "Failed to pick image. Please try again.");
     }
   };
 
-  const handleSubmit = () => {
+  const handleRemoveImage = () => {
+    setQuestionImage(null);
+  };
+
+  const handleSubmit = async () => {
+    // Validate form
+    if (!newQuestion.trim()) {
+      Alert.alert("Error", "Please enter a question.");
+      return;
+    }
+
+    if (!newAnswer.trim()) {
+      Alert.alert("Error", "Please select a correct answer.");
+      return;
+    }
+
+    if (optionsInputs.some(opt => !opt.trim())) {
+      Alert.alert("Error", "Please fill in all answer options.");
+      return;
+    }
+
+    if (!optionsInputs.includes(newAnswer)) {
+      Alert.alert("Error", "The correct answer must be one of the provided options.");
+      return;
+    }
+
+    try {
+      let finalImageUrl = null;
+
+      // If there's an image, upload it now
+      if (questionImage) {
+        setIsUploading(true);
+        console.log('Uploading image...');
+        
+        finalImageUrl = await uploadImage(questionImage);
+        
+        if (!finalImageUrl) {
+          Alert.alert(
+            "Image Upload Failed", 
+            "The image could not be uploaded. Do you want to continue without the image?",
+            [
+              { text: "Cancel", style: "cancel" },
+              { 
+                text: "Continue", 
+                onPress: () => submitQuestion(null)
+              }
+            ]
+          );
+          setIsUploading(false);
+          return;
+        }
+        
+        console.log('Image uploaded successfully:', finalImageUrl);
+      }
+
+      submitQuestion(finalImageUrl);
+    } catch (error) {
+      console.error('Error submitting question:', error);
+      Alert.alert("Error", "Failed to save question. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const submitQuestion = (imageUrl) => {
     const questionData = {
-      question: newQuestion,
+      question: newQuestion.trim(),
       answer: newAnswer,
-      options: optionsInputs,
+      options: optionsInputs.map(opt => opt.trim()),
       points: questionPoints,
       penalty: questionPenalty,
-      image: questionImage,
-      imageIsLocal: questionImage ? true : false  // Flag to indicate this is a local URI
+      image: imageUrl,
+      explanation: explanation.trim() || null,
+      imageIsLocal: false // Since we've already uploaded it
     };
     
+    console.log('Submitting question:', questionData);
     onSubmit(questionData);
     resetForm();
     onClose();
@@ -97,36 +183,12 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
   const showOptionsError = optionsCount !== '' && (isNaN(num) || num < 2 || num > 8);
   
   // Form validation
-  const isSubmitDisabled = !newQuestion || 
-                          !newAnswer || 
+  const isSubmitDisabled = !newQuestion.trim() || 
+                          !newAnswer.trim() || 
                           showOptionsError || 
-                          optionsInputs.some(opt => !opt) ||
-                          !optionsInputs.includes(newAnswer);
-
-  const SimplePointsControl = ({ label, value, onChange, min = 0, max = 20, textColor = '#333' }) => (
-    <View style={styles.pointsControlContainer}>
-      <Text style={[styles.label, isDark && styles.textLight, { color: textColor }]}>
-        {label}: {value}
-      </Text>
-      <View style={styles.pointsControls}>
-        <Pressable 
-          style={styles.pointsButton} 
-          onPress={() => onChange(Math.max(min, value - 1))}
-        >
-          <Text style={styles.pointsButtonText}>-</Text>
-        </Pressable>
-        <Text style={[styles.pointsValue, isDark && styles.textLight]}>
-          {value}
-        </Text>
-        <Pressable 
-          style={styles.pointsButton} 
-          onPress={() => onChange(Math.min(max, value + 1))}
-        >
-          <Text style={styles.pointsButtonText}>+</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
+                          optionsInputs.some(opt => !opt.trim()) ||
+                          !optionsInputs.includes(newAnswer) ||
+                          isUploading;
 
   return (
     <Modal
@@ -143,10 +205,12 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
           ]}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={[styles.modalTitle, isDark && styles.textLight]}>Add New Question</Text>
+            <Text style={[styles.modalTitle, isDark && styles.textLight]}>
+              Add New Question
+            </Text>
 
             {/* Question Text */}
-            <Text style={[styles.label, isDark && styles.textLight]}>Question</Text>
+            <Text style={[styles.label, isDark && styles.textLight]}>Question *</Text>
             <TextInput
               style={[styles.input, styles.textAreaInput, isDark && styles.inputDark]}
               placeholder="Enter your question"
@@ -154,6 +218,7 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
               value={newQuestion}
               onChangeText={setNewQuestion}
               multiline
+              maxLength={500}
             />
 
             {/* Question Image */}
@@ -161,11 +226,12 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
             <ImagePicker
               image={questionImage}
               onPickImage={handlePickImage}
+              onRemoveImage={handleRemoveImage}
               isUploading={isUploading}
             />
 
             {/* Options */}
-            <Text style={[styles.label, isDark && styles.textLight]}>Options</Text>
+            <Text style={[styles.label, isDark && styles.textLight]}>Answer Options *</Text>
             <View style={styles.optionsCountRow}>
               <Text style={[styles.optionsCountLabel, isDark && styles.textLight]}>
                 Number of options:
@@ -175,6 +241,7 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
                 value={optionsCount}
                 onChangeText={handleOptionsCountChange}
                 keyboardType="numeric"
+                maxLength={1}
               />
             </View>
             
@@ -193,20 +260,22 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
                     </Text>
                     <TextInput
                       style={[styles.input, styles.optionInput, isDark && styles.inputDark]}
-                      placeholder={`Option ${idx + 1}`}
+                      placeholder={`Option ${String.fromCharCode(65 + idx)}`}
                       placeholderTextColor={isDark ? '#aaa' : '#888'}
                       value={opt}
                       onChangeText={(text) => handleOptionChange(text, idx)}
+                      maxLength={200}
                     />
                   </View>
                 ))}
               </View>
             )}
 
-            <Text style={[styles.label, isDark && styles.textLight]}>Correct Answer</Text>
+            {/* Correct Answer */}
+            <Text style={[styles.label, isDark && styles.textLight]}>Correct Answer *</Text>
             <View style={[styles.answerSelector, isDark && styles.answerSelectorDark]}>
               {optionsInputs.map((opt, idx) => (
-                opt ? (
+                opt.trim() ? (
                   <TouchableOpacity
                     key={`ans-${idx}`}
                     style={[
@@ -226,21 +295,36 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
               ))}
             </View>
 
+            {/* Explanation */}
+            <Text style={[styles.label, isDark && styles.textLight]}>Explanation (Optional)</Text>
+            <TextInput
+              style={[styles.input, styles.textAreaInput, isDark && styles.inputDark]}
+              placeholder="Explain why this answer is correct..."
+              placeholderTextColor={isDark ? '#aaa' : '#888'}
+              value={explanation}
+              onChangeText={setExplanation}
+              multiline
+              maxLength={300}
+            />
+
             {/* Points and Penalty Controls */}
-            <SimplePointsControl
-              label="Points"
+            <PointsControl
+              label="Points for correct answer"
               value={questionPoints}
               onChange={setQuestionPoints}
               min={1}
-              max={20}
+              max={50}
+              isDark={isDark}
             />
 
-            <SimplePointsControl
+            <PointsControl
               label="Penalty for wrong answer"
               value={questionPenalty}
               onChange={setQuestionPenalty}
+              min={0}
               max={questionPoints}
-              textColor="#e74c3c"
+              isDark={isDark}
+              color="#e74c3c"
             />
 
             <View style={styles.modalButtons}>
@@ -252,14 +336,23 @@ export default function AddQuestionModal({ visible, onClose, onSubmit }) {
                 onPress={handleSubmit}
                 disabled={isSubmitDisabled}
               >
-                <Text style={styles.submitButtonText}>Add Question</Text>
+                {isUploading ? (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color="#fff" />
+                    <Text style={styles.submitButtonText}>Uploading...</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.submitButtonText}>Add Question</Text>
+                )}
               </Pressable>
+              
               <Pressable
                 style={styles.cancelButton}
                 onPress={() => {
                   resetForm();
                   onClose();
                 }}
+                disabled={isUploading}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </Pressable>
@@ -328,60 +421,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#333', 
     color: '#eee' 
   },
-  // Image picker styles
-  imageSelector: {
-    height: 160,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    marginBottom: 16,
-    overflow: 'hidden',
-    backgroundColor: '#f9f9f9',
-  },
-  imageSelectorDark: {
-    borderColor: '#444',
-    backgroundColor: '#333',
-  },
-  imagePickerPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imagePickerText: {
-    color: '#888',
-  },
-  previewImage: {
-    width: '100%',
-    height: '100%',
-  },
-  // Points control styles
-  pointsControlContainer: {
-    marginBottom: 16,
-  },
-  pointsControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pointsButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#0a7ea4',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pointsButtonText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  pointsValue: {
-    width: 60,
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   optionsCountRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -434,6 +473,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
     padding: 8,
+    gap: 8,
   },
   answerSelectorDark: {
     backgroundColor: '#333',
@@ -447,7 +487,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     backgroundColor: '#fff',
-    margin: 4,
   },
   selectedAnswerOption: {
     backgroundColor: '#0a7ea4',
@@ -465,13 +504,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'space-between',
     marginTop: 8,
+    gap: 12,
   },
   submitButton: { 
     flex: 1, 
     backgroundColor: '#0a7ea4', 
     paddingVertical: 12, 
-    borderRadius: 8, 
-    marginRight: 8 
+    borderRadius: 8,
+    alignItems: 'center',
   },
   disabledButton: {
     backgroundColor: '#cccccc',
@@ -486,13 +526,18 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: '#f1f1f1', 
     paddingVertical: 12, 
-    borderRadius: 8, 
-    marginLeft: 8 
+    borderRadius: 8,
+    alignItems: 'center',
   },
   cancelButtonText: { 
     color: '#333', 
     textAlign: 'center', 
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 });

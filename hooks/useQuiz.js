@@ -1,7 +1,5 @@
-// hooks/useQuiz.js
 import { useState, useEffect } from 'react';
-import { database } from '@/services/firebase/config';
-import { ref, onValue, off } from 'firebase/database';
+import { getQuizById } from '@/services/supabase/database'; // Updated import
 
 export const useQuiz = (quizId) => {
   const [quiz, setQuiz] = useState(null);
@@ -15,33 +13,31 @@ export const useQuiz = (quizId) => {
       return;
     }
 
-    const quizRef = ref(database, `quizzes/${quizId}`);
-    
-    const unsubscribe = onValue(quizRef, 
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const quizData = snapshot.val();
-          // Ensure questions array exists
+    const fetchQuiz = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const quizData = await getQuizById(quizId);
+        
+        if (quizData) {
+          // Ensure questions array exists (backward compatibility)
           if (!quizData.questions) {
             quizData.questions = [];
           }
           setQuiz(quizData);
-          setError(null);
         } else {
-          setQuiz(null);
           setError("Quiz not found");
         }
-        setLoading(false);
-      },
-      (error) => {
+      } catch (error) {
         console.error("Error fetching quiz:", error);
         setError("Failed to load quiz: " + error.message);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    // Cleanup subscription
-    return () => off(quizRef);
+    fetchQuiz();
   }, [quizId]);
 
   return { quiz, loading, error };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { subscribeToUserData } from '@/services/firebase/database';
+import { subscribeToUserData } from '@/services/supabase/database'; // Updated import
 
 export function useUserData() {
   const { user } = useAuth();
@@ -18,6 +18,7 @@ export function useUserData() {
     
     // Subscribe to real-time updates for this user
     const unsubscribe = subscribeToUserData(user.sub, (data) => {
+      console.log('User data updated via subscription:', data);
       setUserData(data);
       setLoading(false);
     });

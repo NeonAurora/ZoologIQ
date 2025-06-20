@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, Text, View, Image, Modal, TouchableWithoutFeedback } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useThemeColor } from '@/hooks/useThemeColor'; // Import useThemeColor
+import { Colors } from '@/constants/Colors'; // Import Colors
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { Drawer } from 'expo-router/drawer';
 import { DrawerContent } from '@/components/DrawerContent';
@@ -14,13 +16,16 @@ import { useRouter } from 'expo-router';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// Create combined themes
+// Create combined themes using YOUR custom colors
 const CombinedLightTheme = {
   ...NavigationDefaultTheme,
   ...MD3LightTheme,
   colors: {
     ...NavigationDefaultTheme.colors,
     ...MD3LightTheme.colors,
+    background: Colors.light.background, // Use your custom light background
+    text: Colors.light.text,
+    card: Colors.light.surface,
   },
 };
 
@@ -30,6 +35,11 @@ const CombinedDarkTheme = {
   colors: {
     ...NavigationDarkTheme.colors,
     ...MD3DarkTheme.colors,
+    background: Colors.dark.background, // Use your custom dark background
+    text: Colors.dark.text,
+    card: Colors.dark.surface,
+    surface: Colors.dark.surface,
+    surfaceVariant: Colors.dark.surfaceSecondary,
   },
 };
 
@@ -38,6 +48,13 @@ function HeaderRight() {
   const { user, signIn, signOut } = useAuth();
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
+  
+  // Use theme colors instead of hardcoded values
+  const modalBackgroundColor = useThemeColor({}, 'surface');
+  const modalTextColor = useThemeColor({}, 'text');
+  const modalBorderColor = useThemeColor({}, 'border');
+  const headerTextColor = useThemeColor({}, 'text');
+  const avatarBorderColor = useThemeColor({}, 'borderSecondary');
   
   const handleSignIn = async () => {
     await signIn();
@@ -77,7 +94,7 @@ function HeaderRight() {
             <Image source={{ uri: user.picture }} 
               style={{
                 width: 32, height: 32, borderRadius: 16,
-                borderWidth: 1, borderColor: '#ddd'
+                borderWidth: 1, borderColor: avatarBorderColor
               }}
             />
           ) : (
@@ -92,7 +109,7 @@ function HeaderRight() {
             </View>
           )}
           <Text style={{ 
-            color: '#fff', 
+            color: headerTextColor, // Use theme color
             marginLeft: 10,
             fontWeight: '500'
           }}>
@@ -112,7 +129,7 @@ function HeaderRight() {
                 position: 'absolute',
                 right: 10,
                 top: 50,
-                backgroundColor: '#fff',
+                backgroundColor: modalBackgroundColor, // Use theme color
                 borderRadius: 8,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
@@ -127,10 +144,10 @@ function HeaderRight() {
                     paddingVertical: 12,
                     paddingHorizontal: 16,
                     borderBottomWidth: 1,
-                    borderBottomColor: '#eee'
+                    borderBottomColor: modalBorderColor // Use theme color
                   }}
                 >
-                  <Text>View Profile</Text>
+                  <Text style={{ color: modalTextColor }}>View Profile</Text>
                 </Pressable>
                 <Pressable 
                   onPress={handleSignOut}
@@ -168,8 +185,12 @@ function HeaderRight() {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const theme = colorScheme === 'dark' ? CombinedDarkTheme : CombinedLightTheme;
+  
+  // Use theme colors for header
+  const headerBackgroundColor = useThemeColor({}, 'background');
+  const headerTextColor = useThemeColor({}, 'text');
   
   const [loaded] = useFonts({
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
@@ -190,14 +211,13 @@ export default function RootLayout() {
       <PaperProvider theme={theme}>
         <Drawer
           drawerContent={(props) => <DrawerContent {...props} />}
-          screenOptions={{
+          screenOptions={({ navigation, route }) => ({
             headerStyle: {
-              backgroundColor: colorScheme === 'dark' ? '#121212' : '#fff',
+              backgroundColor: headerBackgroundColor, // Use theme color
             },
-            headerTintColor: colorScheme === 'dark' ? '#fff' : '#000',
+            headerTintColor: headerTextColor, // Use theme color
             headerRight: () => <HeaderRight />,
-            // The drawer already adds a hamburger icon by default
-          }}
+          })}
         >
           <Drawer.Screen 
             name="index" 
