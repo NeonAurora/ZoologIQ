@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, Text, View, Image, Modal, TouchableWithoutFeedback } from 'react-native';
+import { Pressable, Text, View, Image, Modal, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useThemeColor } from '@/hooks/useThemeColor'; // Import useThemeColor
 import { Colors } from '@/constants/Colors'; // Import Colors
@@ -48,6 +48,7 @@ function HeaderRight() {
   const { user, signIn, signOut } = useAuth();
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false); // Add loading state
   
   // Use theme colors instead of hardcoded values
   const modalBackgroundColor = useThemeColor({}, 'surface');
@@ -57,7 +58,15 @@ function HeaderRight() {
   const avatarBorderColor = useThemeColor({}, 'borderSecondary');
   
   const handleSignIn = async () => {
-    await signIn();
+    setIsSigningIn(true); // Start loading
+    try {
+      await signIn();
+    } catch (error) {
+      console.error('Sign in error:', error);
+      // Handle error if needed
+    } finally {
+      setIsSigningIn(false); // Stop loading
+    }
   };
   
   const handleSignOut = async () => {
@@ -109,7 +118,7 @@ function HeaderRight() {
             </View>
           )}
           <Text style={{ 
-            color: headerTextColor, // Use theme color
+            color: headerTextColor,
             marginLeft: 10,
             fontWeight: '500'
           }}>
@@ -129,7 +138,7 @@ function HeaderRight() {
                 position: 'absolute',
                 right: 10,
                 top: 50,
-                backgroundColor: modalBackgroundColor, // Use theme color
+                backgroundColor: modalBackgroundColor,
                 borderRadius: 8,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
@@ -144,7 +153,7 @@ function HeaderRight() {
                     paddingVertical: 12,
                     paddingHorizontal: 16,
                     borderBottomWidth: 1,
-                    borderBottomColor: modalBorderColor // Use theme color
+                    borderBottomColor: modalBorderColor
                   }}
                 >
                   <Text style={{ color: modalTextColor }}>View Profile</Text>
@@ -169,17 +178,32 @@ function HeaderRight() {
   return (
     <Pressable 
       onPress={handleSignIn}
+      disabled={isSigningIn} // Disable button while loading
       style={{ 
-        backgroundColor: '#2E86DE', 
+        backgroundColor: isSigningIn ? '#B0B0B0' : '#2E86DE', // Change color when loading
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 6,
-        marginRight: 10
+        marginRight: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        opacity: isSigningIn ? 0.7 : 1, // Reduce opacity when loading
       }}
     >
-      <Text style={{ color: 'white', fontWeight: 'bold' }}>
-        Sign In
-      </Text>
+      {isSigningIn ? (
+        // Show loading indicator
+        <>
+          <ActivityIndicator size="small" color="white" style={{ marginRight: 6 }} />
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>
+            Signing In...
+          </Text>
+        </>
+      ) : (
+        // Show normal sign in text
+        <Text style={{ color: 'white', fontWeight: 'bold' }}>
+          Sign In
+        </Text>
+      )}
     </Pressable>
   );
 }
