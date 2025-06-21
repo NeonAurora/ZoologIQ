@@ -1,7 +1,7 @@
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
-import auth0Config from '../auth0-configuration';
+import auth0Config from './auth0-configuration';
 import Constants from 'expo-constants';
 
 WebBrowser.maybeCompleteAuthSession();

@@ -3,7 +3,7 @@
  * Supports both light and dark modes with semantic color names
  */
 const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorDark = '#0099e6';
 
 // Test different grays by changing this number (1-10):
 const grayTestNumber = 4; // You liked level 4, but you can change this to test others

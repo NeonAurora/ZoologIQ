@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 // Updated imports - using centralized services
 import { saveQuiz } from '@/services/supabase/database';
-import { uploadImage } from '@/services/supabase/storage';
+import { uploadImage } from '@/services/supabase';
 
 // Component imports
 import QuizTitleSection from '@/components/createQuiz/QuizTitleSection';

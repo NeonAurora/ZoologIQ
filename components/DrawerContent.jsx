@@ -117,8 +117,46 @@ export function DrawerContent(props) {
             style={styles.listItem}
           />
           
+          {/* Lessons Section */}
+          <Divider style={styles.sectionDivider} />
+          <List.Subheader style={styles.subheader}>
+            🎓 Educational Lessons
+          </List.Subheader>
+          
+          <List.Item
+            title="Malayan Tiger 🐅"
+            description="Learn about Malaysia's apex predator"
+            left={props => <List.Icon {...props} icon="paw" color="#FF6B35" />}
+            onPress={() => navigateTo('/tigerLesson', 'Tiger Lesson')}
+            titleStyle={styles.listItemTitle}
+            descriptionStyle={styles.listItemDescription}
+            style={styles.listItem}
+          />
+          
+          <List.Item
+            title="Malayan Tapir 🦏"
+            description="Discover the forest gardener"
+            left={props => <List.Icon {...props} icon="leaf" color="#4CAF50" />}
+            onPress={() => navigateTo('/tapirLesson', 'Tapir Lesson')}
+            titleStyle={styles.listItemTitle}
+            descriptionStyle={styles.listItemDescription}
+            style={styles.listItem}
+          />
+          
+          <List.Item
+            title="Marine Turtle 🐢"
+            description="Explore ocean navigators"
+            left={props => <List.Icon {...props} icon="turtle" color="#2196F3" />}
+            onPress={() => navigateTo('/turtleLesson', 'Turtle Lesson')}
+            titleStyle={styles.listItemTitle}
+            descriptionStyle={styles.listItemDescription}
+            style={styles.listItem}
+          />
+          
           {user && (
             <>
+              <Divider style={styles.sectionDivider} />
+              
               <List.Item
                 title="My Profile"
                 description="View and edit profile"
@@ -133,7 +171,7 @@ export function DrawerContent(props) {
                 <>
                   <Divider style={styles.sectionDivider} />
                   <List.Subheader style={styles.subheader}>
-                    Admin Tools
+                    👨‍💼 Admin Tools
                   </List.Subheader>
                   
                   <List.Item
@@ -312,6 +350,8 @@ const createStyles = (isDark) => {
     subheader: {
       color: theme.textSecondary,
       backgroundColor: theme.background,
+      fontSize: 14,
+      fontWeight: '600',
     },
     sectionDivider: {
       marginVertical: 8,

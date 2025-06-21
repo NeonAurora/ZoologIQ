@@ -16,7 +16,7 @@ import * as ExpoImagePicker from 'expo-image-picker';
 import { ActivityIndicator } from 'react-native-paper';
 
 // Updated imports - using centralized services
-import { uploadImage } from '@/services/supabase/storage';
+import { uploadImage } from '@/services/supabase';
 import ImagePicker from './ImagePicker';
 import PointsControl from './PointsControl';
 

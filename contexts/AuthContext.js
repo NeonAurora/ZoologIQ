@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
-import { login, getUserInfo, logout } from "@/services/AuthService";
+import { login, getUserInfo, logout } from "@/services/auth0";
 import { 
   getUserData, 
   saveUserData, 
