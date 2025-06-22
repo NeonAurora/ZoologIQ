@@ -14,15 +14,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Updated imports - using centralized services
-import { saveQuizResult } from '@/services/supabase';
-
 // Component imports
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Colors } from '@/constants/Colors';
-import { completePreQuiz, completePostQuiz } from '@/services/supabase';
+import { completePreQuiz, completePostQuiz, startStudyPhase, saveQuizResult } from '@/services/supabase';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -211,6 +208,7 @@ export default function QuizPlayPage() {
         // Update learning session based on quiz type
         if (type === 'pre-lesson') {
           await completePreQuiz(sessionId, savedResult.id);
+          await startStudyPhase(sessionId);
         } else if (type === 'post-lesson') {
           await completePostQuiz(sessionId, savedResult.id);
         }

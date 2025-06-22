@@ -147,7 +147,7 @@ export const completePreQuiz = async (sessionId, quizResultId) => {
 };
 
 /**
- * Update learning session when lesson starts
+ * Mark lesson as started (called when user enters lesson content)
  * @param {string} sessionId - Session UUID
  * @returns {Promise<boolean>} Success status
  */
@@ -158,8 +158,8 @@ export const startLesson = async (sessionId) => {
     const { data, error } = await supabase
       .from('study_sessions')
       .update({
-        study_started_at: new Date().toISOString(),
-        session_status: 'studying'
+        lesson_started_at: new Date().toISOString()
+        // Don't change session_status here - it should already be 'studying'
       })
       .eq('id', sessionId)
       .select()
@@ -179,22 +179,137 @@ export const startLesson = async (sessionId) => {
 };
 
 /**
- * Update learning session when lesson completes
+ * Track completion of a specific lesson section
  * @param {string} sessionId - Session UUID
- * @param {number} timeSpentMinutes - Optional time spent in lesson
+ * @param {number} sectionIndex - Index of completed section
+ * @param {string} sectionName - Name of completed section
  * @returns {Promise<boolean>} Success status
  */
-export const completeLesson = async (sessionId, timeSpentMinutes = null) => {
+export const markSectionCompleted = async (sessionId, sectionIndex, sectionName) => {
+  try {
+    console.log(`Marking section ${sectionIndex} (${sectionName}) as completed`);
+    
+    // First, get current completed sections
+    const { data: session, error: fetchError } = await supabase
+      .from('study_sessions')
+      .select('lesson_sections_completed')
+      .eq('id', sessionId)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching session for section update:', fetchError);
+      return false;
+    }
+    
+    // Get existing completed sections or initialize empty array
+    const completedSections = session.lesson_sections_completed || [];
+    
+    // Create section completion data
+    const sectionData = {
+      index: sectionIndex,
+      name: sectionName,
+      completed_at: new Date().toISOString()
+    };
+    
+    // Check if section already exists (avoid duplicates)
+    const existingIndex = completedSections.findIndex(s => s.index === sectionIndex);
+    if (existingIndex === -1) {
+      completedSections.push(sectionData);
+    } else {
+      // Update existing section timestamp
+      completedSections[existingIndex] = sectionData;
+    }
+    
+    // Update the database
+    const { error: updateError } = await supabase
+      .from('study_sessions')
+      .update({
+        lesson_sections_completed: completedSections
+      })
+      .eq('id', sessionId);
+    
+    if (updateError) {
+      console.error('Error updating section completion:', updateError);
+      return false;
+    }
+    
+    console.log(`Section ${sectionIndex} (${sectionName}) marked as completed successfully`);
+    return true;
+  } catch (error) {
+    console.error('Error marking section as completed:', error);
+    return false;
+  }
+};
+
+/**
+ * Mark study phase as started (called after pre-quiz completion)
+ * @param {string} sessionId - Session UUID
+ * @returns {Promise<boolean>} Success status
+ */
+export const startStudyPhase = async (sessionId) => {
+  try {
+    console.log('Starting study phase for session:', sessionId);
+    
+    const { data, error } = await supabase
+      .from('study_sessions')
+      .update({
+        study_started_at: new Date().toISOString(),
+        session_status: 'studying'
+      })
+      .eq('id', sessionId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error starting study phase:', error);
+      return false;
+    }
+    
+    console.log('Study phase started successfully');
+    return true;
+  } catch (error) {
+    console.error('Error starting study phase:', error);
+    return false;
+  }
+};
+
+/**
+ * Complete the lesson phase and calculate time spent
+ * @param {string} sessionId - Session UUID
+ * @returns {Promise<boolean>} Success status
+ */
+export const completeLesson = async (sessionId) => {
   try {
     console.log('Completing lesson for session:', sessionId);
+    
+    // Get lesson start time to calculate duration
+    const { data: session, error: fetchError } = await supabase
+      .from('study_sessions')
+      .select('lesson_started_at, study_started_at')
+      .eq('id', sessionId)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching session for lesson completion:', fetchError);
+      return false;
+    }
+    
+    // Calculate time spent in lesson if lesson_started_at exists
+    let lessonTimeSpentMinutes = null;
+    if (session.lesson_started_at) {
+      const lessonStartTime = new Date(session.lesson_started_at);
+      const lessonEndTime = new Date();
+      lessonTimeSpentMinutes = Math.round((lessonEndTime - lessonStartTime) / (1000 * 60));
+    }
     
     const updateData = {
       study_completed_at: new Date().toISOString(),
       session_status: 'study_completed'
     };
     
-    if (timeSpentMinutes) {
-      updateData.lesson_time_spent_minutes = timeSpentMinutes;
+    // Add lesson time if calculated
+    if (lessonTimeSpentMinutes !== null) {
+      updateData.lesson_time_spent_minutes = lessonTimeSpentMinutes;
     }
     
     const { data, error } = await supabase
@@ -209,13 +324,57 @@ export const completeLesson = async (sessionId, timeSpentMinutes = null) => {
       return false;
     }
     
-    console.log('Lesson completed successfully');
+    console.log(`Lesson completed successfully. Time spent: ${lessonTimeSpentMinutes} minutes`);
     return true;
   } catch (error) {
     console.error('Error completing lesson:', error);
     return false;
   }
 };
+
+
+/**
+ * Get detailed session progress with timing information
+ * @param {string} sessionId - Session UUID
+ * @returns {Promise<object>} Session data with progress details
+ */
+export const getSessionProgress = async (sessionId) => {
+  try {
+    const { data: session, error } = await supabase
+      .from('study_sessions')
+      .select(`
+        *,
+        quiz_categories(name, slug),
+        pre_study_result:quiz_results!pre_study_result_id(*),
+        post_study_result:quiz_results!post_study_result_id(*)
+      `)
+      .eq('id', sessionId)
+      .single();
+    
+    if (error) {
+      console.error('Error getting session progress:', error);
+      return null;
+    }
+    
+    // Calculate total study time if both timestamps exist
+    let totalStudyTimeMinutes = null;
+    if (session.study_started_at && session.study_completed_at) {
+      const studyStart = new Date(session.study_started_at);
+      const studyEnd = new Date(session.study_completed_at);
+      totalStudyTimeMinutes = Math.round((studyEnd - studyStart) / (1000 * 60));
+    }
+    
+    return {
+      ...session,
+      calculated_total_study_time_minutes: totalStudyTimeMinutes,
+      sections_completed_count: session.lesson_sections_completed?.length || 0
+    };
+  } catch (error) {
+    console.error('Error getting session progress:', error);
+    return null;
+  }
+};
+
 
 /**
  * Update learning session after post-quiz completion

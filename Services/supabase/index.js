@@ -36,7 +36,10 @@ export {
   checkSessionAvailability,
   getNextAction,
   getLearningAnalytics,
-  resetLearningSession
+  resetLearningSession,
+  startStudyPhase,
+  markSectionCompleted,
+  getSessionProgress
 } from './learningSessionService';
 
 // Categories
