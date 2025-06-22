@@ -11,7 +11,8 @@ import {
   checkSessionAvailability, 
   createLearningSession, 
   getUserCompletedSessions,
-  abandonSession
+  abandonSession,
+  cleanupIncompleteSessionsForCategory
 } from '@/services/supabase/learningSessionService';
 import { getCategoryBySlug } from '@/services/supabase/categoryService';
 
@@ -125,11 +126,9 @@ export default function LearningSessionStarter({ topic, quizId }) {
       setIsCreatingSession(true);
       console.log('🚀 Starting new learning session');
       
-      // If there's an active session and user wants to start new, abandon it
-      if (shouldAbandonCurrent && sessionState?.activeSession) {
-        console.log('🗑️ Abandoning current session');
-        await abandonSession(sessionState.activeSession.id);
-      }
+      // 🔥 NEW: Clean up ALL incomplete sessions for this user/category
+      // This ensures that old abandoned sessions don't interfere
+      await cleanupIncompleteSessionsForCategory(user.sub, category.id);
       
       const session = await createLearningSession(user.sub, category.id, quizId);
       

@@ -285,6 +285,14 @@ export default function RootLayout() {
               drawerItemStyle: { display: 'none' } // Hide from drawer, access via deep link
             }} 
           />
+          <Drawer.Screen 
+            name="quizPlay" 
+            options={{ 
+              title: "Play Quiz",
+              drawerItemStyle: { display: 'none' },
+              headerShown: false // Hide from drawer, access via deep link
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>

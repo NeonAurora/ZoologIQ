@@ -42,7 +42,8 @@ export {
   getSessionProgress,
   getUserCompletedSessions,
   finalizeSessionCompletion,
-  abandonSession
+  abandonSession,
+  cleanupIncompleteSessionsForCategory
 } from './learningSessionService';
 
 // Categories

@@ -1,6 +1,6 @@
 // components/lesson/tiger/TigerLessonLayout.jsx
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
@@ -10,6 +10,7 @@ import TigerEcology from './sections/TigerEcology';
 import TigerConservation from './sections/TigerConservation';
 import TigerSidebar from './TigerSidebar';
 import TigerNavigation from './TigerNavigation';
+import { ThemedText } from '@/components/ThemedText';
 
 const { width: screenWidth } = Dimensions.get('window');
 

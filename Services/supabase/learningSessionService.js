@@ -46,6 +46,7 @@ export const createLearningSession = async (userId, categoryId, quizId) => {
 
 /**
  * Get active learning session for user and topic
+ * Only returns the most recent session that's not completed AND not abandoned
  * @param {string} userId - Auth0 user ID
  * @param {string} categoryId - Quiz category ID
  * @returns {Promise<object>} Active session or null
@@ -65,6 +66,7 @@ export const getActiveLearningSession = async (userId, categoryId) => {
       .eq('user_id', userId)
       .eq('category_id', categoryId)
       .neq('session_status', 'post_quiz_completed')
+      .neq('session_status', 'abandoned') // 🔥 NEW: Exclude abandoned sessions
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -629,6 +631,37 @@ export const getNextAction = (sessionStatus) => {
   };
   
   return actionMap[sessionStatus] || 'start_session';
+};
+
+/**
+ * Clean up old incomplete sessions for a user/category
+ * This removes any abandoned or incomplete sessions to prevent confusion
+ * @param {string} userId - Auth0 user ID
+ * @param {string} categoryId - Quiz category ID
+ * @returns {Promise<boolean>} Success status
+ */
+export const cleanupIncompleteSessionsForCategory = async (userId, categoryId) => {
+  try {
+    console.log('🧹 Cleaning up incomplete sessions for user:', userId, 'category:', categoryId);
+    
+    const { error } = await supabase
+      .from('study_sessions')
+      .delete()
+      .eq('user_id', userId)
+      .eq('category_id', categoryId)
+      .neq('session_status', 'post_quiz_completed'); // Delete anything that's not completed
+    
+    if (error) {
+      console.error('Error cleaning up incomplete sessions:', error);
+      return false;
+    }
+    
+    console.log('✅ Successfully cleaned up incomplete sessions');
+    return true;
+  } catch (error) {
+    console.error('Error in cleanup function:', error);
+    return false;
+  }
 };
 
 /**
