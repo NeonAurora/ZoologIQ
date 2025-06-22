@@ -39,7 +39,10 @@ export {
   resetLearningSession,
   startStudyPhase,
   markSectionCompleted,
-  getSessionProgress
+  getSessionProgress,
+  getUserCompletedSessions,
+  finalizeSessionCompletion,
+  abandonSession
 } from './learningSessionService';
 
 // Categories

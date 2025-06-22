@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { ActivityIndicator } from 'react-native-paper';
-import { getLearningSession, completePostQuiz } from '@/services/supabase';
+import { getLearningSession, finalizeSessionCompletion } from '@/services/supabase';
 
 export default function LearningResultsPage() {
   const { sessionId } = useLocalSearchParams();
@@ -27,9 +27,14 @@ export default function LearningResultsPage() {
     try {
       const sessionData = await getLearningSession(sessionId);
       setSession(sessionData);
+      
+      // 🔥 ENSURE SESSION IS PROPERLY COMPLETED
       if (sessionData && sessionData.session_status !== 'post_quiz_completed') {
-        console.log('Ensuring session is marked as completed...');
-        // The session should already be completed by the post-quiz, but this is a safety net
+        console.log('Finalizing session completion...');
+        await finalizeSessionCompletion(sessionId);
+        // Refresh session data after completion
+        const updatedSession = await getLearningSession(sessionId);
+        setSession(updatedSession);
       }
     } catch (error) {
       console.error('Error fetching session data:', error);
@@ -185,7 +190,11 @@ export default function LearningResultsPage() {
               styles.retakeButton,
               { backgroundColor: isDark ? '#1976D2' : '#2196F3' }
             ]}
-            onPress={() => router.push(`/startLearning?topic=${session.quiz_categories?.slug}&quizId=${session.pre_study_quiz_id}`)}
+            onPress={() => {
+              // 🔥 ADD TIMESTAMP TO FORCE FRESH STATE
+              const timestamp = Date.now();
+              router.push(`/startLearning?topic=${session.quiz_categories?.slug}&quizId=${session.pre_study_quiz_id}&refresh=${timestamp}`);
+            }}
             activeOpacity={0.8}
           >
             <ThemedText style={styles.buttonText}>

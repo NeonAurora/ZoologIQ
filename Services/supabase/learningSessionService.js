@@ -274,6 +274,95 @@ export const startStudyPhase = async (sessionId) => {
 };
 
 /**
+ * Mark session as fully completed (ensures proper completion status)
+ * @param {string} sessionId - Session UUID
+ * @returns {Promise<boolean>} Success status
+ */
+export const finalizeSessionCompletion = async (sessionId) => {
+  try {
+    console.log('Finalizing session completion:', sessionId);
+    
+    const { data, error } = await supabase
+      .from('study_sessions')
+      .update({
+        session_status: 'post_quiz_completed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', sessionId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error finalizing session:', error);
+      return false;
+    }
+    
+    console.log('Session finalized successfully');
+    return true;
+  } catch (error) {
+    console.error('Error finalizing session:', error);
+    return false;
+  }
+};
+
+/**
+ * Get user's completed learning sessions with summary data
+ * @param {string} userId - Auth0 user ID
+ * @param {string} categoryId - Optional category filter
+ * @returns {Promise<array>} Array of completed sessions with improvement data
+ */
+export const getUserCompletedSessions = async (userId, categoryId = null) => {
+  try {
+    let query = supabase
+      .from('study_sessions')
+      .select(`
+        *,
+        quiz_categories(name, slug),
+        pre_study_result:quiz_results!pre_study_result_id(score, max_possible_score, completed_at),
+        post_study_result:quiz_results!post_study_result_id(score, max_possible_score, completed_at)
+      `)
+      .eq('user_id', userId)
+      .eq('session_status', 'post_quiz_completed')
+      .order('created_at', { ascending: false });
+    
+    if (categoryId) {
+      query = query.eq('category_id', categoryId);
+    }
+    
+    const { data: sessions, error } = await query;
+    
+    if (error) {
+      console.error('Error getting completed sessions:', error);
+      return [];
+    }
+    
+    // Calculate improvement for each session
+    return sessions.map(session => {
+      const preScore = session.pre_study_result?.score || 0;
+      const postScore = session.post_study_result?.score || 0;
+      const maxScore = session.post_study_result?.max_possible_score || 1;
+      const improvement = postScore - preScore;
+      const improvementPercentage = maxScore > 0 ? (improvement / maxScore) * 100 : 0;
+      
+      return {
+        ...session,
+        improvement: {
+          preScore,
+          postScore,
+          maxScore,
+          improvement,
+          improvementPercentage: Math.round(improvementPercentage * 10) / 10
+        }
+      };
+    });
+  } catch (error) {
+    console.error('Error getting completed sessions:', error);
+    return [];
+  }
+};
+
+
+/**
  * Complete the lesson phase and calculate time spent
  * @param {string} sessionId - Session UUID
  * @returns {Promise<boolean>} Success status
@@ -328,6 +417,38 @@ export const completeLesson = async (sessionId) => {
     return true;
   } catch (error) {
     console.error('Error completing lesson:', error);
+    return false;
+  }
+};
+
+/**
+ * Abandon an incomplete session (sets status to abandoned)
+ * @param {string} sessionId - Session UUID
+ * @returns {Promise<boolean>} Success status
+ */
+export const abandonSession = async (sessionId) => {
+  try {
+    console.log('Abandoning session:', sessionId);
+    
+    const { data, error } = await supabase
+      .from('study_sessions')
+      .update({
+        session_status: 'abandoned',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', sessionId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error abandoning session:', error);
+      return false;
+    }
+    
+    console.log('Session abandoned successfully');
+    return true;
+  } catch (error) {
+    console.error('Error abandoning session:', error);
     return false;
   }
 };

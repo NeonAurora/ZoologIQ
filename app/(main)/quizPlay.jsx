@@ -24,7 +24,7 @@ import { completePreQuiz, completePostQuiz, startStudyPhase, saveQuizResult } fr
 const windowWidth = Dimensions.get('window').width;
 
 export default function QuizPlayPage() {
-  const { quizId, sessionId, type } = useLocalSearchParams();
+  const { quizId, sessionId, type, fresh } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuth();
   const { quiz, loading, error } = useQuiz(quizId);
@@ -79,6 +79,18 @@ export default function QuizPlayPage() {
       // Answers will be reset when quiz loads
     }
   }, [type]);
+
+  useEffect(() => {
+    if (fresh === 'true') {
+      console.log('🧹 Fresh quiz requested - resetting all state');
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setAnswers([]);
+      setScore(0);
+      setQuizCompleted(false);
+      // Reset any other quiz state
+    }
+  }, [fresh]);
 
   // Get current question
   const currentQuestion = quiz?.questions?.[currentQuestionIndex] || null;
@@ -232,8 +244,9 @@ export default function QuizPlayPage() {
       // Navigate to lesson after pre-quiz
       router.replace(`/${getTopic()}Lesson?sessionId=${sessionId}&quizId=${quizId}`);
     } else if (sessionId && type === 'post-lesson') {
-      // Navigate to results after post-quiz
-      router.replace(`/learningResults?sessionId=${sessionId}`);
+      // 🔥 ADD TIMESTAMP TO CLEAR QUIZ STATE ON RESULTS PAGE
+      const timestamp = Date.now();
+      router.replace(`/learningResults?sessionId=${sessionId}&refresh=${timestamp}`);
     } else {
       // Regular quiz flow
       router.replace('/quizzes');
