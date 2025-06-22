@@ -271,6 +271,20 @@ export default function RootLayout() {
               drawerItemStyle: { display: 'none' }
             }} 
           />
+          <Drawer.Screen 
+            name="startLearning" 
+            options={{ 
+              title: "Start Learning",
+              drawerItemStyle: { display: 'none' } // Hide from drawer, access via deep link
+            }} 
+          />
+          <Drawer.Screen 
+            name="learningResults" 
+            options={{ 
+              title: "Learning Results",
+              drawerItemStyle: { display: 'none' } // Hide from drawer, access via deep link
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>

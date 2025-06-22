@@ -1,10 +1,11 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import { FAB } from 'react-native-paper';
 import React, { useState } from 'react';
+import LearningTopicCard from '@/components/learning/LearningTopicCard';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -48,6 +49,41 @@ export default function HomePage() {
         </ThemedText>
       )}
 
+      <View style={styles.learningSection}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          🎓 Start Learning Journey
+        </ThemedText>
+        
+        <LearningTopicCard 
+          topic="tiger"
+          title="Malayan Tiger"
+          description="Learn about endangered Malayan Tigers"
+          icon="🐅"
+          color="#FF6B35"
+          quizId="744a1763-0b1b-4b60-913e-cf74df153746" // Replace with actual quiz ID
+        />
+        
+        <LearningTopicCard 
+          topic="tapir"
+          title="Malayan Tapir" 
+          description="Discover the Asian Tapir"
+          icon="🦌"
+          color="#4CAF50"
+          quizId="your-tapir-quiz-id" // Replace with actual quiz ID
+          disabled={true} // Remove when implemented
+        />
+        
+        <LearningTopicCard 
+          topic="turtle"
+          title="Hawksbill Turtle"
+          description="Explore marine turtle conservation"
+          icon="🐢"
+          color="#2196F3"
+          quizId="your-turtle-quiz-id" // Replace with actual quiz ID
+          disabled={true} // Remove when implemented
+        />
+      </View>
+
       {/* FAB Group in bottom‑right */}
       <FAB.Group
         open={fabOpen}
@@ -58,6 +94,8 @@ export default function HomePage() {
       />
 
     </ThemedView>
+    
+    
   );
 }
 

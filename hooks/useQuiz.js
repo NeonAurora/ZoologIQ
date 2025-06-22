@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getQuizById } from '@/services/supabase/database'; // Updated import
+import { getQuizById } from '@/services/supabase'; // Updated import
 
 export const useQuiz = (quizId) => {
   const [quiz, setQuiz] = useState(null);

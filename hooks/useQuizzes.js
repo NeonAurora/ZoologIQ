@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllQuizzes, subscribeToQuizzes } from '@/services/supabase/database'; // Updated import
+import { getAllQuizzes, subscribeToQuizzes } from '@/services/supabase'; // Updated import
 
 export const useQuizzes = ({ realTime = true } = {}) => {
     const [quizzes, setQuizzes] = useState(null);

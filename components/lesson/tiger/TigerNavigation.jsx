@@ -1,16 +1,19 @@
+// components/lesson/tiger/TigerNavigation.jsx
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
+import { completeLesson } from '@/services/supabase/learningSessionService'; // 🔥 ADD import
 
 export default function TigerNavigation({ 
   currentIndex, 
   totalSections, 
   onNext, 
   onPrevious,
-  quizId 
+  quizId,
+  sessionId // 🔥 ADD sessionId prop
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -19,12 +22,44 @@ export default function TigerNavigation({
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === totalSections - 1;
   
-  const handleFinish = () => {
-    // Navigate to post-lesson quiz or back to quizzes
-    if (quizId) {
-      router.push(`/quizPlay?quizId=${quizId}&type=post-lesson`);
-    } else {
-      router.push('/quizzes');
+  const handleFinish = async () => {
+    try {
+      // Complete the lesson in the session if sessionId exists
+      if (sessionId) {
+        console.log('Completing lesson for session:', sessionId);
+        await completeLesson(sessionId);
+        
+        // 🔥 FIX: Add timestamp to force fresh page load
+        const timestamp = Date.now();
+        router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
+      } else {
+        // Fallback for standalone lesson
+        if (quizId) {
+          router.push(`/quizPlay?quizId=${quizId}&type=post-lesson`);
+        } else {
+          router.push('/quizzes');
+        }
+      }
+    } catch (error) {
+      console.error('Error completing lesson:', error);
+      Alert.alert(
+        'Error', 
+        'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Continue', 
+            onPress: () => {
+              const timestamp = Date.now();
+              if (sessionId && quizId) {
+                router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
+              } else {
+                router.push('/quizzes');
+              }
+            }
+          }
+        ]
+      );
     }
   };
   
@@ -49,7 +84,8 @@ export default function TigerNavigation({
       >
         <ThemedText style={[
           styles.buttonText,
-          isFirst && styles.buttonTextDisabled
+          isFirst && styles.buttonTextDisabled,
+          { color: isDark ? Colors.dark.text : Colors.light.text }
         ]}>
           ← Previous
         </ThemedText>
@@ -57,7 +93,10 @@ export default function TigerNavigation({
       
       {/* Progress */}
       <View style={styles.progressContainer}>
-        <ThemedText style={styles.progressText}>
+        <ThemedText style={[
+          styles.progressText,
+          { color: isDark ? Colors.dark.text : Colors.light.text }
+        ]}>
           {currentIndex + 1} of {totalSections}
         </ThemedText>
         <View style={[
@@ -79,13 +118,12 @@ export default function TigerNavigation({
         style={[
           styles.button,
           styles.primaryButton,
-          { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint },
-          { borderColor: isDark ? Colors.dark.border : Colors.light.border }
+          { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
         ]}
         onPress={isLast ? handleFinish : onNext}
       >
         <ThemedText style={styles.primaryButtonText}>
-          {isLast ? 'Finish Lesson' : 'Next →'}
+          {isLast ? '🧠 Test Your Knowledge' : 'Next →'} {/* 🔥 UPDATED text */}
         </ThemedText>
       </TouchableOpacity>
     </View>
@@ -108,8 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryButton: {
-    borderWidth: 1,
-    backgroundColor: 'transparent',
+    // backgroundColor set dynamically above
   },
   secondaryButton: {
     borderWidth: 1,

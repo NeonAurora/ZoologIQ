@@ -15,18 +15,19 @@ import { useColorScheme } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Updated imports - using centralized services
-import { saveQuizResult } from '@/services/supabase/database';
+import { saveQuizResult } from '@/services/supabase';
 
 // Component imports
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Colors } from '@/constants/Colors';
+import { completePreQuiz, completePostQuiz } from '@/services/supabase';
 
 const windowWidth = Dimensions.get('window').width;
 
 export default function QuizPlayPage() {
-  const { quizId } = useLocalSearchParams();
+  const { quizId, sessionId, type } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuth();
   const { quiz, loading, error } = useQuiz(quizId);
@@ -69,6 +70,18 @@ export default function QuizPlayPage() {
       ]);
     }
   }, [error]);
+
+  useEffect(() => {
+    if (type === 'post-lesson') {
+      // Reset all state for fresh post-quiz
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setScore(0);
+      setQuizCompleted(false);
+      setIsSavingResult(false);
+      // Answers will be reset when quiz loads
+    }
+  }, [type]);
 
   // Get current question
   const currentQuestion = quiz?.questions?.[currentQuestionIndex] || null;
@@ -149,6 +162,7 @@ export default function QuizPlayPage() {
     }
   };
   
+  // In your quizPlay.jsx, update this part:
   const saveQuizResultToDatabase = async (finalAnswers) => {
     if (!user?.sub || isSavingResult) return;
     
@@ -161,6 +175,20 @@ export default function QuizPlayPage() {
       // Calculate final stats
       const stats = calculateQuizStats();
       
+      // 🔥 FIX: Map URL parameter values to database values
+      const getSessionType = (type, hasSession) => {
+        if (!hasSession) return 'regular';
+        
+        switch (type) {
+          case 'pre-lesson':
+            return 'pre_study';
+          case 'post-lesson':
+            return 'post_study';
+          default:
+            return 'regular';
+        }
+      };
+      
       const resultData = {
         user_id: user.sub,
         quiz_id: quizId,
@@ -171,7 +199,7 @@ export default function QuizPlayPage() {
         max_score: stats.max_possible_score,
         answers: stats.detailed_answers,
         time_taken_seconds: timeTakenSeconds,
-        session_type: 'regular',
+        session_type: getSessionType(type, !!sessionId), // 🔥 FIXED
         completed_at: quizEndTime.toISOString()
       };
       
@@ -179,22 +207,68 @@ export default function QuizPlayPage() {
       
       const savedResult = await saveQuizResult(resultData);
       
+      if (savedResult && sessionId) {
+        // Update learning session based on quiz type
+        if (type === 'pre-lesson') {
+          await completePreQuiz(sessionId, savedResult.id);
+        } else if (type === 'post-lesson') {
+          await completePostQuiz(sessionId, savedResult.id);
+        }
+      }
+      
       if (savedResult) {
         console.log("Quiz result saved successfully:", savedResult);
       } else {
         console.error("Failed to save quiz result");
-        // Don't show error to user as quiz is completed
       }
     } catch (error) {
       console.error('Error saving quiz result:', error);
-      // Don't show error to user as quiz is completed
     } finally {
       setIsSavingResult(false);
     }
   };
   
+  // Modify the result screen navigation
   const handleReturnToQuizzes = () => {
-    router.replace('/quizzes');
+    if (sessionId && type === 'pre-lesson') {
+      // Navigate to lesson after pre-quiz
+      router.replace(`/${getTopic()}Lesson?sessionId=${sessionId}&quizId=${quizId}`);
+    } else if (sessionId && type === 'post-lesson') {
+      // Navigate to results after post-quiz
+      router.replace(`/learningResults?sessionId=${sessionId}`);
+    } else {
+      // Regular quiz flow
+      router.replace('/quizzes');
+    }
+  };  
+  // Helper function to get topic from category
+  const getTopic = () => {
+    const categorySlugMap = {
+      'tiger': 'tiger',
+      'tapir': 'tapir', 
+      'turtle': 'turtle'
+    };
+    return categorySlugMap[quiz?.category?.toLowerCase()] || 'tiger';
+  };
+
+  const getCompletionButtonText = () => {
+    if (sessionId && type === 'pre-lesson') {
+      return '📚 Take a Brief Lesson';
+    } else if (sessionId && type === 'post-lesson') {
+      return '📊 View Your Progress';
+    } else {
+      return '🌟 More Quizzes';
+    }
+  };
+
+  const getCompletionTitle = () => {
+    if (sessionId && type === 'pre-lesson') {
+      return '✅ Pre-Assessment Complete!';
+    } else if (sessionId && type === 'post-lesson') {
+      return '🎯 Post-Assessment Complete!';
+    } else {
+      return '🎉 Quiz Completed!';
+    }
   };
   
   const handleRetakeQuiz = () => {
@@ -223,8 +297,26 @@ export default function QuizPlayPage() {
       <ThemedView style={styles.container}>
         <ScrollView contentContainerStyle={styles.content}>
           <ThemedText type="title" style={styles.resultTitle}>
-            🎉 Quiz Completed!
+            {getCompletionTitle()}
           </ThemedText>
+
+          {sessionId && type === 'pre-lesson' && (
+            <ThemedText style={[
+              styles.completionMessage,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              Great job! Now let's dive into the lesson to learn more about this topic.
+            </ThemedText>
+          )}
+          
+          {sessionId && type === 'post-lesson' && (
+            <ThemedText style={[
+              styles.completionMessage,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              Excellent! Let's see how much you've improved after the lesson.
+            </ThemedText>
+          )}
           
           <View style={[
             styles.scoreCard,
@@ -314,38 +406,41 @@ export default function QuizPlayPage() {
           </View>
           
           <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={[
-                styles.button, 
-                styles.secondaryButton,
-                { 
-                  borderColor: isDark ? Colors.dark.tint : Colors.light.tint,
-                  backgroundColor: 'transparent'
-                }
-              ]} 
-              onPress={handleRetakeQuiz}
-            >
-              <ThemedText style={[
-                styles.secondaryButtonText,
-                { color: isDark ? Colors.dark.tint : Colors.light.tint }
-              ]}>
-                Retake Quiz
-              </ThemedText>
-            </TouchableOpacity>
+            {/* 🔥 UPDATE: Show retake only for non-session quizzes */}
+            {!sessionId && (
+              <TouchableOpacity 
+                style={[
+                  styles.button, 
+                  styles.secondaryButton,
+                  { 
+                    borderColor: isDark ? Colors.dark.tint : Colors.light.tint,
+                    backgroundColor: 'transparent'
+                  }
+                ]} 
+                onPress={handleRetakeQuiz}
+              >
+                <ThemedText style={[
+                  styles.secondaryButtonText,
+                  { color: isDark ? Colors.dark.tint : Colors.light.tint }
+                ]}>
+                  Retake Quiz
+                </ThemedText>
+              </TouchableOpacity>
+            )}
             
             <TouchableOpacity 
               style={[
                 styles.button, 
                 styles.primaryButton,
-                { backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary }
+                { 
+                  backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+                  flex: sessionId ? 1 : 1 // Full width if no retake button
+                }
               ]} 
               onPress={handleReturnToQuizzes}
             >
-              <ThemedText style={[
-                styles.primaryButtonText,
-                { color: isDark ? Colors.dark.tint : Colors.light.tint }
-              ]}>
-                More Quizzes
+              <ThemedText style={styles.primaryButtonText}>
+                {getCompletionButtonText()} {/* 🔥 UPDATED */}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -761,5 +856,12 @@ const styles = StyleSheet.create({
   },
   savingText: {
     fontSize: 14,
+  },
+  completionMessage: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginBottom: 20,
+    lineHeight: 24,
+    fontStyle: 'italic',
   },
 });

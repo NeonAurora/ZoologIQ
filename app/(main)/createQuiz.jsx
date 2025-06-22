@@ -6,7 +6,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Updated imports - using centralized services
-import { saveQuiz } from '@/services/supabase/database';
+import { saveQuiz } from '@/services/supabase';
 import { uploadImage } from '@/services/supabase';
 
 // Component imports

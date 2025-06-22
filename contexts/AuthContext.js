@@ -6,7 +6,7 @@ import {
   getUserData, 
   saveUserData, 
   updateUserData 
-} from "@/services/supabase/database"; // Updated import
+} from "@/services/supabase"; // Updated import
 
 export const AuthContext = createContext();
 

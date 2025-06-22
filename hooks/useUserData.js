@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { subscribeToUserData } from '@/services/supabase/database'; // Updated import
+import { subscribeToUserData } from '@/services/supabase'; // Updated import
 
 export function useUserData() {
   const { user } = useAuth();

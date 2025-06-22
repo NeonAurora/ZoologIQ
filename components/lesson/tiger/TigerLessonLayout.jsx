@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import TigerSidebar from './TigerSidebar';
 import TigerContent from './TigerContent';
 import TigerNavigation from './TigerNavigation';
+import { startLesson } from '@/services/supabase';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -17,7 +18,7 @@ const TIGER_SECTIONS = [
   { id: 'conservation', title: 'Threats & Conservation', component: 'TigerConservation' },
 ];
 
-export default function TigerLessonLayout({ quizId }) {
+export default function TigerLessonLayout({ quizId, sessionId }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   
@@ -25,6 +26,21 @@ export default function TigerLessonLayout({ quizId }) {
   const [sidebarVisible, setSidebarVisible] = useState(windowWidth > 768);
   
   const currentSection = TIGER_SECTIONS[currentSectionIndex];
+
+  useEffect(() => {
+    if (sessionId) {
+      const trackLessonStart = async () => {
+        try {
+          await startLesson(sessionId);
+          console.log('Lesson started for session:', sessionId);
+        } catch (error) {
+          console.error('Error tracking lesson start:', error);
+        }
+      };
+      
+      trackLessonStart();
+    }
+  }, [sessionId]);
   
   const handleNext = () => {
     if (currentSectionIndex < TIGER_SECTIONS.length - 1) {
@@ -72,6 +88,7 @@ export default function TigerLessonLayout({ quizId }) {
           onNext={handleNext}
           onPrevious={handlePrevious}
           quizId={quizId}
+          sessionId={sessionId}
         />
       </View>
     </View>
