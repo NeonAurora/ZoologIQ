@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, TouchableOpacity, Alert, ScrollView, Platform, Modal } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedView } from '@/components/ThemedView';
@@ -10,7 +10,6 @@ import { useRouter } from 'expo-router';
 import { 
   checkSessionAvailability, 
   createLearningSession, 
-  getNextAction,
   getUserCompletedSessions,
   abandonSession
 } from '@/services/supabase/learningSessionService';
@@ -27,154 +26,173 @@ export default function LearningSessionStarter({ topic, quizId }) {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+  
+  // 🔥 NEW: Web-compatible confirmation modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // 🔥 REF TO TRACK IF WE SHOULD SKIP FOCUS RELOAD
-  const skipNextFocusReload = useRef(false);
+  // 🔥 CROSS-PLATFORM ALERT FUNCTION
+  const showConfirmDialog = (title, message, onConfirm) => {
+    if (Platform.OS === 'web') {
+      // Use custom modal on web
+      setShowConfirmModal({
+        title,
+        message,
+        onConfirm,
+        onCancel: () => setShowConfirmModal(false)
+      });
+    } else {
+      // Use native Alert on mobile
+      Alert.alert(
+        title,
+        message,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Start New', 
+            style: 'destructive',
+            onPress: onConfirm
+          }
+        ]
+      );
+    }
+  };
 
+  // SIMPLIFIED DATA LOADING FUNCTION
   const loadSessionData = useCallback(async () => {
-    if (!user || !topic || isNavigating) return;
+    if (!user || !topic) {
+      console.log('❌ Missing user or topic, skipping load');
+      return;
+    }
     
     try {
-      setLoading(true);
-      console.log('🔄 Refreshing session data for topic:', topic);
+      console.log('🔄 Loading session data for topic:', topic);
       
       // Get category info
       const categoryData = await getCategoryBySlug(topic);
+      if (!categoryData) {
+        console.error('❌ Category not found for topic:', topic);
+        setLoading(false);
+        return;
+      }
+      
       setCategory(categoryData);
       
-      if (categoryData) {
-        // Check for existing session
-        const availability = await checkSessionAvailability(user.sub, categoryData.id);
-        setSessionState(availability);
-        
-        // Get completed sessions for this topic
-        const completed = await getUserCompletedSessions(user.sub, categoryData.id);
-        setCompletedSessions(completed);
-        
-        console.log('✅ Session data refreshed:', {
-          canStartNew: availability.canStartNew,
-          activeSession: !!availability.activeSession,
-          completedCount: completed.length
-        });
-      }
+      // Load session availability and history in parallel
+      const [availability, completed] = await Promise.all([
+        checkSessionAvailability(user.sub, categoryData.id),
+        getUserCompletedSessions(user.sub, categoryData.id)
+      ]);
+      
+      setSessionState(availability);
+      setCompletedSessions(completed);
+      
+      console.log('✅ Session data loaded:', {
+        canStartNew: availability.canStartNew,
+        hasActiveSession: !!availability.activeSession,
+        activeSessionStatus: availability.activeSession?.session_status,
+        completedCount: completed.length
+      });
+      
     } catch (error) {
-      console.error('Error loading session data:', error);
+      console.error('❌ Error loading session data:', error);
     } finally {
       setLoading(false);
     }
-  }, [user, topic, isNavigating]);
+  }, [user, topic]);
 
-  // 🔥 SMARTER FOCUS EFFECT - SKIP AFTER NAVIGATION
+  // SIMPLIFIED FOCUS EFFECT - ALWAYS REFRESH ON FOCUS
   useFocusEffect(
     useCallback(() => {
-      // 🔥 CHECK IF WE SHOULD SKIP THIS RELOAD
-      if (skipNextFocusReload.current) {
-        console.log('🚫 Skipping focus reload - just navigated');
-        skipNextFocusReload.current = false;
-        return;
-      }
-
-      if (isNavigating) {
-        console.log('🚫 Skipping focus reload - currently navigating');
-        return;
-      }
-
-      console.log('🎯 LearningSessionStarter focused - loading fresh data');
+      console.log('🎯 LearningSessionStarter focused - refreshing data');
+      setLoading(true);
       loadSessionData();
-    }, [loadSessionData, isNavigating])
+    }, [loadSessionData])
   );
 
-  // 🔥 INITIAL LOAD
+  // INITIAL LOAD
   useEffect(() => {
-    if (user && topic && !isNavigating) {
+    if (user && topic) {
       console.log('🚀 Initial mount - loading session data');
       loadSessionData();
     }
-  }, [user, topic, loadSessionData, isNavigating]);
+  }, [user, topic, loadSessionData]);
 
   const handleStartNewSession = async (shouldAbandonCurrent = false) => {
+    if (isCreatingSession) return;
+    
     try {
-      setIsNavigating(true);
+      setIsCreatingSession(true);
+      console.log('🚀 Starting new learning session');
       
       // If there's an active session and user wants to start new, abandon it
       if (shouldAbandonCurrent && sessionState?.activeSession) {
+        console.log('🗑️ Abandoning current session');
         await abandonSession(sessionState.activeSession.id);
       }
       
       const session = await createLearningSession(user.sub, category.id, quizId);
       
       if (session) {
-        // 🔥 CLEAR SESSION STATE TO PREVENT INTERFERENCE
-        setSessionState(null);
-        
-        // 🔥 SET FLAG TO SKIP NEXT FOCUS RELOAD
-        skipNextFocusReload.current = true;
-        
-        const timestamp = Date.now();
-        console.log('🚀 Navigating to FRESH pre-quiz with timestamp:', timestamp);
-        console.log('🧹 Cleared session state to prevent interference');
-        
-        router.push(`/quizPlay?sessionId=${session.id}&type=pre-lesson&quizId=${quizId}&t=${timestamp}&fresh=true`);
+        console.log('✅ Session created, navigating to pre-quiz');
+        // Navigate immediately without complex state management
+        router.push(`/quizPlay?sessionId=${session.id}&type=pre-lesson&quizId=${quizId}&fresh=true`);
       } else {
-        setIsNavigating(false);
-        Alert.alert('Error', 'Could not create learning session. Please try again.');
+        // 🔥 CROSS-PLATFORM ERROR HANDLING
+        if (Platform.OS === 'web') {
+          alert('Error: Could not create learning session. Please try again.');
+        } else {
+          Alert.alert('Error', 'Could not create learning session. Please try again.');
+        }
       }
     } catch (error) {
-      setIsNavigating(false);
-      console.error('Error starting session:', error);
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      console.error('❌ Error starting session:', error);
+      // 🔥 CROSS-PLATFORM ERROR HANDLING
+      if (Platform.OS === 'web') {
+        alert('Error: Something went wrong. Please try again.');
+      } else {
+        Alert.alert('Error', 'Something went wrong. Please try again.');
+      }
+    } finally {
+      setIsCreatingSession(false);
     }
   };
 
   const handleContinueSession = () => {
-    setIsNavigating(true);
+    if (isCreatingSession) return;
     
     const session = sessionState.activeSession;
     const nextAction = sessionState.nextAction;
-    const timestamp = Date.now();
     
-    console.log('🚀 Continuing session with action:', nextAction, 'timestamp:', timestamp);
-    
-    // 🔥 SET FLAG TO SKIP NEXT FOCUS RELOAD
-    skipNextFocusReload.current = true;
+    console.log('🚀 Continuing session with action:', nextAction);
     
     switch (nextAction) {
       case 'take_pre_quiz':
-        console.log('🧹 Starting pre-quiz - ensuring fresh state');
-        router.push(`/quizPlay?sessionId=${session.id}&type=pre-lesson&quizId=${quizId}&t=${timestamp}&fresh=true`);
+        router.push(`/quizPlay?sessionId=${session.id}&type=pre-lesson&quizId=${quizId}&fresh=true`);
         break;
       case 'start_lesson':
-        router.push(`/${topic}Lesson?sessionId=${session.id}&t=${timestamp}`);
-        break;
       case 'continue_lesson':
-        router.push(`/${topic}Lesson?sessionId=${session.id}&t=${timestamp}`);
+        router.push(`/${topic}Lesson?sessionId=${session.id}&quizId=${quizId}`);
         break;
       case 'take_post_quiz':
-        console.log('🧹 Starting post-quiz - ensuring fresh state');
-        router.push(`/quizPlay?sessionId=${session.id}&type=post-lesson&quizId=${quizId}&t=${timestamp}&fresh=true`);
+        router.push(`/quizPlay?sessionId=${session.id}&type=post-lesson&quizId=${quizId}&fresh=true`);
         break;
       case 'view_results':
-        router.push(`/learningResults?sessionId=${session.id}&t=${timestamp}`);
+        router.push(`/learningResults?sessionId=${session.id}`);
         break;
       default:
+        console.log('⚠️ Unknown action, starting new session');
         handleStartNewSession();
-        return;
+        break;
     }
   };
 
+  // 🔥 UPDATED: Use cross-platform confirmation
   const handleStartNewWithAbandon = () => {
-    Alert.alert(
+    showConfirmDialog(
       'Start New Session',
       'You have an incomplete session. Starting a new session will abandon your current progress. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Start New', 
-          style: 'destructive',
-          onPress: () => handleStartNewSession(true)
-        }
-      ]
+      () => handleStartNewSession(true)
     );
   };
 
@@ -191,12 +209,14 @@ export default function LearningSessionStarter({ topic, quizId }) {
   if (loading) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText style={[
-          styles.loadingText,
-          { color: isDark ? Colors.dark.text : Colors.light.text }
-        ]}>
-          {isNavigating ? 'Navigating...' : 'Loading...'}
-        </ThemedText>
+        <View style={styles.loadingContainer}>
+          <ThemedText style={[
+            styles.loadingText,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {isCreatingSession ? 'Creating session...' : 'Loading...'}
+          </ThemedText>
+        </View>
       </ThemedView>
     );
   }
@@ -215,7 +235,7 @@ export default function LearningSessionStarter({ topic, quizId }) {
         </ThemedText>
         
         {/* Active Session Section */}
-        {!sessionState?.canStartNew && sessionState?.activeSession && (
+        {sessionState && !sessionState.canStartNew && sessionState.activeSession && (
           <View style={[
             styles.activeSessionCard,
             { 
@@ -247,10 +267,10 @@ export default function LearningSessionStarter({ topic, quizId }) {
                 ]} 
                 onPress={handleContinueSession}
                 activeOpacity={0.8}
-                disabled={isNavigating}
+                disabled={isCreatingSession}
               >
                 <ThemedText style={styles.buttonText}>
-                  {isNavigating ? '⏳ Loading...' : '▶️ Continue Learning'}
+                  {isCreatingSession ? '⏳ Loading...' : '▶️ Continue Learning'}
                 </ThemedText>
               </TouchableOpacity>
               
@@ -261,7 +281,7 @@ export default function LearningSessionStarter({ topic, quizId }) {
                 ]} 
                 onPress={handleStartNewWithAbandon}
                 activeOpacity={0.8}
-                disabled={isNavigating}
+                disabled={isCreatingSession}
               >
                 <ThemedText style={styles.buttonText}>
                   🔄 Start Fresh
@@ -272,7 +292,7 @@ export default function LearningSessionStarter({ topic, quizId }) {
         )}
         
         {/* New Session Section */}
-        {sessionState?.canStartNew && (
+        {sessionState && sessionState.canStartNew && (
           <View style={[
             styles.newSessionCard,
             { 
@@ -301,10 +321,10 @@ export default function LearningSessionStarter({ topic, quizId }) {
               ]} 
               onPress={() => handleStartNewSession(false)}
               activeOpacity={0.8}
-              disabled={isNavigating}
+              disabled={isCreatingSession}
             >
               <ThemedText style={styles.buttonText}>
-                {isNavigating ? '⏳ Starting...' : '🚀 Start Learning Journey'}
+                {isCreatingSession ? '⏳ Starting...' : '🚀 Start Learning Journey'}
               </ThemedText>
             </TouchableOpacity>
           </View>
@@ -382,9 +402,75 @@ export default function LearningSessionStarter({ topic, quizId }) {
           )}
         </View>
       </ScrollView>
+
+      {/* 🔥 NEW: Custom Confirmation Modal for Web */}
+      {Platform.OS === 'web' && showConfirmModal && (
+        <Modal
+          transparent={true}
+          visible={!!showConfirmModal}
+          animationType="fade"
+          onRequestClose={() => setShowConfirmModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[
+              styles.confirmModal,
+              { backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface }
+            ]}>
+              <ThemedText style={[
+                styles.modalTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {showConfirmModal.title}
+              </ThemedText>
+              
+              <ThemedText style={[
+                styles.modalMessage,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {showConfirmModal.message}
+              </ThemedText>
+              
+              <View style={styles.modalButtons}>
+                <TouchableOpacity 
+                  style={[
+                    styles.modalButton,
+                    styles.cancelButton,
+                    { borderColor: isDark ? Colors.dark.border : Colors.light.border }
+                  ]}
+                  onPress={() => setShowConfirmModal(false)}
+                >
+                  <ThemedText style={[
+                    styles.cancelButtonText,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    Cancel
+                  </ThemedText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[
+                    styles.modalButton,
+                    styles.confirmButton,
+                    { backgroundColor: '#FF5722' }
+                  ]}
+                  onPress={() => {
+                    setShowConfirmModal(false);
+                    showConfirmModal.onConfirm();
+                  }}
+                >
+                  <ThemedText style={styles.confirmButtonText}>
+                    Start New
+                  </ThemedText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </ThemedView>
   );
 }
+
 // Helper component for session progress (unchanged)
 function SessionProgressIndicator({ session, isDark }) {
   const getStepStatus = (status) => {
@@ -456,6 +542,11 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 20,
     textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     textAlign: 'center',
@@ -611,5 +702,64 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     maxWidth: 60,
+  },
+
+  // 🔥 NEW: Modal styles for web confirmation
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  confirmModal: {
+    borderRadius: 16,
+    padding: 24,
+    minWidth: 300,
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 16,
+    lineHeight: 22,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    borderWidth: 1,
+    backgroundColor: 'transparent',
+  },
+  confirmButton: {
+    // backgroundColor set above
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

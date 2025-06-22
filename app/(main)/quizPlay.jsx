@@ -1,5 +1,5 @@
 // /app/(main)/quizPlay.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -8,7 +8,8 @@ import {
   ScrollView, 
   ActivityIndicator,
   Alert,
-  Dimensions
+  Dimensions,
+  StatusBar
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from 'react-native';
@@ -21,7 +22,7 @@ import { useQuiz } from '@/hooks/useQuiz';
 import { Colors } from '@/constants/Colors';
 import { completePreQuiz, completePostQuiz, startStudyPhase, saveQuizResult } from '@/services/supabase';
 
-const windowWidth = Dimensions.get('window').width;
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function QuizPlayPage() {
   const { quizId, sessionId, type, fresh } = useLocalSearchParams();
@@ -31,6 +32,9 @@ export default function QuizPlayPage() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   
+  // USE REF TO TRACK COMPONENT MOUNT STATE
+  const mountedRef = useRef(true);
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -39,6 +43,38 @@ export default function QuizPlayPage() {
   const [quizStartTime] = useState(new Date());
   const [isSavingResult, setIsSavingResult] = useState(false);
   
+  // CLEANUP ON UNMOUNT
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // RESET STATE WHEN FRESH PARAMETER CHANGES
+  useEffect(() => {
+    if (fresh === 'true') {
+      console.log('🧹 Fresh quiz requested - resetting all state');
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setAnswers([]);
+      setScore(0);
+      setQuizCompleted(false);
+      setIsSavingResult(false);
+    }
+  }, [fresh]);
+
+  // RESET STATE FOR POST-LESSON QUIZZES
+  useEffect(() => {
+    if (type === 'post-lesson') {
+      console.log('🧹 Post-lesson quiz - ensuring fresh state');
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setScore(0);
+      setQuizCompleted(false);
+      setIsSavingResult(false);
+    }
+  }, [type]);
+
   // Redirect if not logged in
   useEffect(() => {
     if (!user && !loading) {
@@ -54,8 +90,9 @@ export default function QuizPlayPage() {
 
   // Initialize answers array when quiz loads
   useEffect(() => {
-    if (quiz && quiz.questions) {
-      setAnswers(Array(quiz.questions.length || 0).fill(null));
+    if (quiz && quiz.questions && mountedRef.current) {
+      console.log('🔧 Initializing answers array for', quiz.questions.length, 'questions');
+      setAnswers(Array(quiz.questions.length).fill(null));
     }
   }, [quiz]);
 
@@ -68,29 +105,34 @@ export default function QuizPlayPage() {
     }
   }, [error]);
 
-  useEffect(() => {
-    if (type === 'post-lesson') {
-      // Reset all state for fresh post-quiz
-      setCurrentQuestionIndex(0);
-      setSelectedAnswer(null);
-      setScore(0);
-      setQuizCompleted(false);
-      setIsSavingResult(false);
-      // Answers will be reset when quiz loads
+  // Get quiz type information
+  const getQuizTypeInfo = () => {
+    if (sessionId && type === 'pre-lesson') {
+      return {
+        title: 'Pre-Assessment',
+        subtitle: 'Test your current knowledge',
+        icon: '📝',
+        color: isDark ? '#FF9800' : '#FF6B35',
+        description: 'This quiz will help us understand what you already know about the topic.'
+      };
+    } else if (sessionId && type === 'post-lesson') {
+      return {
+        title: 'Post-Assessment',
+        subtitle: 'Show what you\'ve learned',
+        icon: '🎯',
+        color: isDark ? '#4CAF50' : '#2E7D32',
+        description: 'Let\'s see how much you\'ve improved after the lesson!'
+      };
+    } else {
+      return {
+        title: 'Knowledge Quiz',
+        subtitle: 'Test your understanding',
+        icon: '🧠',
+        color: isDark ? '#2196F3' : '#1976D2',
+        description: 'Challenge yourself with this quiz.'
+      };
     }
-  }, [type]);
-
-  useEffect(() => {
-    if (fresh === 'true') {
-      console.log('🧹 Fresh quiz requested - resetting all state');
-      setCurrentQuestionIndex(0);
-      setSelectedAnswer(null);
-      setAnswers([]);
-      setScore(0);
-      setQuizCompleted(false);
-      // Reset any other quiz state
-    }
-  }, [fresh]);
+  };
 
   // Get current question
   const currentQuestion = quiz?.questions?.[currentQuestionIndex] || null;
@@ -99,12 +141,12 @@ export default function QuizPlayPage() {
     setSelectedAnswer(answer);
   };
   
-  const calculateQuizStats = () => {
+  const calculateQuizStats = (finalAnswers) => {
     let correctCount = 0;
     let totalScore = 0;
     let maxPossibleScore = 0;
     
-    const detailedAnswers = answers.map((userAnswer, index) => {
+    const detailedAnswers = finalAnswers.map((userAnswer, index) => {
       const question = quiz.questions[index];
       const isCorrect = userAnswer === question.answer;
       
@@ -130,7 +172,7 @@ export default function QuizPlayPage() {
     
     return {
       correct_answers: correctCount,
-      total_score: Math.max(0, totalScore), // Don't allow negative scores
+      total_score: Math.max(0, totalScore),
       max_possible_score: maxPossibleScore,
       detailed_answers: detailedAnswers
     };
@@ -161,19 +203,15 @@ export default function QuizPlayPage() {
     if (currentQuestionIndex < (quiz.questions?.length || 0) - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Quiz completed - calculate final stats and save
-      const finalAnswers = [...newAnswers];
-      setAnswers(finalAnswers);
+      // Quiz completed - finalize and save
+      console.log('🎯 Quiz completed, finalizing results');
       setQuizCompleted(true);
-      
-      // Save result with complete data
-      await saveQuizResultToDatabase(finalAnswers);
+      await saveQuizResultToDatabase(newAnswers);
     }
   };
   
-  // In your quizPlay.jsx, update this part:
   const saveQuizResultToDatabase = async (finalAnswers) => {
-    if (!user?.sub || isSavingResult) return;
+    if (!user?.sub || isSavingResult || !mountedRef.current) return;
     
     setIsSavingResult(true);
     
@@ -182,9 +220,8 @@ export default function QuizPlayPage() {
       const timeTakenSeconds = Math.floor((quizEndTime - quizStartTime) / 1000);
       
       // Calculate final stats
-      const stats = calculateQuizStats();
+      const stats = calculateQuizStats(finalAnswers);
       
-      // 🔥 FIX: Map URL parameter values to database values
       const getSessionType = (type, hasSession) => {
         if (!hasSession) return 'regular';
         
@@ -208,50 +245,64 @@ export default function QuizPlayPage() {
         max_score: stats.max_possible_score,
         answers: stats.detailed_answers,
         time_taken_seconds: timeTakenSeconds,
-        session_type: getSessionType(type, !!sessionId), // 🔥 FIXED
+        session_type: getSessionType(type, !!sessionId),
         completed_at: quizEndTime.toISOString()
       };
       
-      console.log('Saving quiz result:', resultData);
+      console.log('💾 Saving quiz result:', {
+        score: stats.total_score,
+        maxScore: stats.max_possible_score,
+        sessionType: resultData.session_type,
+        hasSession: !!sessionId
+      });
       
       const savedResult = await saveQuizResult(resultData);
       
-      if (savedResult && sessionId) {
+      if (savedResult && sessionId && mountedRef.current) {
+        console.log('🔄 Updating learning session based on quiz type:', type);
+        
         // Update learning session based on quiz type
         if (type === 'pre-lesson') {
+          console.log('📝 Completing pre-quiz phase');
           await completePreQuiz(sessionId, savedResult.id);
           await startStudyPhase(sessionId);
         } else if (type === 'post-lesson') {
+          console.log('🎯 Completing post-quiz phase');
           await completePostQuiz(sessionId, savedResult.id);
         }
       }
       
       if (savedResult) {
-        console.log("Quiz result saved successfully:", savedResult);
+        console.log("✅ Quiz result saved successfully");
       } else {
-        console.error("Failed to save quiz result");
+        console.error("❌ Failed to save quiz result");
       }
     } catch (error) {
-      console.error('Error saving quiz result:', error);
+      console.error('❌ Error saving quiz result:', error);
     } finally {
-      setIsSavingResult(false);
+      if (mountedRef.current) {
+        setIsSavingResult(false);
+      }
     }
   };
   
-  // Modify the result screen navigation
   const handleReturnToQuizzes = () => {
     if (sessionId && type === 'pre-lesson') {
       // Navigate to lesson after pre-quiz
-      router.replace(`/${getTopic()}Lesson?sessionId=${sessionId}&quizId=${quizId}`);
+      const topic = getTopic();
+      console.log('📚 Navigating to lesson:', topic);
+      router.replace(`/${topic}Lesson?sessionId=${sessionId}&quizId=${quizId}`);
     } else if (sessionId && type === 'post-lesson') {
-      // 🔥 ADD TIMESTAMP TO CLEAR QUIZ STATE ON RESULTS PAGE
-      const timestamp = Date.now();
-      router.replace(`/learningResults?sessionId=${sessionId}&refresh=${timestamp}`);
+      // Navigate to results after post-quiz
+      console.log('📊 Navigating to learning results');
+      router.replace(`/learningResults?sessionId=${sessionId}`);
     } else {
       // Regular quiz flow
+      console.log('🏠 Returning to quizzes');
       router.replace('/quizzes');
     }
-  };  
+  };
+
   // Helper function to get topic from category
   const getTopic = () => {
     const categorySlugMap = {
@@ -264,9 +315,9 @@ export default function QuizPlayPage() {
 
   const getCompletionButtonText = () => {
     if (sessionId && type === 'pre-lesson') {
-      return '📚 Take a Brief Lesson';
+      return '📚 Start Lesson';
     } else if (sessionId && type === 'post-lesson') {
-      return '📊 View Your Progress';
+      return '📊 View Results';
     } else {
       return '🌟 More Quizzes';
     }
@@ -283,65 +334,103 @@ export default function QuizPlayPage() {
   };
   
   const handleRetakeQuiz = () => {
-    // Reset all state
+    console.log('🔄 Retaking quiz - resetting state');
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
     setAnswers(Array(quiz.questions.length).fill(null));
     setScore(0);
     setQuizCompleted(false);
+    setIsSavingResult(false);
   };
+
+  const quizTypeInfo = getQuizTypeInfo();
   
   if (loading || !quiz) {
     return (
-      <ThemedView style={styles.center}>
-        <ActivityIndicator size="large" color={isDark ? Colors.dark.tint : Colors.light.tint} />
-        <ThemedText style={styles.loadingText}>Loading quiz...</ThemedText>
+      <ThemedView style={styles.container}>
+        <StatusBar 
+          barStyle={isDark ? 'light-content' : 'dark-content'} 
+          backgroundColor={isDark ? Colors.dark.background : Colors.light.background}
+        />
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={isDark ? Colors.dark.tint : Colors.light.tint} />
+          <ThemedText style={styles.loadingText}>Loading quiz...</ThemedText>
+        </View>
       </ThemedView>
     );
   }
   
   if (quizCompleted) {
-    const finalStats = calculateQuizStats();
+    const finalStats = calculateQuizStats(answers);
     const percentage = Math.round((finalStats.total_score / finalStats.max_possible_score) * 100);
     
     return (
       <ThemedView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.content}>
-          <ThemedText type="title" style={styles.resultTitle}>
-            {getCompletionTitle()}
-          </ThemedText>
-
-          {sessionId && type === 'pre-lesson' && (
-            <ThemedText style={[
-              styles.completionMessage,
-              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-            ]}>
-              Great job! Now let's dive into the lesson to learn more about this topic.
+        <StatusBar 
+          barStyle={isDark ? 'light-content' : 'dark-content'} 
+          backgroundColor={isDark ? Colors.dark.background : Colors.light.background}
+        />
+        <ScrollView 
+          contentContainerStyle={styles.resultsContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Results Header */}
+          <View style={[
+            styles.resultsHeader,
+            { backgroundColor: isDark ? Colors.dark.surface : Colors.light.backgroundSecondary }
+          ]}>
+            <ThemedText style={styles.resultsIcon}>
+              {quizTypeInfo.icon}
             </ThemedText>
-          )}
-          
-          {sessionId && type === 'post-lesson' && (
-            <ThemedText style={[
-              styles.completionMessage,
-              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-            ]}>
-              Excellent! Let's see how much you've improved after the lesson.
+            <ThemedText type="title" style={styles.resultTitle}>
+              {getCompletionTitle()}
             </ThemedText>
-          )}
+            
+            {sessionId && (
+              <ThemedText style={[
+                styles.completionMessage,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {type === 'pre-lesson' 
+                  ? "Great job! Now let's dive into the lesson to learn more about this topic."
+                  : "Excellent! Let's see how much you've improved after the lesson."
+                }
+              </ThemedText>
+            )}
+          </View>
           
+          {/* Score Card */}
           <View style={[
             styles.scoreCard,
-            { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
+            { 
+              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+              shadowColor: isDark ? '#000' : '#000',
+              shadowOpacity: isDark ? 0.3 : 0.1,
+            }
           ]}>
-            <ThemedText style={[
-              styles.scoreLabel,
-              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-            ]}>
-              Your Score
-            </ThemedText>
+            <View style={styles.scoreHeader}>
+              <ThemedText style={[
+                styles.scoreLabel,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                Your Score
+              </ThemedText>
+              <View style={[
+                styles.scoreBadge,
+                { backgroundColor: quizTypeInfo.color + '20' }
+              ]}>
+                <ThemedText style={[
+                  styles.scoreBadgeText,
+                  { color: quizTypeInfo.color }
+                ]}>
+                  {quizTypeInfo.title}
+                </ThemedText>
+              </View>
+            </View>
+            
             <ThemedText style={[
               styles.scoreValue,
-              { color: isDark ? Colors.dark.tint : Colors.light.tint }
+              { color: quizTypeInfo.color }
             ]}>
               {finalStats.total_score}/{finalStats.max_possible_score}
             </ThemedText>
@@ -353,10 +442,10 @@ export default function QuizPlayPage() {
               <View 
                 style={[
                   styles.percentageFill, 
-                  { width: `${percentage}%` },
-                  percentage < 50 ? styles.percentageLow :
-                  percentage < 75 ? styles.percentageMedium :
-                  styles.percentageHigh
+                  { 
+                    width: `${percentage}%`,
+                    backgroundColor: quizTypeInfo.color
+                  }
                 ]} 
               />
             </View>
@@ -372,7 +461,7 @@ export default function QuizPlayPage() {
               <View style={styles.statItem}>
                 <ThemedText style={[
                   styles.statValue,
-                  { color: isDark ? Colors.dark.tint : Colors.light.tint }
+                  { color: '#4CAF50' }
                 ]}>
                   {finalStats.correct_answers}
                 </ThemedText>
@@ -387,7 +476,7 @@ export default function QuizPlayPage() {
               <View style={styles.statItem}>
                 <ThemedText style={[
                   styles.statValue,
-                  { color: isDark ? Colors.dark.tint : Colors.light.tint }
+                  { color: '#FF5722' }
                 ]}>
                   {quiz.questions.length - finalStats.correct_answers}
                 </ThemedText>
@@ -416,12 +505,12 @@ export default function QuizPlayPage() {
             </View>
           </View>
           
-          <View style={styles.buttonRow}>
-            {/* 🔥 UPDATE: Show retake only for non-session quizzes */}
+          {/* Action Buttons */}
+          <View style={styles.actionButtonsContainer}>
             {!sessionId && (
               <TouchableOpacity 
                 style={[
-                  styles.button, 
+                  styles.actionButton, 
                   styles.secondaryButton,
                   { 
                     borderColor: isDark ? Colors.dark.tint : Colors.light.tint,
@@ -434,36 +523,37 @@ export default function QuizPlayPage() {
                   styles.secondaryButtonText,
                   { color: isDark ? Colors.dark.tint : Colors.light.tint }
                 ]}>
-                  Retake Quiz
+                  🔄 Retake Quiz
                 </ThemedText>
               </TouchableOpacity>
             )}
             
             <TouchableOpacity 
               style={[
-                styles.button, 
+                styles.actionButton, 
                 styles.primaryButton,
                 { 
-                  backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
-                  flex: sessionId ? 1 : 1 // Full width if no retake button
+                  backgroundColor: quizTypeInfo.color,
+                  flex: sessionId ? 1 : 1
                 }
               ]} 
               onPress={handleReturnToQuizzes}
+              disabled={isSavingResult}
             >
               <ThemedText style={styles.primaryButtonText}>
-                {getCompletionButtonText()} {/* 🔥 UPDATED */}
+                {isSavingResult ? '⏳ Saving...' : getCompletionButtonText()}
               </ThemedText>
             </TouchableOpacity>
           </View>
           
           {isSavingResult && (
             <View style={styles.savingIndicator}>
-              <ActivityIndicator size="small" color={isDark ? Colors.dark.tint : Colors.light.tint} />
+              <ActivityIndicator size="small" color={quizTypeInfo.color} />
               <ThemedText style={[
                 styles.savingText,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Saving result...
+                Saving your results...
               </ThemedText>
             </View>
           )}
@@ -475,36 +565,105 @@ export default function QuizPlayPage() {
   // Handle case where quiz has no questions
   if (!currentQuestion || !quiz.questions || quiz.questions.length === 0) {
     return (
-      <ThemedView style={styles.center}>
-        <ThemedText style={[
-          styles.errorText,
-          { color: isDark ? Colors.dark.error : Colors.light.error }
-        ]}>
-          This quiz has no questions
-        </ThemedText>
-        <TouchableOpacity 
-          style={[
-            styles.button,
-            { backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary }
-          ]} 
-          onPress={() => router.back()}
-        >
+      <ThemedView style={styles.container}>
+        <StatusBar 
+          barStyle={isDark ? 'light-content' : 'dark-content'} 
+          backgroundColor={isDark ? Colors.dark.background : Colors.light.background}
+        />
+        <View style={styles.center}>
+          <ThemedText style={styles.errorIcon}>⚠️</ThemedText>
           <ThemedText style={[
-            styles.buttonText,
-            { color: isDark ? Colors.dark.tint : Colors.light.tint }
+            styles.errorText,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Go Back
+            This quiz has no questions
           </ThemedText>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={[
+              styles.actionButton,
+              { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+            ]} 
+            onPress={() => router.back()}
+          >
+            <ThemedText style={styles.primaryButtonText}>
+              Go Back
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
       </ThemedView>
     );
   }
   
   return (
     <ThemedView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Progress indicator */}
-        <View style={styles.progressContainer}>
+      <StatusBar 
+        barStyle={isDark ? 'light-content' : 'dark-content'} 
+        backgroundColor={isDark ? Colors.dark.background : Colors.light.background}
+      />
+      
+      {/* Quiz Header */}
+      <View style={[
+        styles.quizHeader,
+        { 
+          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+          borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
+        }
+      ]}>
+        <View style={styles.headerContent}>
+          <View style={styles.quizTypeContainer}>
+            <ThemedText style={[styles.quizTypeIcon, { color: quizTypeInfo.color }]}>
+              {quizTypeInfo.icon}
+            </ThemedText>
+            <View style={styles.quizTypeInfo}>
+              <ThemedText style={[
+                styles.quizTypeTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {quizTypeInfo.title}
+              </ThemedText>
+              <ThemedText style={[
+                styles.quizTypeSubtitle,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {quizTypeInfo.subtitle}
+              </ThemedText>
+            </View>
+          </View>
+          
+          <ThemedText style={[
+            styles.quizTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {quiz.title}
+          </ThemedText>
+        </View>
+      </View>
+
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Progress Section */}
+        <View style={[
+          styles.progressSection,
+          { backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface }
+        ]}>
+          <View style={styles.progressHeader}>
+            <ThemedText style={[
+              styles.progressLabel,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              Question {currentQuestionIndex + 1} of {quiz.questions.length}
+            </ThemedText>
+            <ThemedText style={[
+              styles.progressPercentage,
+              { color: quizTypeInfo.color }
+            ]}>
+              {Math.round(((currentQuestionIndex + 1) / quiz.questions.length) * 100)}%
+            </ThemedText>
+          </View>
+          
           <View style={[
             styles.progressBar,
             { backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary }
@@ -514,21 +673,18 @@ export default function QuizPlayPage() {
                 styles.progressFill, 
                 { 
                   width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%`,
-                  backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint
+                  backgroundColor: quizTypeInfo.color
                 }
               ]} 
             />
           </View>
-          <ThemedText style={[
-            styles.progressText,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {currentQuestionIndex + 1} of {quiz.questions.length}
-          </ThemedText>
         </View>
         
-        {/* Question */}
-        <View style={styles.questionContainer}>
+        {/* Question Section */}
+        <View style={[
+          styles.questionSection,
+          { backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface }
+        ]}>
           <ThemedText style={[
             styles.questionText,
             { color: isDark ? Colors.dark.text : Colors.light.text }
@@ -538,34 +694,46 @@ export default function QuizPlayPage() {
           
           {/* Question image if exists */}
           {currentQuestion.image && (
-            <Image 
-              source={{ uri: currentQuestion.image }} 
-              style={styles.questionImage}
-              resizeMode="cover"
-            />
+            <View style={styles.imageContainer}>
+              <Image 
+                source={{ uri: currentQuestion.image }} 
+                style={styles.questionImage}
+                resizeMode="cover"
+              />
+            </View>
           )}
           
           {/* Points indicator */}
-          <View style={styles.pointsIndicator}>
-            <ThemedText style={[
-              styles.pointsText,
-              { color: isDark ? Colors.dark.tint : Colors.light.tint }
+          <View style={styles.pointsContainer}>
+            <View style={[
+              styles.pointsBadge,
+              { backgroundColor: quizTypeInfo.color + '20' }
             ]}>
-              {currentQuestion.points || 10} points
-            </ThemedText>
-            {currentQuestion.penalty > 0 && (
               <ThemedText style={[
-                styles.penaltyText,
-                { color: isDark ? Colors.dark.error : Colors.light.error }
+                styles.pointsText,
+                { color: quizTypeInfo.color }
               ]}>
-                -{currentQuestion.penalty} for wrong answer
+                +{currentQuestion.points || 10} points
               </ThemedText>
+            </View>
+            {currentQuestion.penalty > 0 && (
+              <View style={[
+                styles.penaltyBadge,
+                { backgroundColor: '#FF572220' }
+              ]}>
+                <ThemedText style={[
+                  styles.penaltyText,
+                  { color: '#FF5722' }
+                ]}>
+                  -{currentQuestion.penalty} penalty
+                </ThemedText>
+              </View>
             )}
           </View>
         </View>
         
-        {/* Answer options */}
-        <View style={styles.optionsContainer}>
+        {/* Answer Options */}
+        <View style={styles.optionsSection}>
           {currentQuestion.options.map((option, index) => (
             <TouchableOpacity
               key={index}
@@ -573,22 +741,28 @@ export default function QuizPlayPage() {
                 styles.optionButton,
                 { 
                   borderColor: selectedAnswer === option 
-                    ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                    ? quizTypeInfo.color
                     : (isDark ? Colors.dark.border : Colors.light.border),
                   backgroundColor: selectedAnswer === option 
-                    ? (isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundSecondary)
-                    : (isDark ? Colors.dark.surface : Colors.light.surface)
+                    ? quizTypeInfo.color + '15'
+                    : (isDark ? Colors.dark.surface : Colors.light.surface),
+                  shadowColor: selectedAnswer === option ? quizTypeInfo.color : '#000',
+                  shadowOpacity: selectedAnswer === option ? 0.2 : (isDark ? 0.3 : 0.1),
                 }
               ]}
               onPress={() => handleSelectAnswer(option)}
+              activeOpacity={0.7}
             >
               <View style={styles.optionContent}>
                 <View style={[
                   styles.optionLetter,
                   { 
                     backgroundColor: selectedAnswer === option 
-                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
-                      : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary)
+                      ? quizTypeInfo.color
+                      : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
+                    borderColor: selectedAnswer === option 
+                      ? quizTypeInfo.color
+                      : 'transparent'
                   }
                 ]}>
                   <ThemedText style={[
@@ -605,42 +779,61 @@ export default function QuizPlayPage() {
                 <ThemedText style={[
                   styles.optionText,
                   { 
-                    color: isDark ? Colors.dark.text : Colors.light.text,
+                    color: selectedAnswer === option 
+                      ? (isDark ? Colors.dark.text : Colors.light.text)
+                      : (isDark ? Colors.dark.text : Colors.light.text),
                     fontWeight: selectedAnswer === option ? '600' : 'normal'
                   }
                 ]}>
                   {option}
                 </ThemedText>
+                {selectedAnswer === option && (
+                  <ThemedText style={[
+                    styles.selectedIcon,
+                    { color: quizTypeInfo.color }
+                  ]}>
+                    ✓
+                  </ThemedText>
+                )}
               </View>
             </TouchableOpacity>
           ))}
         </View>
-        
-        {/* Next button */}
+      </ScrollView>
+      
+      {/* Fixed Bottom Button */}
+      <View style={[
+        styles.bottomButtonContainer,
+        { 
+          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+          borderTopColor: isDark ? Colors.dark.border : Colors.light.border
+        }
+      ]}>
         <TouchableOpacity 
           style={[
             styles.nextButton,
             { 
               backgroundColor: selectedAnswer === null 
-                ? (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary)
-                : (isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary)
+                ? (isDark ? Colors.dark.backgroundSecondary : '#E0E0E0')
+                : quizTypeInfo.color
             }
           ]}
           onPress={handleNextQuestion}
           disabled={selectedAnswer === null}
+          activeOpacity={0.8}
         >
           <ThemedText style={[
             styles.nextButtonText,
             { 
               color: selectedAnswer === null 
-                ? (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
-                : (isDark ? Colors.dark.tint : Colors.light.tint)
+                ? (isDark ? Colors.dark.textMuted : '#999')
+                : '#fff'
             }
           ]}>
-            {currentQuestionIndex === quiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+            {currentQuestionIndex === quiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question'} →
           </ThemedText>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </ThemedView>
   );
 }
@@ -657,91 +850,177 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
+    fontSize: 16,
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: 16,
   },
   errorText: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: 18,
+    marginBottom: 24,
     textAlign: 'center',
+    fontWeight: '500',
+  },
+  
+  // Quiz Header
+  quizHeader: {
+    paddingTop: 12,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerContent: {
+    gap: 12,
+  },
+  quizTypeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  quizTypeIcon: {
+    fontSize: 24,
+  },
+  quizTypeInfo: {
+    flex: 1,
+  },
+  quizTypeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  quizTypeSubtitle: {
+    fontSize: 14,
+    marginTop: 2,
+  },
+  quizTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  
+  // Content
+  scrollContainer: {
+    flex: 1,
   },
   content: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 100, // Space for fixed button
+    gap: 20,
   },
   
-  // Progress
-  progressContainer: {
+  // Progress Section
+  progressSection: {
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  progressHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
+  },
+  progressLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  progressPercentage: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   progressBar: {
-    flex: 1,
     height: 8,
     borderRadius: 4,
-    marginRight: 12,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-  },
-  progressText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    minWidth: 60,
+    borderRadius: 4,
   },
   
-  // Question
-  questionContainer: {
-    marginBottom: 24,
+  // Question Section
+  questionSection: {
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   questionText: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
     lineHeight: 28,
+    marginBottom: 16,
+  },
+  imageContainer: {
+    marginBottom: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   questionImage: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
-    marginBottom: 16,
   },
-  pointsIndicator: {
+  pointsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    gap: 12,
     marginTop: 8,
+  },
+  pointsBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
   },
   pointsText: {
     fontSize: 14,
     fontWeight: 'bold',
   },
+  penaltyBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
   penaltyText: {
     fontSize: 14,
+    fontWeight: 'bold',
   },
   
-  // Options
-  optionsContainer: {
-    marginBottom: 24,
+  // Options Section
+  optionsSection: {
     gap: 12,
   },
   optionButton: {
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
   },
   optionContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 20,
+    gap: 16,
   },
   optionLetter: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    borderWidth: 2,
   },
   optionLetterText: {
     fontSize: 16,
@@ -752,103 +1031,161 @@ const styles = StyleSheet.create({
     flex: 1,
     lineHeight: 22,
   },
+  selectedIcon: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
   
-  // Buttons
+  // Bottom Button
+  bottomButtonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    borderTopWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 8,
+  },
   nextButton: {
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   nextButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   
-  // Results page
-  resultTitle: {
-    textAlign: 'center',
-    marginBottom: 24,
+  // Results Content
+  resultsContent: {
+    padding: 20,
+    paddingBottom: 40,
+    gap: 24,
   },
-  scoreCard: {
-    borderRadius: 16,
+  resultsHeader: {
     padding: 24,
+    borderRadius: 16,
     alignItems: 'center',
-    marginBottom: 32,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  scoreLabel: {
+  resultsIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  resultTitle: {
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  completionMessage: {
+    textAlign: 'center',
     fontSize: 16,
-    marginBottom: 8,
+    lineHeight: 24,
+    fontStyle: 'italic',
+  },
+  
+  // Score Card
+  scoreCard: {
+    borderRadius: 20,
+    padding: 24,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  scoreHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  scoreLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  scoreBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  scoreBadgeText: {
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   scoreValue: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 16,
-    paddingTop: 10,
   },
   percentageContainer: {
     width: '100%',
     height: 12,
     borderRadius: 6,
     overflow: 'hidden',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   percentageFill: {
     height: '100%',
-  },
-  percentageLow: {
-    backgroundColor: '#e74c3c',
-  },
-  percentageMedium: {
-    backgroundColor: '#f39c12',
-  },
-  percentageHigh: {
-    backgroundColor: '#2ecc71',
+    borderRadius: 6,
   },
   percentageText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '100%',
   },
   statItem: {
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   statLabel: {
     fontSize: 14,
     marginTop: 4,
   },
-  buttonRow: {
+  
+  // Action Buttons
+  actionButtonsContainer: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
+    gap: 16,
   },
-  button: {
+  actionButton: {
     flex: 1,
     paddingVertical: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   primaryButton: {
-    // backgroundColor is set dynamically
+    // backgroundColor set dynamically
   },
   secondaryButton: {
     borderWidth: 2,
   },
   primaryButtonText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -856,23 +1193,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  buttonText: {
-    fontWeight: 'bold',
-  },
+  
+  // Saving Indicator
   savingIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 12,
+    marginTop: 16,
   },
   savingText: {
-    fontSize: 14,
-  },
-  completionMessage: {
-    textAlign: 'center',
     fontSize: 16,
-    marginBottom: 20,
-    lineHeight: 24,
     fontStyle: 'italic',
   },
 });
