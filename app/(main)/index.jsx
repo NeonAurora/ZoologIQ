@@ -14,7 +14,7 @@ export default function HomePage() {
 
   const actions = [
     {
-      icon: 'alpha-a',           // any MaterialCommunityIcon name
+      icon: 'alpha-a',
       label: 'Button1',
       onPress: () => router.push('/createQuiz'),
     },
@@ -37,54 +37,46 @@ export default function HomePage() {
   
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Welcome to Home Page</ThemedText>
-      
-      {user ? (
-        <ThemedText style={styles.welcomeText}>
-          Hello, {user.name || user.email || 'User'}! You are signed in.
+      <View style={styles.header}>
+        <ThemedText type="title" style={styles.headerTitle}>
+          Learning Paths
         </ThemedText>
-      ) : (
-        <ThemedText style={styles.welcomeText}>
-          Sign in using the button in the header to access your profile.
+        <ThemedText style={styles.headerSubtitle}>
+          Choose your learning journey
         </ThemedText>
-      )}
+      </View>
 
       <View style={styles.learningSection}>
-        <ThemedText type="subtitle" style={styles.sectionTitle}>
-          🎓 Start Learning Journey
-        </ThemedText>
-        
         <LearningTopicCard 
           topic="tiger"
           title="Malayan Tiger"
-          description="Learn about endangered Malayan Tigers"
-          icon="🐅"
+          description="Conservation and habitat study"
+          icon="■"
           color="#FF6B35"
-          quizId="744a1763-0b1b-4b60-913e-cf74df153746" // Replace with actual quiz ID
+          quizId="744a1763-0b1b-4b60-913e-cf74df153746"
         />
         
         <LearningTopicCard 
           topic="tapir"
           title="Malayan Tapir" 
-          description="Discover the Asian Tapir"
-          icon="🦌"
+          description="Species behavior and ecology"
+          icon="■"
           color="#4CAF50"
-          quizId="your-tapir-quiz-id" // Replace with actual quiz ID
-          disabled={true} // Remove when implemented
+          quizId="your-tapir-quiz-id"
+          disabled={true}
         />
         
         <LearningTopicCard 
           topic="turtle"
           title="Hawksbill Turtle"
-          description="Explore marine turtle conservation"
-          icon="🐢"
+          description="Marine conservation research"
+          icon="■"
           color="#2196F3"
-          quizId="your-turtle-quiz-id" // Replace with actual quiz ID
-          disabled={true} // Remove when implemented
+          quizId="your-turtle-quiz-id"
+          disabled={true}
         />
       </View>
 
-      {/* FAB Group in bottom‑right */}
       <FAB.Group
         open={fabOpen}
         icon={fabOpen ? 'close' : 'plus'}
@@ -92,24 +84,33 @@ export default function HomePage() {
         onStateChange={({ open }) => setFabOpen(open)}
         style={styles.fab}
       />
-
     </ThemedView>
-    
-    
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
+    paddingTop: 32,
   },
-  welcomeText: {
-    marginTop: 20,
-    textAlign: 'center',
+  header: {
+    marginBottom: 40,
+    alignItems: 'flex-start',
+  },
+  headerTitle: {
+    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: '600',
+  },
+  headerSubtitle: {
     fontSize: 16,
+    opacity: 0.7,
+    fontWeight: '400',
+  },
+  learningSection: {
+    flex: 1,
+    gap: 20,
   },
   fab: {
     position: 'absolute',

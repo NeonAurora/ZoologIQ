@@ -32,7 +32,6 @@ export default function QuizPlayPage() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   
-  // USE REF TO TRACK COMPONENT MOUNT STATE
   const mountedRef = useRef(true);
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -140,6 +139,38 @@ export default function QuizPlayPage() {
   const handleSelectAnswer = (answer) => {
     setSelectedAnswer(answer);
   };
+
+  // Navigation functions
+  const goToPreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+      setSelectedAnswer(answers[currentQuestionIndex - 1]); // Restore previous answer
+    }
+  };
+
+  const goToNextQuestion = () => {
+    // Save current answer
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = selectedAnswer;
+    setAnswers(newAnswers);
+
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(newAnswers[currentQuestionIndex + 1]); // Load next answer if exists
+    }
+  };
+
+  const goToQuestion = (index) => {
+    if (index >= 0 && index < quiz.questions.length) {
+      // Save current answer first
+      const newAnswers = [...answers];
+      newAnswers[currentQuestionIndex] = selectedAnswer;
+      setAnswers(newAnswers);
+      
+      setCurrentQuestionIndex(index);
+      setSelectedAnswer(newAnswers[index]); // Load answer for target question
+    }
+  };
   
   const calculateQuizStats = (finalAnswers) => {
     let correctCount = 0;
@@ -178,7 +209,7 @@ export default function QuizPlayPage() {
     };
   };
   
-  const handleNextQuestion = async () => {
+  const handleNextOrFinish = async () => {
     if (selectedAnswer === null) {
       Alert.alert('Please select an answer', 'You must choose an answer before continuing.');
       return;
@@ -189,24 +220,19 @@ export default function QuizPlayPage() {
     newAnswers[currentQuestionIndex] = selectedAnswer;
     setAnswers(newAnswers);
     
-    // Calculate score for this question
-    if (selectedAnswer === currentQuestion.answer) {
-      setScore(prev => prev + (currentQuestion.points || 10));
-    } else if (currentQuestion.penalty) {
-      setScore(prev => Math.max(0, prev - (currentQuestion.penalty || 0)));
-    }
-    
-    // Clear selected answer
-    setSelectedAnswer(null);
-    
-    // Move to next question or finish quiz
-    if (currentQuestionIndex < (quiz.questions?.length || 0) - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
-      // Quiz completed - finalize and save
+    // If this is the last question, finish the quiz
+    if (currentQuestionIndex === quiz.questions.length - 1) {
+      // Calculate final score
+      const stats = calculateQuizStats(newAnswers);
+      setScore(stats.total_score);
+      
       console.log('🎯 Quiz completed, finalizing results');
       setQuizCompleted(true);
       await saveQuizResultToDatabase(newAnswers);
+    } else {
+      // Go to next question
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(newAnswers[currentQuestionIndex + 1] || null);
     }
   };
   
@@ -322,16 +348,6 @@ export default function QuizPlayPage() {
       return '🌟 More Quizzes';
     }
   };
-
-  const getCompletionTitle = () => {
-    if (sessionId && type === 'pre-lesson') {
-      return '✅ Pre-Assessment Complete!';
-    } else if (sessionId && type === 'post-lesson') {
-      return '🎯 Post-Assessment Complete!';
-    } else {
-      return '🎉 Quiz Completed!';
-    }
-  };
   
   const handleRetakeQuiz = () => {
     console.log('🔄 Retaking quiz - resetting state');
@@ -341,6 +357,13 @@ export default function QuizPlayPage() {
     setScore(0);
     setQuizCompleted(false);
     setIsSavingResult(false);
+  };
+
+  // Helper function to get option letter
+  const getOptionLetter = (questionIndex, answer) => {
+    const question = quiz.questions[questionIndex];
+    const optionIndex = question.options.indexOf(answer);
+    return optionIndex !== -1 ? String.fromCharCode(65 + optionIndex) : '-';
   };
 
   const quizTypeInfo = getQuizTypeInfo();
@@ -370,33 +393,57 @@ export default function QuizPlayPage() {
           barStyle={isDark ? 'light-content' : 'dark-content'} 
           backgroundColor={isDark ? Colors.dark.background : Colors.light.background}
         />
+        
+        {/* Custom Header Results */}
+        <View style={[
+          styles.customHeader,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <ThemedText style={[
+              styles.backButtonText,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              ←
+            </ThemedText>
+          </TouchableOpacity>
+          
+          <View style={styles.headerTitleContainer}>
+            <ThemedText style={[
+              styles.headerTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              Results
+            </ThemedText>
+          </View>
+          
+          <View style={styles.headerSpacer} />
+        </View>
+
         <ScrollView 
           contentContainerStyle={styles.resultsContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Results Header */}
-          <View style={[
-            styles.resultsHeader,
-            { backgroundColor: isDark ? Colors.dark.surface : Colors.light.backgroundSecondary }
-          ]}>
-            <ThemedText style={styles.resultsIcon}>
-              {quizTypeInfo.icon}
+          {/* Quiz Title and Subtitle */}
+          <View style={styles.titleSection}>
+            <ThemedText style={[
+              styles.quizTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {quiz.title}
             </ThemedText>
-            <ThemedText type="title" style={styles.resultTitle}>
-              {getCompletionTitle()}
+            <ThemedText style={[
+              styles.quizSubtitle,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {quizTypeInfo.subtitle}
             </ThemedText>
-            
-            {sessionId && (
-              <ThemedText style={[
-                styles.completionMessage,
-                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-              ]}>
-                {type === 'pre-lesson' 
-                  ? "Great job! Now let's dive into the lesson to learn more about this topic."
-                  : "Excellent! Let's see how much you've improved after the lesson."
-                }
-              </ThemedText>
-            )}
           </View>
           
           {/* Score Card */}
@@ -404,8 +451,6 @@ export default function QuizPlayPage() {
             styles.scoreCard,
             { 
               backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-              shadowColor: isDark ? '#000' : '#000',
-              shadowOpacity: isDark ? 0.3 : 0.1,
             }
           ]}>
             <View style={styles.scoreHeader}>
@@ -505,6 +550,105 @@ export default function QuizPlayPage() {
             </View>
           </View>
           
+          {/* 🔥 NEW: Answer Analysis Section */}
+          <View style={[
+            styles.analysisCard,
+            { 
+              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            }
+          ]}>
+            <ThemedText style={[
+              styles.analysisTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              📋 Answer Analysis
+            </ThemedText>
+            
+            <View style={styles.analysisHeader}>
+              <ThemedText style={[styles.analysisHeaderText, { flex: 0.8 }]}>Q#</ThemedText>
+              <ThemedText style={[styles.analysisHeaderText, { flex: 2 }]}>Your Answer</ThemedText>
+              <ThemedText style={[styles.analysisHeaderText, { flex: 2 }]}>Correct Answer</ThemedText>
+              <ThemedText style={[styles.analysisHeaderText, { flex: 1 }]}>Result</ThemedText>
+            </View>
+            
+            {finalStats.detailed_answers.map((answer, index) => (
+              <View 
+                key={index}
+                style={[
+                  styles.analysisRow,
+                  {
+                    backgroundColor: answer.is_correct 
+                      ? (isDark ? '#4CAF5020' : '#4CAF5015')
+                      : (isDark ? '#F4433620' : '#F4433615'),
+                    borderLeftColor: answer.is_correct ? '#4CAF50' : '#F44336'
+                  }
+                ]}
+              >
+                <View style={[styles.analysisCell, { flex: 0.8 }]}>
+                  <ThemedText style={[
+                    styles.analysisCellText,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    {index + 1}
+                  </ThemedText>
+                </View>
+                
+                <View style={[styles.analysisCell, { flex: 2 }]}>
+                  <View style={styles.answerContainer}>
+                    <View style={[
+                      styles.answerLetter,
+                      { backgroundColor: answer.is_correct ? '#4CAF5030' : '#F4433630' }
+                    ]}>
+                      <ThemedText style={[
+                        styles.answerLetterText,
+                        { color: answer.is_correct ? '#4CAF50' : '#F44336' }
+                      ]}>
+                        {getOptionLetter(index, answer.user_answer)}
+                      </ThemedText>
+                    </View>
+                    <ThemedText style={[
+                      styles.answerText,
+                      { color: isDark ? Colors.dark.text : Colors.light.text }
+                    ]} numberOfLines={2}>
+                      {answer.user_answer || 'No answer'}
+                    </ThemedText>
+                  </View>
+                </View>
+                
+                <View style={[styles.analysisCell, { flex: 2 }]}>
+                  <View style={styles.answerContainer}>
+                    <View style={[
+                      styles.answerLetter,
+                      { backgroundColor: '#4CAF5030' }
+                    ]}>
+                      <ThemedText style={[
+                        styles.answerLetterText,
+                        { color: '#4CAF50' }
+                      ]}>
+                        {getOptionLetter(index, answer.correct_answer)}
+                      </ThemedText>
+                    </View>
+                    <ThemedText style={[
+                      styles.answerText,
+                      { color: isDark ? Colors.dark.text : Colors.light.text }
+                    ]} numberOfLines={2}>
+                      {answer.correct_answer}
+                    </ThemedText>
+                  </View>
+                </View>
+                
+                <View style={[styles.analysisCell, { flex: 1 }]}>
+                  <ThemedText style={[
+                    styles.resultIcon,
+                    { color: answer.is_correct ? '#4CAF50' : '#F44336' }
+                  ]}>
+                    {answer.is_correct ? '✓' : '✗'}
+                  </ThemedText>
+                </View>
+              </View>
+            ))}
+          </View>
+          
           {/* Action Buttons */}
           <View style={styles.actionButtonsContainer}>
             {!sessionId && (
@@ -601,42 +745,36 @@ export default function QuizPlayPage() {
         backgroundColor={isDark ? Colors.dark.background : Colors.light.background}
       />
       
-      {/* Quiz Header */}
+      {/* Custom Header */}
       <View style={[
-        styles.quizHeader,
+        styles.customHeader,
         { 
           backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
           borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
         }
       ]}>
-        <View style={styles.headerContent}>
-          <View style={styles.quizTypeContainer}>
-            <ThemedText style={[styles.quizTypeIcon, { color: quizTypeInfo.color }]}>
-              {quizTypeInfo.icon}
-            </ThemedText>
-            <View style={styles.quizTypeInfo}>
-              <ThemedText style={[
-                styles.quizTypeTitle,
-                { color: isDark ? Colors.dark.text : Colors.light.text }
-              ]}>
-                {quizTypeInfo.title}
-              </ThemedText>
-              <ThemedText style={[
-                styles.quizTypeSubtitle,
-                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-              ]}>
-                {quizTypeInfo.subtitle}
-              </ThemedText>
-            </View>
-          </View>
-          
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
           <ThemedText style={[
-            styles.quizTitle,
+            styles.backButtonText,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            {quiz.title}
+            ←
+          </ThemedText>
+        </TouchableOpacity>
+        
+        <View style={styles.headerTitleContainer}>
+          <ThemedText style={[
+            styles.headerTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {quizTypeInfo.title}
           </ThemedText>
         </View>
+        
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView 
@@ -644,40 +782,111 @@ export default function QuizPlayPage() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Progress Section */}
-        <View style={[
-          styles.progressSection,
-          { backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface }
-        ]}>
-          <View style={styles.progressHeader}>
-            <ThemedText style={[
-              styles.progressLabel,
-              { color: isDark ? Colors.dark.text : Colors.light.text }
-            ]}>
-              Question {currentQuestionIndex + 1} of {quiz.questions.length}
-            </ThemedText>
-            <ThemedText style={[
-              styles.progressPercentage,
-              { color: quizTypeInfo.color }
-            ]}>
-              {Math.round(((currentQuestionIndex + 1) / quiz.questions.length) * 100)}%
-            </ThemedText>
-          </View>
-          
-          <View style={[
-            styles.progressBar,
-            { backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary }
+        {/* Quiz Title and Subtitle */}
+        <View style={styles.titleSection}>
+          <ThemedText style={[
+            styles.quizTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            <View 
-              style={[
-                styles.progressFill, 
-                { 
-                  width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%`,
-                  backgroundColor: quizTypeInfo.color
-                }
-              ]} 
-            />
+            {quiz.title}
+          </ThemedText>
+          <ThemedText style={[
+            styles.quizSubtitle,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {quizTypeInfo.subtitle}
+          </ThemedText>
+        </View>
+
+        {/* Question Navigation */}
+        <View style={styles.navigationContainer}>
+          {/* Previous Chevron */}
+          <TouchableOpacity
+            style={[
+              styles.chevronButton,
+              currentQuestionIndex === 0 && styles.chevronDisabled
+            ]}
+            onPress={goToPreviousQuestion}
+            disabled={currentQuestionIndex === 0}
+          >
+            <ThemedText style={[
+              styles.chevronText,
+              { color: currentQuestionIndex === 0 
+                ? (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
+                : quizTypeInfo.color
+              }
+            ]}>
+              ‹
+            </ThemedText>
+          </TouchableOpacity>
+
+          {/* Question Dots (show up to 5) */}
+          <View style={styles.questionDots}>
+            {quiz.questions.slice(0, 5).map((_, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.questionDot,
+                  {
+                    backgroundColor: currentQuestionIndex === index
+                      ? quizTypeInfo.color
+                      : (answers[index] !== null && answers[index] !== undefined)
+                        ? quizTypeInfo.color + '40'
+                        : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary)
+                  }
+                ]}
+                onPress={() => goToQuestion(index)}
+              >
+                <ThemedText style={[
+                  styles.questionDotText,
+                  {
+                    color: currentQuestionIndex === index
+                      ? '#fff'
+                      : (answers[index] !== null && answers[index] !== undefined)
+                        ? quizTypeInfo.color
+                        : (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
+                  }
+                ]}>
+                  {index + 1}
+                </ThemedText>
+              </TouchableOpacity>
+            ))}
+            
+            {/* Show more indicator if more than 5 questions */}
+            {quiz.questions.length > 5 && (
+              <View style={[
+                styles.moreIndicator,
+                { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
+              ]}>
+                <ThemedText style={[
+                  styles.moreIndicatorText,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  +{quiz.questions.length - 5}
+                </ThemedText>
+              </View>
+            )}
           </View>
+
+          {/* Next Chevron */}
+          <TouchableOpacity
+            style={[
+              styles.chevronButton,
+              currentQuestionIndex === quiz.questions.length - 1 && styles.chevronDisabled
+            ]}
+            onPress={goToNextQuestion}
+            disabled={currentQuestionIndex === quiz.questions.length - 1}
+          >
+            <ThemedText style={[
+              styles.chevronText,
+              { color: currentQuestionIndex === quiz.questions.length - 1
+                ? (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
+                : quizTypeInfo.color
+              }
+            ]}>
+              ›
+            </ThemedText>
+          </TouchableOpacity>
         </View>
         
         {/* Question Section */}
@@ -746,8 +955,6 @@ export default function QuizPlayPage() {
                   backgroundColor: selectedAnswer === option 
                     ? quizTypeInfo.color + '15'
                     : (isDark ? Colors.dark.surface : Colors.light.surface),
-                  shadowColor: selectedAnswer === option ? quizTypeInfo.color : '#000',
-                  shadowOpacity: selectedAnswer === option ? 0.2 : (isDark ? 0.3 : 0.1),
                 }
               ]}
               onPress={() => handleSelectAnswer(option)}
@@ -779,10 +986,8 @@ export default function QuizPlayPage() {
                 <ThemedText style={[
                   styles.optionText,
                   { 
-                    color: selectedAnswer === option 
-                      ? (isDark ? Colors.dark.text : Colors.light.text)
-                      : (isDark ? Colors.dark.text : Colors.light.text),
-                    fontWeight: selectedAnswer === option ? '600' : 'normal'
+                    color: isDark ? Colors.dark.text : Colors.light.text,
+                    fontWeight: selectedAnswer === option ? '500' : 'normal'
                   }
                 ]}>
                   {option}
@@ -811,19 +1016,19 @@ export default function QuizPlayPage() {
       ]}>
         <TouchableOpacity 
           style={[
-            styles.nextButton,
+            styles.bottomButton,
             { 
               backgroundColor: selectedAnswer === null 
                 ? (isDark ? Colors.dark.backgroundSecondary : '#E0E0E0')
                 : quizTypeInfo.color
             }
           ]}
-          onPress={handleNextQuestion}
+          onPress={handleNextOrFinish}
           disabled={selectedAnswer === null}
           activeOpacity={0.8}
         >
           <ThemedText style={[
-            styles.nextButtonText,
+            styles.bottomButtonText,
             { 
               color: selectedAnswer === null 
                 ? (isDark ? Colors.dark.textMuted : '#999')
@@ -863,44 +1068,54 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   
-  // Quiz Header
-  quizHeader: {
-    paddingTop: 12,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  headerContent: {
-    gap: 12,
-  },
-  quizTypeContainer: {
+  // Custom Header
+  customHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginTop: 35, // 🔥 ADDED: 35px margin top
+    borderBottomWidth: 1,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  quizTypeIcon: {
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backButtonText: {
     fontSize: 24,
-  },
-  quizTypeInfo: {
-    flex: 1,
-  },
-  quizTypeTitle: {
-    fontSize: 18,
     fontWeight: 'bold',
   },
-  quizTypeSubtitle: {
-    fontSize: 14,
-    marginTop: 2,
+  headerTitleContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'left',
   },
-  quizTitle: {
+  headerIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  headerIconText: {
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  headerTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    textAlign: 'center',
+    alignContent: 'left',
+  },
+  headerSpacer: {
+    width: 40,
   },
   
   // Content
@@ -908,49 +1123,84 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     paddingBottom: 100, // Space for fixed button
-    gap: 20,
   },
   
-  // Progress Section
-  progressSection: {
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  // Title Section
+  titleSection: {
+    marginBottom: 24,
     alignItems: 'center',
-    marginBottom: 12,
   },
-  progressLabel: {
-    fontSize: 16,
+  quizTitle: {
+    fontSize: 22,
     fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 8,
   },
-  progressPercentage: {
+  quizSubtitle: {
     fontSize: 16,
+    textAlign: 'center',
+  },
+  
+  // Navigation Container
+  navigationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+    paddingHorizontal: 8,
+  },
+  chevronButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chevronDisabled: {
+    opacity: 0.3,
+  },
+  chevronText: {
+    fontSize: 28,
     fontWeight: 'bold',
   },
-  progressBar: {
-    height: 8,
-    borderRadius: 4,
-    overflow: 'hidden',
+  questionDots: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    alignItems: 'center',
   },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
+  questionDot: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  questionDotText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  moreIndicator: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  moreIndicatorText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   
   // Question Section
   questionSection: {
     padding: 20,
     borderRadius: 16,
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -958,9 +1208,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   questionText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    lineHeight: 28,
+    fontSize: 18,
+    fontWeight: '500',
+    lineHeight: 26,
     marginBottom: 16,
   },
   imageContainer: {
@@ -970,7 +1220,7 @@ const styles = StyleSheet.create({
   },
   questionImage: {
     width: '100%',
-    height: 200,
+    height: 180,
   },
   pointsContainer: {
     flexDirection: 'row',
@@ -978,22 +1228,22 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   pointsBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   pointsText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '600',
   },
   penaltyBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   penaltyText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '600',
   },
   
   // Options Section
@@ -1001,38 +1251,35 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   optionButton: {
-    borderWidth: 2,
-    borderRadius: 16,
+    borderWidth: 1.5,
+    borderRadius: 12,
     overflow: 'hidden',
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
   },
   optionContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    gap: 16,
+    padding: 16,
+    gap: 12,
   },
   optionLetter: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 1,
   },
   optionLetterText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '600',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 15,
     flex: 1,
-    lineHeight: 22,
+    lineHeight: 20,
   },
   selectedIcon: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   
@@ -1050,40 +1297,32 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 8,
   },
-  nextButton: {
-    paddingVertical: 16,
+  bottomButton: {
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  nextButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  bottomButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   
   // Results Content
   resultsContent: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     paddingBottom: 40,
-    gap: 24,
   },
   resultsHeader: {
-    padding: 24,
+    padding: 20,
     borderRadius: 16,
     alignItems: 'center',
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  resultsIcon: {
-    fontSize: 48,
-    marginBottom: 12,
   },
   resultTitle: {
     textAlign: 'center',
@@ -1092,17 +1331,20 @@ const styles = StyleSheet.create({
   completionMessage: {
     textAlign: 'center',
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 22,
     fontStyle: 'italic',
   },
   
   // Score Card
   scoreCard: {
-    borderRadius: 20,
-    padding: 24,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 6,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   scoreHeader: {
     flexDirection: 'row',
@@ -1111,37 +1353,38 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   scoreLabel: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '500',
   },
   scoreBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   scoreBadgeText: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '600',
   },
   scoreValue: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 16,
+    paddingTop: 8,
   },
   percentageContainer: {
     width: '100%',
-    height: 12,
-    borderRadius: 6,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 12,
   },
   percentageFill: {
     height: '100%',
-    borderRadius: 6,
+    borderRadius: 4,
   },
   percentageText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
@@ -1154,27 +1397,99 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: 12,
     marginTop: 4,
+  },
+  
+  // 🔥 NEW: Answer Analysis Section
+  analysisCard: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  analysisTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  analysisHeader: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 2,
+    borderBottomColor: '#E0E0E0',
+    marginBottom: 8,
+  },
+  analysisHeaderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#666',
+  },
+  analysisRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+  },
+  analysisCell: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  analysisCellText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  answerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+  },
+  answerLetter: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  answerLetterText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  answerText: {
+    fontSize: 13,
+    flex: 1,
+  },
+  resultIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   
   // Action Buttons
   actionButtonsContainer: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
   },
   actionButton: {
     flex: 1,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -1182,16 +1497,16 @@ const styles = StyleSheet.create({
     // backgroundColor set dynamically
   },
   secondaryButton: {
-    borderWidth: 2,
+    borderWidth: 1.5,
   },
   primaryButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '600',
   },
   secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '600',
   },
   
   // Saving Indicator
@@ -1199,11 +1514,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
     marginTop: 16,
   },
   savingText: {
-    fontSize: 16,
+    fontSize: 14,
     fontStyle: 'italic',
   },
 });

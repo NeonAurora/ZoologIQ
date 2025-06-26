@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { completeLesson } from '@/services/supabase/learningSessionService'; // 🔥 ADD import
+import { completeLesson } from '@/services/supabase/learningSessionService';
 
 export default function TigerNavigation({ 
   currentIndex, 
@@ -13,7 +13,8 @@ export default function TigerNavigation({
   onNext, 
   onPrevious,
   quizId,
-  sessionId // 🔥 ADD sessionId prop
+  sessionId,
+  isNavigating = false // 🔥 NEW: Add navigation state prop
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -23,17 +24,19 @@ export default function TigerNavigation({
   const isLast = currentIndex === totalSections - 1;
   
   const handleFinish = async () => {
+    if (isNavigating) {
+      console.log('Navigation in progress, ignoring finish click');
+      return;
+    }
+
     try {
-      // Complete the lesson in the session if sessionId exists
       if (sessionId) {
         console.log('Completing lesson for session:', sessionId);
         await completeLesson(sessionId);
         
-        // 🔥 FIX: Add timestamp to force fresh page load
         const timestamp = Date.now();
         router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
       } else {
-        // Fallback for standalone lesson
         if (quizId) {
           router.push(`/quizPlay?quizId=${quizId}&type=post-lesson`);
         } else {
@@ -76,15 +79,15 @@ export default function TigerNavigation({
         style={[
           styles.button,
           styles.secondaryButton,
-          isFirst && styles.buttonDisabled,
+          (isFirst || isNavigating) && styles.buttonDisabled,
           { borderColor: isDark ? Colors.dark.border : Colors.light.border }
         ]}
         onPress={onPrevious}
-        disabled={isFirst}
+        disabled={isFirst || isNavigating} // 🔥 NEW: Disable during navigation
       >
         <ThemedText style={[
           styles.buttonText,
-          isFirst && styles.buttonTextDisabled,
+          (isFirst || isNavigating) && styles.buttonTextDisabled,
           { color: isDark ? Colors.dark.text : Colors.light.text }
         ]}>
           ← Previous
@@ -118,12 +121,23 @@ export default function TigerNavigation({
         style={[
           styles.button,
           styles.primaryButton,
-          { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+          isNavigating && styles.buttonDisabled, // 🔥 NEW: Disable during navigation
+          { backgroundColor: isNavigating 
+            ? (isDark ? Colors.dark.backgroundSecondary : '#CCCCCC')
+            : (isDark ? Colors.dark.tint : Colors.light.tint) 
+          }
         ]}
         onPress={isLast ? handleFinish : onNext}
+        disabled={isNavigating} // 🔥 NEW: Disable during navigation
       >
-        <ThemedText style={styles.primaryButtonText}>
-          {isLast ? '🧠 Test Your Knowledge' : 'Next →'} {/* 🔥 UPDATED text */}
+        <ThemedText style={[
+          styles.primaryButtonText,
+          { color: isNavigating ? '#999999' : '#ffffff' }
+        ]}>
+          {isNavigating 
+            ? 'Loading...'
+            : (isLast ? '🧠 Test Your Knowledge' : 'Next →')
+          }
         </ThemedText>
       </TouchableOpacity>
     </View>

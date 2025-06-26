@@ -30,10 +30,10 @@ export default function LearningTopicCard({
       style={[
         styles.card, 
         { 
-          borderLeftColor: color,
           backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
           shadowColor: isDark ? '#000' : '#000',
           shadowOpacity: isDark ? 0.3 : 0.1,
+          borderLeftColor: disabled ? '#E0E0E0' : color,
         },
         disabled && styles.cardDisabled
       ]}
@@ -41,37 +41,66 @@ export default function LearningTopicCard({
       disabled={disabled}
       activeOpacity={disabled ? 1 : 0.7}
     >
-      <View style={styles.cardHeader}>
-        <ThemedText style={styles.icon}>{icon}</ThemedText>
-        <View style={styles.cardContent}>
+      <View style={styles.cardContent}>
+        <View style={[
+          styles.iconContainer,
+          { backgroundColor: disabled ? '#F5F5F5' : color + '15' }
+        ]}>
+          <ThemedText style={[
+            styles.icon,
+            { color: disabled ? '#BDBDBD' : color }
+          ]}>
+            {icon}
+          </ThemedText>
+        </View>
+        
+        <View style={styles.textContainer}>
           <ThemedText style={[
             styles.title,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
+            { 
+              color: disabled 
+                ? (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
+                : (isDark ? Colors.dark.text : Colors.light.text)
+            }
           ]}>
             {title}
           </ThemedText>
           <ThemedText style={[
             styles.description,
-            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            { 
+              color: disabled 
+                ? (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
+                : (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
+            }
           ]}>
             {description}
           </ThemedText>
         </View>
-        <ThemedText style={[
-          styles.arrow,
-          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-        ]}>
-          {disabled ? '🚧' : '▶️'}
-        </ThemedText>
+        
+        <View style={styles.actionContainer}>
+          <View style={[
+            styles.arrow,
+            { backgroundColor: disabled ? '#F0F0F0' : color + '20' }
+          ]}>
+            <ThemedText style={[
+              styles.arrowText,
+              { color: disabled ? '#BDBDBD' : color }
+            ]}>
+              {disabled ? '●' : '→'}
+            </ThemedText>
+          </View>
+        </View>
       </View>
       
       {disabled && (
-        <ThemedText style={[
-          styles.comingSoon,
-          { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
-        ]}>
-          Coming Soon
-        </ThemedText>
+        <View style={styles.comingSoonContainer}>
+          <ThemedText style={[
+            styles.comingSoon,
+            { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
+          ]}>
+            Coming Soon
+          </ThemedText>
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -79,48 +108,70 @@ export default function LearningTopicCard({
 
 const styles = StyleSheet.create({
   card: {
-    // backgroundColor removed - now set dynamically
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
+    borderRadius: 16,
     borderLeftWidth: 4,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    shadowRadius: 8,
     elevation: 3,
+    overflow: 'hidden',
   },
   cardDisabled: {
     opacity: 0.6,
   },
-  cardHeader: {
+  cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 20,
+    minHeight: 80,
   },
-  icon: {
-    fontSize: 32,
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 16,
   },
-  cardContent: {
+  icon: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  textContainer: {
     flex: 1,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginBottom: 4,
-    // color removed - now set dynamically
+    lineHeight: 22,
   },
   description: {
     fontSize: 14,
-    // opacity removed - now using theme colors
+    lineHeight: 18,
+  },
+  actionContainer: {
+    marginLeft: 12,
   },
   arrow: {
-    fontSize: 20,
-    // color added dynamically
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  arrowText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  comingSoonContainer: {
+    position: 'absolute',
+    bottom: 8,
+    right: 20,
   },
   comingSoon: {
     fontSize: 12,
+    fontWeight: '500',
     fontStyle: 'italic',
-    marginTop: 8,
-    textAlign: 'center',
-    // opacity removed - now using theme colors
   },
 });
