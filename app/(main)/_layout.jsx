@@ -275,14 +275,14 @@ export default function RootLayout() {
             name="startLearning" 
             options={{ 
               title: "Start Learning",
-              drawerItemStyle: { display: 'none' } // Hide from drawer, access via deep link
+              drawerItemStyle: { display: 'none' }
             }} 
           />
           <Drawer.Screen 
             name="learningResults" 
             options={{ 
               title: "Learning Results",
-              drawerItemStyle: { display: 'none' } // Hide from drawer, access via deep link
+              drawerItemStyle: { display: 'none' }
             }} 
           />
           <Drawer.Screen 
@@ -290,7 +290,21 @@ export default function RootLayout() {
             options={{ 
               title: "Play Quiz",
               drawerItemStyle: { display: 'none' },
-              headerShown: false // Hide from drawer, access via deep link
+              headerShown: false
+            }} 
+          />
+          <Drawer.Screen 
+            name="editProfile" 
+            options={{ 
+              title: "Edit Profile",
+              drawerItemStyle: { display: 'none' } 
+            }} 
+          />
+          <Drawer.Screen 
+            name="tigerLesson" 
+            options={{ 
+              title: "Tiger",
+              drawerItemStyle: { display: 'none' } 
             }} 
           />
         </Drawer>

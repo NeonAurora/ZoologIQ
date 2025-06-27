@@ -1,6 +1,13 @@
 // components/lesson/tiger/TigerLessonLayout.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { 
+  View, 
+  StyleSheet, 
+  Dimensions, 
+  TouchableOpacity, 
+  Animated,
+  TouchableWithoutFeedback
+} from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
@@ -11,6 +18,7 @@ import TigerConservation from './sections/TigerConservation';
 import TigerSidebar from './TigerSidebar';
 import TigerNavigation from './TigerNavigation';
 import { ThemedText } from '@/components/ThemedText';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -28,15 +36,60 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [hasStartedLesson, setHasStartedLesson] = useState(false);
   const [completedSections, setCompletedSections] = useState(new Set());
-  const [sidebarVisible, setSidebarVisible] = useState(screenWidth > 768);
-  
-  // 🔥 NEW: Add navigation state to prevent rapid clicks
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Animation for sidebar
+  const slideAnim = useRef(new Animated.Value(-240)).current; // Start off-screen
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
+  
   const navigationTimeoutRef = useRef(null);
   const pendingNavigationRef = useRef(null);
 
   const safeSectionIndex = Math.max(0, Math.min(currentSectionIndex, sections.length - 1));
   const currentSection = sections[safeSectionIndex];
+
+  // Sidebar animation handlers
+  const openSidebar = () => {
+    setSidebarVisible(true);
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(overlayOpacity, {
+        toValue: 0.5,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+
+  const closeSidebar = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: -240,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      })
+    ]).start(() => {
+      setSidebarVisible(false);
+    });
+  };
+
+  const toggleSidebar = () => {
+    if (sidebarVisible) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  };
 
   // Track lesson start
   useEffect(() => {
@@ -55,7 +108,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     }
   }, [sessionId, hasStartedLesson]);
 
-  // 🔥 NEW: Cleanup timeouts on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (navigationTimeoutRef.current) {
@@ -64,17 +117,14 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     };
   }, []);
 
-  // 🔥 NEW: Debounced navigation function
+  // Debounced navigation function
   const debouncedNavigation = (targetIndex) => {
-    // Clear any pending navigation
     if (navigationTimeoutRef.current) {
       clearTimeout(navigationTimeoutRef.current);
     }
 
-    // Store the target index
     pendingNavigationRef.current = targetIndex;
 
-    // Set a short debounce delay (300ms)
     navigationTimeoutRef.current = setTimeout(() => {
       const finalIndex = pendingNavigationRef.current;
       if (finalIndex !== null && finalIndex >= 0 && finalIndex < sections.length) {
@@ -101,7 +151,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     }
   };
 
-  // 🔥 IMPROVED: Throttled section completion with queue management
   const markCurrentSectionCompleted = async () => {
     if (sessionId && hasStartedLesson && !completedSections.has(safeSectionIndex)) {
       try {
@@ -114,7 +163,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     }
   };
 
-  // 🔥 IMPROVED: Prevent rapid navigation
   const goToNextSection = async () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
@@ -124,7 +172,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     setIsNavigating(true);
     
     try {
-      // Mark current section as completed (don't await to prevent blocking)
       markCurrentSectionCompleted();
       
       const nextIndex = safeSectionIndex + 1;
@@ -148,7 +195,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     setIsNavigating(true);
     
     try {
-      // Mark current section as completed (don't await to prevent blocking)
       markCurrentSectionCompleted();
       
       const prevIndex = safeSectionIndex - 1;
@@ -175,17 +221,19 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     }
   };
 
-  const toggleSidebar = () => {
-    setSidebarVisible(prev => !prev);
+  const handleSectionSelect = async (index) => {
+    if (isNavigating) {
+      console.log('Navigation in progress, ignoring sidebar click');
+      return;
+    }
+    
+    setIsNavigating(true);
+    markCurrentSectionCompleted();
+    safeSetCurrentSectionIndex(index);
+    closeSidebar(); // Close sidebar after selection
   };
 
   if (!currentSection || !currentSection.component) {
-    console.error('Invalid section:', { 
-      currentSectionIndex: safeSectionIndex, 
-      sectionsLength: sections.length,
-      currentSection 
-    });
-    
     return (
       <View style={[
         styles.container,
@@ -195,20 +243,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
           <ThemedText style={styles.errorText}>
             Unable to load lesson content
           </ThemedText>
-          <TouchableOpacity 
-            style={styles.resetButton}
-            onPress={() => {
-              setCurrentSectionIndex(0);
-              setIsNavigating(false);
-              if (navigationTimeoutRef.current) {
-                clearTimeout(navigationTimeoutRef.current);
-              }
-            }}
-          >
-            <ThemedText style={styles.resetButtonText}>
-              Return to Start
-            </ThemedText>
-          </TouchableOpacity>
         </View>
       </View>
     );
@@ -221,74 +255,55 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
       styles.container,
       { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }
     ]}>
-      <View style={styles.mainContent}>
-        {sidebarVisible && (
-          <View style={[
-            styles.sidebarContainer,
-            { 
-              backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
-              borderRightColor: isDark ? Colors.dark.border : Colors.light.border
-            }
-          ]}>
-            <TigerSidebar 
-              sections={sections}
-              currentSection={safeSectionIndex}
-              completedSections={completedSections}
-              onSectionSelect={async (index) => {
-                if (isNavigating) {
-                  console.log('Navigation in progress, ignoring sidebar click');
-                  return;
-                }
-                
-                setIsNavigating(true);
-                markCurrentSectionCompleted(); // Don't await
-                safeSetCurrentSectionIndex(index);
-              }}
-              isDark={isDark}
-            />
-          </View>
-        )}
-        
+      {/* Main Content */}
+      <View style={styles.contentContainer}>
+        {/* Mobile Header */}
         <View style={[
-          styles.contentArea,
-          { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }
+          styles.mobileHeader,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
+          }
         ]}>
-          {screenWidth <= 768 && (
-            <View style={[
-              styles.mobileHeader,
-              { 
-                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
-              }
-            ]}>
-              <TouchableOpacity 
-                style={styles.sidebarToggle}
-                onPress={toggleSidebar}
-              >
-                <ThemedText style={styles.toggleIcon}>☰</ThemedText>
-              </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.sidebarToggle}
+            onPress={toggleSidebar}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialIcons 
+              name="chevron-right" 
+              size={20} 
+              color={isDark ? Colors.dark.textSecondary : Colors.light.textSecondary} 
+            />
+          </TouchableOpacity>
+          
+          <View style={styles.headerContent}>
+            <ThemedText style={styles.lessonEmoji}>🐅</ThemedText>
+            <View style={styles.headerTitleContainer}>
               <ThemedText style={[
-                styles.sectionTitle,
+                styles.headerTitle,
                 { color: isDark ? Colors.dark.text : Colors.light.text }
               ]}>
                 {currentSection.title}
               </ThemedText>
+              <ThemedText style={[
+                styles.lessonName,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                Malayan Tiger
+              </ThemedText>
             </View>
-          )}
-          
-          <View style={styles.lessonContent}>
-            <CurrentSectionComponent />
           </View>
+        </View>
+        
+        {/* Lesson Content */}
+        <View style={styles.lessonContent}>
+          <CurrentSectionComponent />
         </View>
       </View>
       
-      <View style={[
-        styles.navigationContainer,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderTopColor: isDark ? Colors.dark.border : Colors.light.border
-        }
-      ]}>
+      {/* Navigation */}
+      <View style={styles.navigationContainer}>
         <TigerNavigation
           currentIndex={safeSectionIndex}
           totalSections={sections.length}
@@ -297,10 +312,30 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
           onComplete={handleLessonComplete}
           quizId={quizId}
           sessionId={sessionId}
-          // 🔥 NEW: Pass navigation state to disable buttons
           isNavigating={isNavigating}
         />
       </View>
+
+      {/* Sidebar Overlay */}
+      {sidebarVisible && (
+        <>
+          <TouchableWithoutFeedback onPress={closeSidebar}>
+            <Animated.View style={[
+              styles.overlay,
+              { opacity: overlayOpacity }
+            ]} />
+          </TouchableWithoutFeedback>
+          
+          <TigerSidebar 
+            sections={sections}
+            currentSection={safeSectionIndex}
+            completedSections={completedSections}
+            onSectionSelect={handleSectionSelect}
+            onClose={closeSidebar}
+            slideAnim={slideAnim}
+          />
+        </>
+      )}
     </View>
   );
 }
@@ -308,23 +343,8 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column', // 🔥 CHANGED: Column layout for proper stacking
   },
-  mainContent: {
-    flex: 1,
-    flexDirection: 'row', // Sidebar and content side by side
-    overflow: 'hidden',
-  },
-  sidebarContainer: {
-    width: screenWidth > 1024 ? 320 : 280, // Responsive sidebar width
-    borderRightWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  contentArea: {
+  contentContainer: {
     flex: 1,
     flexDirection: 'column',
   },
@@ -339,28 +359,55 @@ const styles = StyleSheet.create({
   sidebarToggle: {
     padding: 8,
     marginRight: 12,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 6,
   },
-  toggleIcon: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
+  },
+  lessonEmoji: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  headerTitleContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  lessonName: {
+    fontSize: 12,
+    marginTop: 2,
   },
   lessonContent: {
     flex: 1,
-    overflow: 'hidden',
   },
   navigationContainer: {
-    borderTopWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 8,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000',
+    zIndex: 999,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    textAlign: 'center',
+    fontSize: 16,
   },
 });

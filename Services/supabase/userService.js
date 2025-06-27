@@ -1,3 +1,4 @@
+// Services/supabase/userService.js
 import { supabase } from './config';
 
 // ==================================
@@ -51,6 +52,9 @@ export const getUserData = async (userId) => {
 
 export const updateUserData = async (userId, updates) => {
   try {
+    console.log('🔄 Updating user data for:', userId);
+    console.log('📝 Update data:', updates);
+    
     const { data, error } = await supabase
       .from('users')
       .update({ 
@@ -66,6 +70,7 @@ export const updateUserData = async (userId, updates) => {
       return false;
     }
     
+    console.log('✅ User data updated successfully:', data);
     return true;
   } catch (error) {
     console.error('Error updating user data:', error);

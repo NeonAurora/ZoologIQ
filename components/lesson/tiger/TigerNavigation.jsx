@@ -6,6 +6,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { completeLesson } from '@/services/supabase/learningSessionService';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TigerNavigation({ 
   currentIndex, 
@@ -14,7 +15,7 @@ export default function TigerNavigation({
   onPrevious,
   quizId,
   sessionId,
-  isNavigating = false // 🔥 NEW: Add navigation state prop
+  isNavigating = false
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -65,80 +66,99 @@ export default function TigerNavigation({
       );
     }
   };
+
+  // Progress dots
+  const renderProgressDots = () => {
+    const dots = [];
+    for (let i = 0; i < totalSections; i++) {
+      dots.push(
+        <View
+          key={i}
+          style={[
+            styles.progressDot,
+            {
+              backgroundColor: i <= currentIndex 
+                ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                : (isDark ? Colors.dark.backgroundTertiary : '#E0E0E0')
+            }
+          ]}
+        />
+      );
+    }
+    return dots;
+  };
   
   return (
     <View style={[
       styles.container,
       { 
-        backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
+        backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
         borderTopColor: isDark ? Colors.dark.border : Colors.light.border
       }
     ]}>
       {/* Previous Button */}
       <TouchableOpacity
         style={[
-          styles.button,
-          styles.secondaryButton,
+          styles.navButton,
           (isFirst || isNavigating) && styles.buttonDisabled,
-          { borderColor: isDark ? Colors.dark.border : Colors.light.border }
+          { 
+            backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
         ]}
         onPress={onPrevious}
-        disabled={isFirst || isNavigating} // 🔥 NEW: Disable during navigation
+        disabled={isFirst || isNavigating}
+        activeOpacity={0.7}
       >
-        <ThemedText style={[
-          styles.buttonText,
-          (isFirst || isNavigating) && styles.buttonTextDisabled,
-          { color: isDark ? Colors.dark.text : Colors.light.text }
-        ]}>
-          ← Previous
-        </ThemedText>
+        <MaterialIcons 
+          name="chevron-left" 
+          size={20} 
+          color={(isFirst || isNavigating) 
+            ? (isDark ? Colors.dark.textMuted : '#CCCCCC')
+            : (isDark ? Colors.dark.text : Colors.light.text)
+          } 
+        />
       </TouchableOpacity>
       
-      {/* Progress */}
+      {/* Progress Dots */}
       <View style={styles.progressContainer}>
+        <View style={styles.dotsContainer}>
+          {renderProgressDots()}
+        </View>
         <ThemedText style={[
           styles.progressText,
-          { color: isDark ? Colors.dark.text : Colors.light.text }
+          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
           {currentIndex + 1} of {totalSections}
         </ThemedText>
-        <View style={[
-          styles.progressBar,
-          { backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary }
-        ]}>
-          <View style={[
-            styles.progressFill,
-            { 
-              width: `${((currentIndex + 1) / totalSections) * 100}%`,
-              backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint
-            }
-          ]} />
-        </View>
       </View>
       
       {/* Next/Finish Button */}
       <TouchableOpacity
         style={[
-          styles.button,
-          styles.primaryButton,
-          isNavigating && styles.buttonDisabled, // 🔥 NEW: Disable during navigation
-          { backgroundColor: isNavigating 
-            ? (isDark ? Colors.dark.backgroundSecondary : '#CCCCCC')
-            : (isDark ? Colors.dark.tint : Colors.light.tint) 
+          styles.navButton,
+          isNavigating && styles.buttonDisabled,
+          { 
+            backgroundColor: isNavigating 
+              ? (isDark ? Colors.dark.backgroundSecondary : '#CCCCCC')
+              : (isDark ? Colors.dark.tint : Colors.light.tint)
           }
         ]}
         onPress={isLast ? handleFinish : onNext}
-        disabled={isNavigating} // 🔥 NEW: Disable during navigation
+        disabled={isNavigating}
+        activeOpacity={0.7}
       >
-        <ThemedText style={[
-          styles.primaryButtonText,
-          { color: isNavigating ? '#999999' : '#ffffff' }
-        ]}>
-          {isNavigating 
-            ? 'Loading...'
-            : (isLast ? '🧠 Test Your Knowledge' : 'Next →')
-          }
-        </ThemedText>
+        {isNavigating ? (
+          <MaterialIcons name="hourglass-empty" size={16} color="#999999" />
+        ) : (
+          <>
+            {isLast ? (
+              <MaterialIcons name="quiz" size={16} color="#ffffff" />
+            ) : (
+              <MaterialIcons name="chevron-right" size={20} color="#ffffff" />
+            )}
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -149,56 +169,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderTopWidth: 1,
   },
-  button: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    minWidth: 100,
+  navButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
-  },
-  primaryButton: {
-    // backgroundColor set dynamically above
-  },
-  secondaryButton: {
+    justifyContent: 'center',
     borderWidth: 1,
-    backgroundColor: 'transparent',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   buttonDisabled: {
-    opacity: 0.3,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  primaryButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonTextDisabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
   progressContainer: {
-    alignItems: 'center',
     flex: 1,
-    marginHorizontal: 20,
+    alignItems: 'center',
+    marginHorizontal: 16,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 6,
+  },
+  progressDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   progressText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
-    marginBottom: 8,
-  },
-  progressBar: {
-    width: '100%',
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 3,
   },
 });

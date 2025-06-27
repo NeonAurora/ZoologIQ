@@ -1,4 +1,6 @@
-import { StyleSheet, View } from 'react-native';
+// app/(main)/index.jsx
+import { StyleSheet, View} from 'react-native';
+import { useEffect } from 'react';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,11 +8,26 @@ import { useRouter } from 'expo-router';
 import { FAB } from 'react-native-paper';
 import React, { useState } from 'react';
 import LearningTopicCard from '@/components/learning/LearningTopicCard';
+import { ActivityIndicator } from 'react-native';
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, supabaseData, loading } = useAuth();
   const router = useRouter();
   const [fabOpen, setFabOpen] = useState(false);
+
+  // 🔥 NEW: Check onboarding status
+  useEffect(() => {
+    if (!loading && user && supabaseData) {
+      console.log('🔍 Checking onboarding status:', supabaseData.onboarding_completed);
+      
+      // If user is logged in but hasn't completed onboarding, redirect to profile
+      if (!supabaseData.onboarding_completed) {
+        console.log('❌ Onboarding not completed, redirecting to profile');
+        router.replace('/profile');
+        return;
+      }
+    }
+  }, [loading, user, supabaseData, router]);
 
   const actions = [
     {
@@ -34,24 +51,43 @@ export default function HomePage() {
       onPress: () => router.push('/'),
     },
   ];
+
+  // Show loading while checking onboarding status
+  if (loading || (user && !supabaseData)) {
+    return (
+      <ThemedView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0a7ea4" />
+          <ThemedText style={styles.loadingText}>Loading...</ThemedText>
+        </View>
+      </ThemedView>
+    );
+  }
   
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.header}>
-        <ThemedText type="title" style={styles.headerTitle}>
-          Learning Paths
+      <ThemedText type="title">Welcome to Home Page</ThemedText>
+      
+      {user ? (
+        <ThemedText style={styles.welcomeText}>
+          Hello, {supabaseData?.name || user.name || user.email || 'User'}! You are signed in.
         </ThemedText>
-        <ThemedText style={styles.headerSubtitle}>
-          Choose your learning journey
+      ) : (
+        <ThemedText style={styles.welcomeText}>
+          Sign in using the button in the header to access your profile.
         </ThemedText>
-      </View>
+      )}
 
       <View style={styles.learningSection}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>
+          🎓 Start Learning Journey
+        </ThemedText>
+        
         <LearningTopicCard 
           topic="tiger"
           title="Malayan Tiger"
-          description="Conservation and habitat study"
-          icon="■"
+          description="Learn about endangered Malayan Tigers"
+          icon="🐅"
           color="#FF6B35"
           quizId="744a1763-0b1b-4b60-913e-cf74df153746"
         />
@@ -59,8 +95,8 @@ export default function HomePage() {
         <LearningTopicCard 
           topic="tapir"
           title="Malayan Tapir" 
-          description="Species behavior and ecology"
-          icon="■"
+          description="Discover the Asian Tapir"
+          icon="🦌"
           color="#4CAF50"
           quizId="your-tapir-quiz-id"
           disabled={true}
@@ -69,8 +105,8 @@ export default function HomePage() {
         <LearningTopicCard 
           topic="turtle"
           title="Hawksbill Turtle"
-          description="Marine conservation research"
-          icon="■"
+          description="Explore marine turtle conservation"
+          icon="🐢"
           color="#2196F3"
           quizId="your-turtle-quiz-id"
           disabled={true}
@@ -91,26 +127,30 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 32,
+    alignItems: 'center',
+    paddingTop: 40,
+    paddingHorizontal: 20,
   },
-  header: {
-    marginBottom: 40,
-    alignItems: 'flex-start',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  headerTitle: {
-    marginBottom: 8,
-    fontSize: 28,
-    fontWeight: '600',
-  },
-  headerSubtitle: {
+  loadingText: {
+    marginTop: 16,
     fontSize: 16,
-    opacity: 0.7,
-    fontWeight: '400',
+  },
+  welcomeText: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 16,
   },
   learningSection: {
-    flex: 1,
-    gap: 20,
+    width: '100%',
+    marginTop: 30,
+  },
+  sectionTitle: {
+    marginBottom: 16,
   },
   fab: {
     position: 'absolute',

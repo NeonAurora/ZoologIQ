@@ -81,7 +81,7 @@ export const getUserInfo = async (accessToken) => {
     });
     
     if (!response.ok) {
-      console.error("Failed to get user info:", response.status, response.statusText);
+      console.warn("No User data found:", response.status, response.statusText);
       return null;
     }
     

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TigerBiology() {
   const { colorScheme } = useColorScheme();
@@ -33,93 +34,175 @@ export default function TigerBiology() {
     { rank: 'Species', name: 'Panthera tigris', common: 'Tiger' },
     { rank: 'Subspecies', name: 'Panthera tigris jacksoni', common: 'Malayan Tiger' },
   ];
+
+  const adaptations = [
+    {
+      icon: 'pets',
+      title: 'Powerful Bite',
+      description: '1,000 psi bite force can crush bones',
+      color: '#FF6B35'
+    },
+    {
+      icon: 'waves',
+      title: 'Excellent Swimmer',
+      description: 'Unlike most cats, tigers are strong swimmers',
+      color: '#2196F3'
+    },
+    {
+      icon: 'visibility',
+      title: 'Perfect Camouflage',
+      description: 'Unique stripe patterns blend into forest shadows',
+      color: '#4CAF50'
+    }
+  ];
+
+  const funFacts = [
+    'Unique stripe patterns are like fingerprints - no two tigers are identical',
+    'Smallest mainland tiger subspecies yet can leap over 5 meters',
+    'Excellent night vision with eyes that reflect light',
+    'Use "chuffing" sounds for friendly communication'
+  ];
   
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <ThemedText type="title" style={styles.title}>
-        📄 Fact Sheet
-      </ThemedText>
-      
-      <View style={[
-        styles.factSheet,
-        { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
-      ]}>
-        {factSheetData.map((fact, index) => (
-          <View key={index} style={[
-            styles.factRow,
-            index !== factSheetData.length - 1 && {
-              borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
-              borderBottomWidth: 1
-            }
-          ]}>
-            <ThemedText style={styles.factLabel}>{fact.label}</ThemedText>
-            <ThemedText style={styles.factValue}>{fact.value}</ThemedText>
-          </View>
-        ))}
-      </View>
-      
-      <ThemedText type="title" style={[styles.title, styles.sectionSpacing]}>
-        🧬 Taxonomic Classification
-      </ThemedText>
-      
-      <View style={[
-        styles.taxonomyTable,
-        { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
-      ]}>
-        {taxonomy.map((tax, index) => (
-          <View key={index} style={[
-            styles.taxonomyRow,
-            index !== taxonomy.length - 1 && {
-              borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
-              borderBottomWidth: 1
-            }
-          ]}>
-            <ThemedText style={styles.taxonomyRank}>{tax.rank}</ThemedText>
-            <ThemedText style={styles.taxonomyName}>{tax.name}</ThemedText>
-            <ThemedText style={styles.taxonomyCommon}>{tax.common}</ThemedText>
-          </View>
-        ))}
-      </View>
-      
-      <ThemedText type="subtitle" style={[styles.sectionTitle, styles.sectionSpacing]}>
-        💪 Physiology & Adaptations
-      </ThemedText>
-      
-      <View style={styles.adaptationsList}>
-        <View style={styles.adaptation}>
-          <ThemedText style={styles.adaptationEmoji}>🦷</ThemedText>
-          <View style={styles.adaptationContent}>
-            <ThemedText style={styles.adaptationTitle}>Powerful Bite</ThemedText>
-            <ThemedText style={styles.adaptationDesc}>1,000 psi bite can crush bones</ThemedText>
-          </View>
+      {/* Fact Sheet Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="description" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={styles.sectionTitle}>Fact Sheet</ThemedText>
         </View>
         
-        <View style={styles.adaptation}>
-          <ThemedText style={styles.adaptationEmoji}>🌊</ThemedText>
-          <View style={styles.adaptationContent}>
-            <ThemedText style={styles.adaptationTitle}>Great Swimmers</ThemedText>
-            <ThemedText style={styles.adaptationDesc}>Unlike most cats!</ThemedText>
-          </View>
-        </View>
-        
-        <View style={styles.adaptation}>
-          <ThemedText style={styles.adaptationEmoji}>🎯</ThemedText>
-          <View style={styles.adaptationContent}>
-            <ThemedText style={styles.adaptationTitle}>Perfect Camouflage</ThemedText>
-            <ThemedText style={styles.adaptationDesc}>Stripes blend into the forest</ThemedText>
-          </View>
+        <View style={[
+          styles.factSheet,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
+          {factSheetData.map((fact, index) => (
+            <View key={index} style={[
+              styles.factRow,
+              index !== factSheetData.length - 1 && {
+                borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
+                borderBottomWidth: 1
+              }
+            ]}>
+              <ThemedText style={styles.factLabel}>{fact.label}</ThemedText>
+              <ThemedText style={styles.factValue}>{fact.value}</ThemedText>
+            </View>
+          ))}
         </View>
       </View>
-      
-      <View style={[
-        styles.funFactBox,
-        { backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundSecondary }
-      ]}>
-        <ThemedText style={styles.funFactTitle}>🎉 Fun Facts</ThemedText>
-        <ThemedText style={styles.funFact}>• <ThemedText style={styles.funFactBold}>Unique Stripes:</ThemedText> Like fingerprints!</ThemedText>
-        <ThemedText style={styles.funFact}>• <ThemedText style={styles.funFactBold}>Smallest Mainland Tiger:</ThemedText> Yet can leap 5+ meters</ThemedText>
-        <ThemedText style={styles.funFact}>• <ThemedText style={styles.funFactBold}>Night Hunters:</ThemedText> Eyes glow for night vision</ThemedText>
-        <ThemedText style={styles.funFact}>• <ThemedText style={styles.funFactBold}>Chuffing Cats:</ThemedText> Use friendly vocalizations</ThemedText>
+
+      {/* Taxonomy Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="account-tree" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={styles.sectionTitle}>Classification</ThemedText>
+        </View>
+        
+        <View style={[
+          styles.taxonomyTable,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
+          {taxonomy.map((tax, index) => (
+            <View key={index} style={[
+              styles.taxonomyRow,
+              index !== taxonomy.length - 1 && {
+                borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
+                borderBottomWidth: 1
+              }
+            ]}>
+              <ThemedText style={styles.taxonomyRank}>{tax.rank}</ThemedText>
+              <ThemedText style={styles.taxonomyName}>{tax.name}</ThemedText>
+              <ThemedText style={styles.taxonomyCommon}>{tax.common}</ThemedText>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Adaptations Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="fitness-center" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={styles.sectionTitle}>Key Adaptations</ThemedText>
+        </View>
+        
+        <View style={styles.adaptationsGrid}>
+          {adaptations.map((adaptation, index) => (
+            <View key={index} style={[
+              styles.adaptationCard,
+              { 
+                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
+              }
+            ]}>
+              <View style={[
+                styles.adaptationIcon,
+                { backgroundColor: adaptation.color + '20' }
+              ]}>
+                <MaterialIcons 
+                  name={adaptation.icon} 
+                  size={24} 
+                  color={adaptation.color} 
+                />
+              </View>
+              <View style={styles.adaptationContent}>
+                <ThemedText style={styles.adaptationTitle}>
+                  {adaptation.title}
+                </ThemedText>
+                <ThemedText style={styles.adaptationDesc}>
+                  {adaptation.description}
+                </ThemedText>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Fun Facts Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="lightbulb" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={styles.sectionTitle}>Key Facts</ThemedText>
+        </View>
+        
+        <View style={[
+          styles.factsContainer,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
+          {funFacts.map((fact, index) => (
+            <View key={index} style={styles.factItem}>
+              <View style={[
+                styles.factBullet,
+                { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+              ]} />
+              <ThemedText style={styles.factText}>{fact}</ThemedText>
+            </View>
+          ))}
+        </View>
       </View>
     </ScrollView>
   );
@@ -130,79 +213,120 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: 16,
+    paddingBottom: 32,
   },
-  title: {
-    marginBottom: 16,
+  
+  // Section Structure
+  section: {
+    marginBottom: 24,
   },
-  sectionSpacing: {
-    marginTop: 32,
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
   },
   sectionTitle: {
-    marginBottom: 16,
+    fontSize: 18,
+    fontWeight: '600',
   },
+
+  // Fact Sheet
   factSheet: {
     borderRadius: 12,
+    borderWidth: 1,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   factRow: {
     flexDirection: 'row',
     paddingVertical: 12,
     paddingHorizontal: 16,
+    minHeight: 48,
+    alignItems: 'center',
   },
   factLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
     flex: 1,
     marginRight: 12,
   },
   factValue: {
     fontSize: 14,
     flex: 2,
+    textAlign: 'right',
   },
+
+  // Taxonomy Table
   taxonomyTable: {
     borderRadius: 12,
+    borderWidth: 1,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   taxonomyRow: {
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 16,
+    minHeight: 44,
+    alignItems: 'center',
   },
   taxonomyRank: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     flex: 1,
   },
   taxonomyName: {
-    fontSize: 14,
+    fontSize: 13,
     fontStyle: 'italic',
     flex: 1.5,
   },
   taxonomyCommon: {
-    fontSize: 14,
+    fontSize: 13,
     flex: 1,
+    textAlign: 'right',
+    opacity: 0.7,
   },
-  adaptationsList: {
-    marginBottom: 24,
+
+  // Adaptations Grid
+  adaptationsGrid: {
+    gap: 12,
   },
-  adaptation: {
+  adaptationCard: {
     flexDirection: 'row',
-    marginBottom: 16,
-    paddingRight: 16,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  adaptationEmoji: {
-    fontSize: 24,
-    marginRight: 12,
-    marginTop: 2,
+  adaptationIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
   adaptationContent: {
     flex: 1,
   },
   adaptationTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginBottom: 4,
   },
   adaptationDesc: {
@@ -210,21 +334,33 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     opacity: 0.8,
   },
-  funFactBox: {
+
+  // Fun Facts
+  factsContainer: {
     padding: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  funFactTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  factItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
-  funFact: {
+  factBullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 8,
+    marginRight: 12,
+  },
+  factText: {
     fontSize: 15,
     lineHeight: 22,
-    marginBottom: 6,
-  },
-  funFactBold: {
-    fontWeight: 'bold',
+    flex: 1,
   },
 });
