@@ -50,7 +50,7 @@ export default function TigerConservation() {
 
   const actionCategories = [
     {
-      icon: 'volunteer-activism',
+      icon: 'campaign',
       title: 'Support & Donate',
       color: '#4CAF50',
       actions: [

@@ -98,8 +98,7 @@ export default function HomePage() {
           description="Discover the Asian Tapir"
           icon="🦌"
           color="#4CAF50"
-          quizId="your-tapir-quiz-id"
-          disabled={true}
+          quizId="4b3d9bbc-bb0f-498e-81e8-be4f10d67afc"
         />
         
         <LearningTopicCard 

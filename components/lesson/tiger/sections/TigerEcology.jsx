@@ -32,7 +32,7 @@ export default function TigerEcology() {
 
   const reproductionData = [
     {
-      icon: 'child-care',
+      icon: 'family-restroom',
       label: 'Litter Size',
       value: '2–4 cubs every 2–3 years'
     },
