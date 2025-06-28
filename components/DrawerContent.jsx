@@ -98,6 +98,15 @@ export function DrawerContent(props) {
       <ScrollView style={styles.navSection}>
         <List.Section style={styles.listSection}>
           <List.Item
+            title="About"
+            description="App information"
+            left={props => <List.Icon {...props} icon="information" color={iconColor} />}
+            onPress={() => navigateTo('/about', 'About')}
+            titleStyle={styles.listItemTitle}
+            descriptionStyle={styles.listItemDescription}
+            style={styles.listItem}
+          />
+          <List.Item
             title="Home"
             description="Dashboard and overview"
             left={props => <List.Icon {...props} icon="home" color={iconColor} />}
@@ -112,42 +121,6 @@ export function DrawerContent(props) {
             description="View available quizzes"
             left={props => <List.Icon {...props} icon="book-open" color={iconColor} />}
             onPress={() => navigateTo('/quizzes', 'Quizzes')}
-            titleStyle={styles.listItemTitle}
-            descriptionStyle={styles.listItemDescription}
-            style={styles.listItem}
-          />
-          
-          {/* Lessons Section */}
-          <Divider style={styles.sectionDivider} />
-          <List.Subheader style={styles.subheader}>
-            🎓 Educational Lessons
-          </List.Subheader>
-          
-          <List.Item
-            title="Malayan Tiger 🐅"
-            description="Learn about Malaysia's apex predator"
-            left={props => <List.Icon {...props} icon="paw" color="#FF6B35" />}
-            onPress={() => navigateTo('/tigerLesson', 'Tiger Lesson')}
-            titleStyle={styles.listItemTitle}
-            descriptionStyle={styles.listItemDescription}
-            style={styles.listItem}
-          />
-          
-          <List.Item
-            title="Malayan Tapir 🦏"
-            description="Discover the forest gardener"
-            left={props => <List.Icon {...props} icon="leaf" color="#4CAF50" />}
-            onPress={() => navigateTo('/tapirLesson', 'Tapir Lesson')}
-            titleStyle={styles.listItemTitle}
-            descriptionStyle={styles.listItemDescription}
-            style={styles.listItem}
-          />
-          
-          <List.Item
-            title="Marine Turtle 🐢"
-            description="Explore ocean navigators"
-            left={props => <List.Icon {...props} icon="turtle" color="#2196F3" />}
-            onPress={() => navigateTo('/turtleLesson', 'Turtle Lesson')}
             titleStyle={styles.listItemTitle}
             descriptionStyle={styles.listItemDescription}
             style={styles.listItem}
@@ -215,16 +188,6 @@ export function DrawerContent(props) {
             description="Get assistance"
             left={props => <List.Icon {...props} icon="help-circle" color={iconColor} />}
             onPress={() => navigateTo('/help', 'Help')}
-            titleStyle={styles.listItemTitle}
-            descriptionStyle={styles.listItemDescription}
-            style={styles.listItem}
-          />
-          
-          <List.Item
-            title="About"
-            description="App information"
-            left={props => <List.Icon {...props} icon="information" color={iconColor} />}
-            onPress={() => navigateTo('/about', 'About')}
             titleStyle={styles.listItemTitle}
             descriptionStyle={styles.listItemDescription}
             style={styles.listItem}

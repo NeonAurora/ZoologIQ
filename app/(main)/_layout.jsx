@@ -307,6 +307,20 @@ export default function RootLayout() {
               drawerItemStyle: { display: 'none' } 
             }} 
           />
+          <Drawer.Screen 
+            name="tapirLesson" 
+            options={{ 
+              title: "Tapir",
+              drawerItemStyle: { display: 'none' } 
+            }} 
+          />
+          <Drawer.Screen 
+            name="turtleLesson" 
+            options={{ 
+              title: "Turtle",
+              drawerItemStyle: { display: 'none' } 
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>
