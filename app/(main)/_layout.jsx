@@ -321,6 +321,13 @@ export default function RootLayout() {
               drawerItemStyle: { display: 'none' } 
             }} 
           />
+          <Drawer.Screen 
+            name="acknowledgement" 
+            options={{ 
+              title: "Acknowledgement",
+              drawerItemStyle: { display: 'none' } 
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>

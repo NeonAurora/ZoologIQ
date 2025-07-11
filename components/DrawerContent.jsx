@@ -101,7 +101,7 @@ export function DrawerContent(props) {
             title="About"
             description="App information"
             left={props => <List.Icon {...props} icon="information" color={iconColor} />}
-            onPress={() => navigateTo('/about', 'About')}
+            onPress={() => navigateTo('/acknowledgement', 'About')}
             titleStyle={styles.listItemTitle}
             descriptionStyle={styles.listItemDescription}
             style={styles.listItem}
@@ -111,16 +111,6 @@ export function DrawerContent(props) {
             description="Dashboard and overview"
             left={props => <List.Icon {...props} icon="home" color={iconColor} />}
             onPress={() => navigateTo('/', 'Home')}
-            titleStyle={styles.listItemTitle}
-            descriptionStyle={styles.listItemDescription}
-            style={styles.listItem}
-          />
-          
-          <List.Item
-            title="Browse Quizzes"
-            description="View available quizzes"
-            left={props => <List.Icon {...props} icon="book-open" color={iconColor} />}
-            onPress={() => navigateTo('/quizzes', 'Quizzes')}
             titleStyle={styles.listItemTitle}
             descriptionStyle={styles.listItemDescription}
             style={styles.listItem}

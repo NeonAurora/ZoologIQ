@@ -1,14 +1,75 @@
 // components/lesson/tapir/sections/TapirFunFacts.jsx
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 export default function TapirFunFacts() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔒 HARDCODED PDF URL - Replace with your actual PDF URL
+  const PDF_DOWNLOAD_URL = "https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751086346171.pdf";
+
+  const handleDownloadPDF = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        // Web download
+        const link = document.createElement('a');
+        link.href = PDF_DOWNLOAD_URL;
+        link.download = 'tapir-facts-guide.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Mobile download
+        const downloadResumable = FileSystem.createDownloadResumable(
+          PDF_DOWNLOAD_URL,
+          FileSystem.documentDirectory + 'tapir-facts-guide.pdf'
+        );
+
+        try {
+          const { uri } = await downloadResumable.downloadAsync();
+          
+          // Check if sharing is available
+          const isAvailable = await Sharing.isAvailableAsync();
+          
+          Alert.alert(
+            'Download Complete',
+            '', // ← Empty message
+            [
+              { text: 'Cancel', style: 'default' },
+              ...(isAvailable ? [{ 
+                text: 'Open', 
+                onPress: async () => {
+                  try {
+                    await Sharing.shareAsync(uri, {
+                      mimeType: 'application/pdf',
+                      dialogTitle: 'Open Tapir Facts Guide'
+                    });
+                  } catch (shareError) {
+                    console.error('Error opening file:', shareError);
+                    Alert.alert('Error', 'Unable to open the file. You can find it in your Downloads folder.');
+                  }
+                },
+                style: 'default'
+              }] : [])
+            ]
+          );
+        } catch (error) {
+          console.error('Download failed:', error);
+          Alert.alert('Download Failed', 'Unable to download the file. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Error', 'An error occurred while downloading the file.');
+    }
+  };
 
   const amazingFacts = [
     {
@@ -633,6 +694,20 @@ export default function TapirFunFacts() {
           🇲🇾 **Malaysia's 50-ringgit banknote features the Malayan tapir**, making it one of the few animals to be honored on national currency! This recognition highlights the tapir's importance as Malaysia's gentle forest guardian and symbol of conservation success. 
         </ThemedText>
       </View>
+      {/* 🔥 Simple Download Button */}
+      <View style={styles.downloadSection}>
+        <TouchableOpacity 
+          style={[
+            styles.simpleDownloadButton,
+            { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+          ]}
+          onPress={handleDownloadPDF}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="file-download" size={18} color="#fff" />
+          <ThemedText style={styles.simpleDownloadText}>Download PDF</ThemedText>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -970,4 +1045,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
   },
+  downloadSection: {
+  alignItems: 'center',
+  marginTop: 16,
+  marginBottom: 8,
+},
+simpleDownloadButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingHorizontal: 20,
+  paddingVertical: 10,
+  borderRadius: 20,
+  gap: 6,
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
+  elevation: 2,
+},
+simpleDownloadText: {
+  color: '#fff',
+  fontSize: 14,
+  fontWeight: '600',
+},
 });

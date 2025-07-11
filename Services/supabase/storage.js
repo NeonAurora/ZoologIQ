@@ -170,3 +170,157 @@ export const deleteImage = async (url) => {
     return false;
   }
 };
+
+// Services/supabase/storage.js (Add these functions to your existing file)
+
+/**
+ * Upload a PDF file to Supabase Storage
+ * @param {string|File} pdfData - The local URI (mobile) or File object (web)
+ * @returns {Promise<string>} The public URL of the uploaded PDF
+ */
+export const uploadPdf = async (pdfData) => {
+  try {
+    console.log('uploadPdf called with:', pdfData);
+    
+    if (Platform.OS === 'web') {
+      return await uploadPdfWeb(pdfData);
+    } else {
+      return await uploadPdfMobile(pdfData);
+    }
+  } catch (error) {
+    console.error('Error in PDF upload process:', error);
+    return null;
+  }
+};
+
+const uploadPdfWeb = async (file) => {
+  try {
+    console.log('uploadPdfWeb called with file:', file);
+    
+    if (!file) {
+      console.error('No file provided for web PDF upload');
+      return null;
+    }
+    
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      console.error('Invalid file type. Only PDF files are allowed.');
+      return null;
+    }
+    
+    // Generate unique filename
+    const fileName = `${Date.now()}.pdf`;
+    
+    console.log("Uploading PDF file:", fileName);
+    
+    // Upload the file directly to your lesson-materials bucket
+    const { data, error } = await supabase.storage
+      .from('lesson-materials')
+      .upload(`pdfs/${fileName}`, file, {
+        contentType: 'application/pdf',
+        upsert: true
+      });
+    
+    if (error) {
+      console.error('Error uploading PDF:', error);
+      return null;
+    }
+    
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('lesson-materials')
+      .getPublicUrl(`pdfs/${fileName}`);
+    
+    console.log("PDF upload successful, URL:", publicUrlData);
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Error in web PDF upload process:', error);
+    return null;
+  }
+};
+
+const uploadPdfMobile = async (uri) => {
+  try {
+    console.log('uploadPdfMobile called with URI:', uri);
+    
+    if (!uri) {
+      console.error('No URI provided for mobile PDF upload');
+      return null;
+    }
+    
+    // Generate a unique filename
+    const fileName = `${Date.now()}.pdf`;
+    
+    // Read the file as base64
+    const fileInfo = await FileSystem.getInfoAsync(uri);
+    if (!fileInfo.exists) {
+      console.error("PDF file doesn't exist");
+      return null;
+    }
+    
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    
+    // Convert to ArrayBuffer
+    const arrayBuffer = decode(base64);
+    
+    console.log("Uploading PDF file:", fileName);
+    
+    // Upload to Supabase
+    const { data, error } = await supabase.storage
+      .from('lesson-materials')
+      .upload(`pdfs/${fileName}`, arrayBuffer, {
+        contentType: 'application/pdf',
+        upsert: true
+      });
+    
+    if (error) {
+      console.error('Error uploading PDF:', error);
+      return null;
+    }
+    
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('lesson-materials')
+      .getPublicUrl(`pdfs/${fileName}`);
+    
+    console.log("PDF upload successful, URL:", publicUrlData);
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Error in mobile PDF upload process:', error);
+    return null;
+  }
+};
+
+/**
+ * Delete a PDF file from Supabase Storage
+ * @param {string} url - The public URL of the PDF
+ * @returns {Promise<boolean>} Success status
+ */
+export const deletePdf = async (url) => {
+  try {
+    // Extract the path from the URL
+    const path = url.split('lesson-materials/')[1];
+    
+    if (!path) {
+      console.error('Invalid PDF URL format');
+      return false;
+    }
+    
+    const { error } = await supabase.storage
+      .from('lesson-materials')
+      .remove([path]);
+    
+    if (error) {
+      console.error('Error deleting PDF:', error);
+      return false;
+    }
+    
+    console.log('PDF deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('Error in PDF delete process:', error);
+    return false;
+  }
+};
