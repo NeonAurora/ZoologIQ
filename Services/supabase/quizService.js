@@ -1,4 +1,6 @@
+// Services/supabase/quizService.js
 import { supabase } from './config';
+import { createCategory, findCategoryByName } from './categoryService';
 
 // ==================================
 // QUIZ OPERATIONS
@@ -6,14 +8,13 @@ import { supabase } from './config';
 
 export const getAllQuizzes = async () => {
   try {
-    const { data: quizzes, error } = await supabase
+    const { data, error } = await supabase
       .from('quizzes')
       .select(`
         *,
         quiz_categories(name, slug),
         quiz_questions(*)
       `)
-      .eq('is_published', true)
       .eq('is_active', true)
       .order('created_at', { ascending: false });
     
@@ -22,42 +23,41 @@ export const getAllQuizzes = async () => {
       return {};
     }
     
-    // Convert to Firebase-compatible format: { id: quizData, id2: quizData2, ... }
+    // Convert array to object grouped by category
     const quizzesObject = {};
-    
-    quizzes.forEach(quiz => {
-      // Convert normalized questions back to the old format your components expect
+    data?.forEach(quiz => {
+      const categoryName = quiz.quiz_categories?.name?.en || 'General';
+      if (!quizzesObject[categoryName]) {
+        quizzesObject[categoryName] = [];
+      }
+      
+      // Format quiz data
       quiz.questions = quiz.quiz_questions
-        .sort((a, b) => a.question_order - b.question_order)
-        .map(q => ({
+        ?.sort((a, b) => a.question_order - b.question_order)
+        ?.map(q => ({
           question: q.question_text,
           answer: q.correct_answer,
           options: q.options,
           points: q.points,
           penalty: q.penalty,
-          image: q.question_image_url
-        }));
+          image: q.question_image_url,
+          explanation: q.explanation
+        })) || [];
       
       // Add backward compatibility fields
-      quiz.category = quiz.quiz_categories?.name || 'General';
-      quiz.grade = quiz.quiz_categories?.name || 'General'; // Your old field name
+      quiz.category = categoryName;
+      quiz.grade = categoryName;
       quiz.createdBy = quiz.created_by;
       quiz.createdAt = quiz.created_at;
       
-      // Clean up the response
+      // Clean up
       delete quiz.quiz_questions;
       delete quiz.quiz_categories;
-      delete quiz.category_id; // Internal field
-      delete quiz.created_by; // Use createdBy instead
-      delete quiz.created_at; // Use createdAt instead
-      delete quiz.updated_at;
-      delete quiz.is_published;
-      delete quiz.is_active;
       
-      quizzesObject[quiz.id] = quiz;
+      quizzesObject[categoryName].push(quiz);
     });
     
-    console.log(`Fetched ${Object.keys(quizzesObject).length} quizzes from Supabase`);
+    console.log(`✅ Loaded ${Object.keys(quizzesObject).length} categories with quizzes from Supabase`);
     return quizzesObject;
   } catch (error) {
     console.error('Error fetching quizzes:', error);
@@ -91,12 +91,13 @@ export const getQuizById = async (quizId) => {
         options: q.options,
         points: q.points,
         penalty: q.penalty,
-        image: q.question_image_url
+        image: q.question_image_url,
+        explanation: q.explanation
       }));
     
     // Backward compatibility fields
-    quiz.category = quiz.quiz_categories?.name || 'General';
-    quiz.grade = quiz.quiz_categories?.name || 'General';
+    quiz.category = quiz.quiz_categories?.name?.en || 'General';
+    quiz.grade = quiz.quiz_categories?.name?.en || 'General';
     quiz.createdBy = quiz.created_by;
     quiz.createdAt = quiz.created_at;
     
@@ -117,52 +118,57 @@ export const getQuizById = async (quizId) => {
   }
 };
 
+// 🔥 UPDATED: Handle bilingual quiz creation
 export const saveQuiz = async (quizData) => {
   try {
-    console.log('Saving quiz to Supabase:', quizData);
+    console.log('Saving bilingual quiz to Supabase:', quizData);
     
     // Step 1: Handle category (create if doesn't exist)
     let categoryId = null;
     if (quizData.category) {
-      // Check if category exists
-      const { data: existingCategory } = await supabase
-        .from('quiz_categories')
-        .select('id')
-        .eq('name', quizData.category)
-        .single();
+      // First try to find existing category by name
+      let existingCategory = await findCategoryByName(quizData.category);
       
       if (existingCategory) {
         categoryId = existingCategory.id;
+        console.log('Found existing category:', existingCategory);
       } else {
-        // Create new category
-        const { data: newCategory, error: categoryError } = await supabase
-          .from('quiz_categories')
-          .insert({
-            name: quizData.category,
-            slug: quizData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-            description: `Questions about ${quizData.category}`,
-            created_by: quizData.created_by || quizData.createdBy
-          })
-          .select()
-          .single();
+        // Create new bilingual category
+        console.log('Creating new bilingual category for:', quizData.category);
+        const newCategory = await createCategory({
+          name: quizData.category, // Will be converted to bilingual in createCategory
+          created_by: quizData.created_by || quizData.createdBy
+        });
         
-        if (categoryError) {
-          console.error('Error creating category:', categoryError);
-          throw categoryError;
+        if (!newCategory) {
+          throw new Error('Failed to create category');
         }
         
         categoryId = newCategory.id;
-        console.log('Created new category:', newCategory);
+        console.log('Created new bilingual category:', newCategory);
       }
     }
     
-    // Step 2: Create the quiz
+    // Step 2: Ensure quiz data is in bilingual format
+    let title = quizData.title;
+    let description = quizData.description;
+    
+    // Convert to bilingual if needed
+    if (typeof title === 'string') {
+      title = { en: title, ms: title }; // For now, keep same - admin can update later
+    }
+    
+    if (typeof description === 'string') {
+      description = { en: description, ms: description }; // For now, keep same - admin can update later
+    }
+    
+    // Step 3: Create the quiz
     const { data: quiz, error: quizError } = await supabase
       .from('quizzes')
       .insert({
         category_id: categoryId,
-        title: quizData.title,
-        description: quizData.description,
+        title: title,
+        description: description,
         instructions: quizData.instructions,
         difficulty: quizData.difficulty || 'Medium',
         is_published: true,
@@ -177,32 +183,114 @@ export const saveQuiz = async (quizData) => {
       throw quizError;
     }
     
-    console.log('Created quiz:', quiz);
+    console.log('Created bilingual quiz:', quiz);
     
-    // Step 3: Insert questions
+    // Step 4: Insert bilingual questions
     if (quizData.questions && quizData.questions.length > 0) {
-      const questionsToInsert = quizData.questions.map((q, index) => ({
-        quiz_id: quiz.id,
-        question_text: q.question,
-        question_image_url: q.image,
-        options: q.options,
-        correct_answer: q.answer,
-        points: q.points || 10,
-        penalty: q.penalty || 0,
-        explanation: q.explanation,
-        question_order: index + 1
-      }));
+      const questionsToInsert = quizData.questions.map((q, index) => {
+        // Ensure question data is in correct format
+        let questionText = q.question_text || q.question;
+        let options = q.options;
+        let explanation = q.explanation;
+        
+        // Convert string fields to bilingual if needed (backward compatibility)
+        if (typeof questionText === 'string') {
+          questionText = { en: questionText, ms: questionText };
+        }
+        
+        if (Array.isArray(options)) {
+          options = { en: options, ms: options };
+        }
+        
+        if (typeof explanation === 'string') {
+          explanation = { en: explanation, ms: explanation };
+        }
+
+        // 🔥 UPDATED: Handle correct_answer - could be index or text
+        let correctAnswer = q.correct_answer || q.answer;
+        const englishOptions = options.en;
+        
+        console.log(`🔍 Processing Question ${index + 1} correct_answer:`, {
+          received_correct_answer: correctAnswer,
+          type: typeof correctAnswer,
+          english_options: englishOptions
+        });
+
+        // 🔥 NEW: Check if correct_answer is already an index or if it's text
+        if (typeof correctAnswer === 'string') {
+          // Try to parse as number first (could be index like "1")
+          const parsedIndex = parseInt(correctAnswer, 10);
+          
+          // If it's a valid index (0, 1, 2, 3, etc.) and within bounds
+          if (!isNaN(parsedIndex) && parsedIndex >= 0 && parsedIndex < englishOptions.length) {
+            console.log(`✅ Question ${index + 1}: Received valid index "${correctAnswer}"`);
+            correctAnswer = correctAnswer; // Keep as string index
+          } else {
+            // It's text, find its index
+            const answerIndex = englishOptions.findIndex(opt => opt === correctAnswer);
+            if (answerIndex === -1) {
+              console.error(`❌ Question ${index + 1}: Correct answer "${correctAnswer}" not found in English options:`, englishOptions);
+              throw new Error(`Question ${index + 1}: Correct answer "${correctAnswer}" not found in options`);
+            }
+            correctAnswer = answerIndex.toString(); // Convert to string index
+            console.log(`✅ Question ${index + 1}: Converted text "${q.correct_answer}" to index "${correctAnswer}"`);
+          }
+        } else if (typeof correctAnswer === 'number') {
+          // Convert number to string
+          if (correctAnswer >= 0 && correctAnswer < englishOptions.length) {
+            correctAnswer = correctAnswer.toString();
+            console.log(`✅ Question ${index + 1}: Converted number index ${q.correct_answer} to string "${correctAnswer}"`);
+          } else {
+            throw new Error(`Question ${index + 1}: Index ${correctAnswer} is out of bounds for options array`);
+          }
+        } else {
+          throw new Error(`Question ${index + 1}: Invalid correct_answer type: ${typeof correctAnswer}`);
+        }
+        
+        // 🔥 VALIDATE: Ensure the index is valid for both language arrays
+        const finalIndex = parseInt(correctAnswer, 10);
+        if (finalIndex < 0 || finalIndex >= englishOptions.length || finalIndex >= options.ms.length) {
+          throw new Error(`Question ${index + 1}: Index ${finalIndex} is out of bounds (EN: ${englishOptions.length}, MS: ${options.ms.length})`);
+        }
+
+        console.log(`🔍 Question ${index + 1} final validation:`, {
+          final_index: correctAnswer,
+          english_option_at_index: englishOptions[finalIndex],
+          malay_option_at_index: options.ms[finalIndex],
+          english_options_count: englishOptions.length,
+          malay_options_count: options.ms.length
+        });
+        
+        return {
+          quiz_id: quiz.id,
+          question_text: questionText,
+          question_image_url: q.image,
+          options: options,
+          correct_answer: correctAnswer, // INDEX as string: "0", "1", "2", "3"
+          explanation: explanation,
+          points: q.points || 10,
+          penalty: q.penalty || 0,
+          question_order: index + 1
+        };
+      });
+      
+      console.log('🔍 All questions converted to index-based correct answers:', questionsToInsert.map((q, i) => ({
+        question: i + 1,
+        correct_answer_index: q.correct_answer,
+        english_option: q.options.en[parseInt(q.correct_answer, 10)],
+        malay_option: q.options.ms[parseInt(q.correct_answer, 10)]
+      })));
       
       const { error: questionsError } = await supabase
         .from('quiz_questions')
         .insert(questionsToInsert);
       
       if (questionsError) {
-        console.error('Error inserting questions:', questionsError);
+        console.error('Error inserting bilingual questions:', questionsError);
         throw questionsError;
       }
       
-      console.log(`Inserted ${questionsToInsert.length} questions`);
+      console.log(`✅ Inserted ${questionsToInsert.length} bilingual questions with index-based correct answers`);
     }
     
     // Return quiz data in the format your components expect
@@ -216,7 +304,7 @@ export const saveQuiz = async (quizData) => {
     };
     
   } catch (error) {
-    console.error('Error saving quiz:', error);
+    console.error('Error saving bilingual quiz:', error);
     return null;
   }
 };

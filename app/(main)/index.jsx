@@ -18,6 +18,10 @@ export default function HomePage() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Get user's preferred language
+  const preferredLanguage = supabaseData?.preferred_language || 'en';
+  const isEnglish = preferredLanguage === 'en';
+
   // Check onboarding status
   useEffect(() => {
     if (!loading && user && supabaseData) {
@@ -31,29 +35,50 @@ export default function HomePage() {
     }
   }, [loading, user, supabaseData, router]);
 
+  // 🔥 UPDATED: Bilingual learning topics
   const learningTopics = [
     {
       topic: "tiger",
-      title: "Malayan Tiger",
+      title: isEnglish ? "Malayan Tiger" : "Harimau Malaya",
       icon: "pets",
       color: "#FF6B35",
       quizId: "744a1763-0b1b-4b60-913e-cf74df153746"
     },
     {
       topic: "tapir",
-      title: "Malayan Tapir",
+      title: isEnglish ? "Malayan Tapir" : "Tapir Malaya",
       icon: "forest",
       color: "#4CAF50",
       quizId: "4b3d9bbc-bb0f-498e-81e8-be4f10d67afc"
     },
     {
       topic: "turtle",
-      title: "Green Sea Turtle",
+      title: isEnglish ? "Green Sea Turtle" : "Penyu Agar",
       icon: "waves",
       color: "#2196F3",
       quizId: "5650b2ca-b502-48ff-b810-d6178ec39a20"
     }
   ];
+
+  // 🔥 NEW: Bilingual text content
+  const content = {
+    en: {
+      title: "Learning Topics",
+      subtitle: user ? "Select a topic to continue learning" : "Sign in to access learning content",
+      loading: "Loading...",
+      signInRequired: "Sign In Required",
+      signInDescription: "Please sign in to access learning content and track your progress."
+    },
+    ms: {
+      title: "Topik Pembelajaran",
+      subtitle: user ? "Pilih topik untuk meneruskan pembelajaran" : "Log masuk untuk mengakses kandungan pembelajaran",
+      loading: "Sedang memuatkan...",
+      signInRequired: "Log Masuk Diperlukan",
+      signInDescription: "Sila log masuk untuk mengakses kandungan pembelajaran dan menjejaki kemajuan anda."
+    }
+  };
+
+  const text = content[preferredLanguage] || content.en;
 
   // Show loading while checking onboarding status
   if (loading || (user && !supabaseData)) {
@@ -65,7 +90,7 @@ export default function HomePage() {
             styles.loadingText,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Loading...
+            {text.loading}
           </ThemedText>
         </View>
       </ThemedView>
@@ -86,13 +111,13 @@ export default function HomePage() {
               styles.title,
               { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              Learning Topics
+              {text.title}
             </ThemedText>
             <ThemedText style={[
               styles.subtitle,
               { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
             ]}>
-              {user ? 'Select a topic to continue learning' : 'Sign in to access learning content'}
+              {text.subtitle}
             </ThemedText>
           </View>
           
@@ -181,14 +206,14 @@ export default function HomePage() {
                   styles.ctaTitle,
                   { color: isDark ? Colors.dark.text : Colors.light.text }
                 ]}>
-                  Sign In Required
+                  {text.signInRequired}
                 </ThemedText>
               </View>
               <ThemedText style={[
                 styles.ctaDescription,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Please sign in to access learning content and track your progress.
+                {text.signInDescription}
               </ThemedText>
             </View>
           </View>
@@ -198,6 +223,7 @@ export default function HomePage() {
   );
 }
 
+// ... styles remain the same ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

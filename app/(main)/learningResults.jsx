@@ -9,15 +9,83 @@ import { Colors } from '@/constants/Colors';
 import { ActivityIndicator } from 'react-native-paper';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getLearningSession, finalizeSessionCompletion } from '@/services/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LearningResultsPage() {
   const { sessionId } = useLocalSearchParams();
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { supabaseData } = useAuth();
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showQuizComparison, setShowQuizComparison] = useState(false);
+
+  // 🔥 NEW: Get user's preferred language
+  const preferredLanguage = supabaseData?.preferred_language || 'en';
+  const isEnglish = preferredLanguage === 'en';
+
+  // 🔥 NEW: Bilingual text content
+  const content = {
+    en: {
+      title: "Learning Complete",
+      sessionSuffix: "Session",
+      loadingResults: "Loading Results",
+      sessionNotFound: "Session not found",
+      scoreComparison: "Score Comparison",
+      before: "Before",
+      after: "After",
+      pointsImprovement: "points improvement",
+      pointsDifference: "points difference",
+      better: "better",
+      quizComparison: "Quiz Comparison",
+      improved: "Improved",
+      missed: "Missed",
+      maintained: "Maintained",
+      correctAnswer: "Correct Answer:",
+      sessionDetails: "Session Details",
+      topic: "Topic",
+      duration: "Duration",
+      date: "Date",
+      exploreTopics: "Explore Topics",
+      retake: "Retake",
+      excellent: "Excellent",
+      great: "Great",
+      good: "Good",
+      progress: "Progress",
+      review: "Review"
+    },
+    ms: {
+      title: "Pembelajaran Selesai",
+      sessionSuffix: "Sesi",
+      loadingResults: "Sedang Memuatkan Keputusan",
+      sessionNotFound: "Sesi tidak dijumpai",
+      scoreComparison: "Perbandingan Markah",
+      before: "Sebelum",
+      after: "Selepas",
+      pointsImprovement: "mata penambahbaikan",
+      pointsDifference: "mata perbezaan",
+      better: "lebih baik",
+      quizComparison: "Perbandingan Kuiz",
+      improved: "Bertambah Baik",
+      missed: "Terlepas",
+      maintained: "Dikekalkan",
+      correctAnswer: "Jawapan Betul:",
+      sessionDetails: "Butiran Sesi",
+      topic: "Topik",
+      duration: "Tempoh",
+      date: "Tarikh",
+      exploreTopics: "Terokai Topik",
+      retake: "Ambil Semula",
+      excellent: "Cemerlang",
+      great: "Hebat",
+      good: "Baik",
+      progress: "Kemajuan",
+      review: "Semak"
+    }
+  };
+
+  const text = content[preferredLanguage] || content.en;
 
   useEffect(() => {
     if (sessionId) {
@@ -72,7 +140,7 @@ export default function LearningResultsPage() {
           color={isDark ? Colors.dark.tint : Colors.light.tint} 
         />
         <ThemedText style={styles.loadingText}>
-          Loading Results
+          {text.loadingResults}
         </ThemedText>
       </ThemedView>
     );
@@ -87,13 +155,24 @@ export default function LearningResultsPage() {
           color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
         />
         <ThemedText style={styles.errorText}>
-          Session not found
+          {text.sessionNotFound}
         </ThemedText>
       </ThemedView>
     );
   }
 
   const improvement = calculateImprovement();
+
+  // 🔥 UPDATED: Get category name in preferred language
+  const getCategoryName = () => {
+    if (!session.quiz_categories?.name) return 'Unknown';
+    
+    if (typeof session.quiz_categories.name === 'string') {
+      return session.quiz_categories.name;
+    }
+    
+    return session.quiz_categories.name[preferredLanguage] || session.quiz_categories.name.en || 'Unknown';
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -109,10 +188,10 @@ export default function LearningResultsPage() {
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
           <ThemedText type="title" style={styles.title}>
-            Learning Complete
+            {text.title}
           </ThemedText>
           <ThemedText style={styles.subtitle}>
-            {session.quiz_categories?.name || 'Topic'} Session
+            {getCategoryName()} {text.sessionSuffix}
           </ThemedText>
         </View>
 
@@ -127,13 +206,13 @@ export default function LearningResultsPage() {
               }
             ]}>
               <View style={styles.scoreHeader}>
-                <ThemedText style={styles.cardTitle}>Score Comparison</ThemedText>
-                <ImprovementBadge improvement={improvement} isDark={isDark} />
+                <ThemedText style={styles.cardTitle}>{text.scoreComparison}</ThemedText>
+                <ImprovementBadge improvement={improvement} isDark={isDark} text={text} />
               </View>
               
               <View style={styles.scoresRow}>
                 <ScoreItem
-                  label="Before"
+                  label={text.before}
                   score={improvement.preScore}
                   maxScore={improvement.maxScore}
                   iconName="quiz"
@@ -149,7 +228,7 @@ export default function LearningResultsPage() {
                 </View>
                 
                 <ScoreItem
-                  label="After"
+                  label={text.after}
                   score={improvement.postScore}
                   maxScore={improvement.maxScore}
                   iconName="school"
@@ -161,14 +240,14 @@ export default function LearningResultsPage() {
               <View style={styles.improvementSummary}>
                 <ThemedText style={styles.improvementText}>
                   {improvement.improvement >= 0 ? 
-                    `+${improvement.improvement} points improvement` :
-                    `${improvement.improvement} points difference`
+                    `+${improvement.improvement} ${text.pointsImprovement}` :
+                    `${improvement.improvement} ${text.pointsDifference}`
                   }
                 </ThemedText>
                 
                 {improvement.improvementPercentage > 0 && (
                   <ThemedText style={styles.percentageText}>
-                    {improvement.improvementPercentage}% better
+                    {improvement.improvementPercentage}% {text.better}
                   </ThemedText>
                 )}
               </View>
@@ -180,10 +259,12 @@ export default function LearningResultsPage() {
               isDark={isDark}
               showComparison={showQuizComparison}
               onToggleComparison={() => setShowQuizComparison(!showQuizComparison)}
+              text={text}
+              preferredLanguage={preferredLanguage}
             />
 
             {/* Session Details */}
-            <SessionSummary session={session} isDark={isDark} />
+            <SessionSummary session={session} isDark={isDark} text={text} getCategoryName={getCategoryName} />
           </>
         )}
         
@@ -199,7 +280,7 @@ export default function LearningResultsPage() {
           >
             <MaterialIcons name="explore" size={20} color="#fff" />
             <ThemedText style={styles.buttonText}>
-              Explore Topics
+              {text.exploreTopics}
             </ThemedText>
           </TouchableOpacity>
           
@@ -226,7 +307,7 @@ export default function LearningResultsPage() {
               styles.secondaryButtonText,
               { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              Retake
+              {text.retake}
             </ThemedText>
           </TouchableOpacity>
         </View>
@@ -235,8 +316,8 @@ export default function LearningResultsPage() {
   );
 }
 
-// Quiz Comparison Section Component
-function QuizComparisonSection({ session, isDark, showComparison, onToggleComparison }) {
+// 🔥 UPDATED: Quiz Comparison Section Component with bilingual support
+function QuizComparisonSection({ session, isDark, showComparison, onToggleComparison, text, preferredLanguage }) {
   const preAnswers = session.pre_study_result?.user_answers || [];
   const postAnswers = session.post_study_result?.user_answers || [];
   
@@ -286,7 +367,7 @@ function QuizComparisonSection({ session, isDark, showComparison, onToggleCompar
             size={20} 
             color={isDark ? Colors.dark.textSecondary : Colors.light.textSecondary} 
           />
-          <ThemedText style={styles.cardTitle}>Quiz Comparison</ThemedText>
+          <ThemedText style={styles.cardTitle}>{text.quizComparison}</ThemedText>
         </View>
         
         <View style={styles.comparisonStats}>
@@ -311,19 +392,19 @@ function QuizComparisonSection({ session, isDark, showComparison, onToggleCompar
           <View style={styles.quickStats}>
             <StatItem 
               icon="trending-up" 
-              label="Improved" 
+              label={text.improved} 
               value={stats.improved} 
               color="#4CAF50" 
             />
             <StatItem 
               icon="trending-down" 
-              label="Missed" 
+              label={text.missed} 
               value={stats.regressed} 
               color="#F44336" 
             />
             <StatItem 
               icon="check-circle" 
-              label="Maintained" 
+              label={text.maintained} 
               value={stats.maintained} 
               color="#2196F3" 
             />
@@ -337,6 +418,8 @@ function QuizComparisonSection({ session, isDark, showComparison, onToggleCompar
                 item={item} 
                 questionNumber={index + 1}
                 isDark={isDark}
+                text={text}
+                preferredLanguage={preferredLanguage}
               />
             ))}
           </View>
@@ -346,8 +429,8 @@ function QuizComparisonSection({ session, isDark, showComparison, onToggleCompar
   );
 }
 
-// Individual Question Comparison Item
-function QuestionComparisonItem({ item, questionNumber, isDark }) {
+// 🔥 UPDATED: Individual Question Comparison Item with bilingual support
+function QuestionComparisonItem({ item, questionNumber, isDark, text, preferredLanguage }) {
   const { preAnswer, postAnswer, status } = item;
   
   const getStatusColor = (status) => {
@@ -366,6 +449,12 @@ function QuestionComparisonItem({ item, questionNumber, isDark }) {
       case 'maintained': return 'check-circle';
       default: return 'remove-circle';
     }
+  };
+
+  // 🔥 NEW: Get question text in preferred language
+  const getQuestionText = (questionText) => {
+    if (typeof questionText === 'string') return questionText;
+    return questionText[preferredLanguage] || questionText.en || 'Question';
   };
 
   return (
@@ -391,13 +480,13 @@ function QuestionComparisonItem({ item, questionNumber, isDark }) {
       </View>
 
       <ThemedText style={styles.questionText} numberOfLines={2}>
-        {preAnswer.question_text}
+        {getQuestionText(preAnswer.question_text)}
       </ThemedText>
 
       <View style={styles.answersComparison}>
         {/* Pre-Quiz Answer */}
         <View style={styles.answerColumn}>
-          <ThemedText style={styles.answerLabel}>Before</ThemedText>
+          <ThemedText style={styles.answerLabel}>{text.before}</ThemedText>
           <View style={[
             styles.answerItem,
             { 
@@ -427,7 +516,7 @@ function QuestionComparisonItem({ item, questionNumber, isDark }) {
 
         {/* Post-Quiz Answer */}
         <View style={styles.answerColumn}>
-          <ThemedText style={styles.answerLabel}>After</ThemedText>
+          <ThemedText style={styles.answerLabel}>{text.after}</ThemedText>
           <View style={[
             styles.answerItem,
             { 
@@ -450,7 +539,7 @@ function QuestionComparisonItem({ item, questionNumber, isDark }) {
       {/* Correct Answer (if both were wrong) */}
       {!preAnswer.is_correct && !postAnswer.is_correct && (
         <View style={styles.correctAnswerContainer}>
-          <ThemedText style={styles.correctAnswerLabel}>Correct Answer:</ThemedText>
+          <ThemedText style={styles.correctAnswerLabel}>{text.correctAnswer}</ThemedText>
           <ThemedText style={styles.correctAnswerText}>
             {preAnswer.correct_answer}
           </ThemedText>
@@ -471,14 +560,14 @@ function StatItem({ icon, label, value, color }) {
   );
 }
 
-// Improvement badge component
-function ImprovementBadge({ improvement, isDark }) {
+// 🔥 UPDATED: Improvement badge component with bilingual support
+function ImprovementBadge({ improvement, isDark, text }) {
   const getImprovementLevel = () => {
-    if (improvement.improvementPercentage >= 20) return { level: 'Excellent', color: '#4CAF50' };
-    if (improvement.improvementPercentage >= 10) return { level: 'Great', color: '#8BC34A' };
-    if (improvement.improvementPercentage >= 5) return { level: 'Good', color: '#FFC107' };
-    if (improvement.improvementPercentage >= 0) return { level: 'Progress', color: '#FF9800' };
-    return { level: 'Review', color: '#F44336' };
+    if (improvement.improvementPercentage >= 20) return { level: text.excellent, color: '#4CAF50' };
+    if (improvement.improvementPercentage >= 10) return { level: text.great, color: '#8BC34A' };
+    if (improvement.improvementPercentage >= 5) return { level: text.good, color: '#FFC107' };
+    if (improvement.improvementPercentage >= 0) return { level: text.progress, color: '#FF9800' };
+    return { level: text.review, color: '#F44336' };
   };
 
   const level = getImprovementLevel();
@@ -522,8 +611,8 @@ function ScoreItem({ label, score, maxScore, iconName, isDark, isHighlighted = f
   );
 }
 
-// Session summary component
-function SessionSummary({ session, isDark }) {
+// 🔥 UPDATED: Session summary component with bilingual support
+function SessionSummary({ session, isDark, text, getCategoryName }) {
   const formatDuration = (startTime, endTime) => {
     if (!startTime || !endTime) return 'N/A';
     
@@ -537,17 +626,17 @@ function SessionSummary({ session, isDark }) {
   const summaryItems = [
     {
       icon: 'category',
-      label: 'Topic',
-      value: session.quiz_categories?.name || 'Unknown'
+      label: text.topic,
+      value: getCategoryName()
     },
     {
       icon: 'schedule',
-      label: 'Duration',
+      label: text.duration,
       value: formatDuration(session.study_started_at, session.study_completed_at)
     },
     {
       icon: 'today',
-      label: 'Date',
+      label: text.date,
       value: new Date(session.created_at).toLocaleDateString()
     }
   ];
@@ -560,7 +649,7 @@ function SessionSummary({ session, isDark }) {
         borderColor: isDark ? Colors.dark.border : Colors.light.border
       }
     ]}>
-      <ThemedText style={styles.cardTitle}>Session Details</ThemedText>
+      <ThemedText style={styles.cardTitle}>{text.sessionDetails}</ThemedText>
       
       <View style={styles.summaryGrid}>
         {summaryItems.map((item, index) => (
@@ -585,7 +674,9 @@ function SessionSummary({ session, isDark }) {
   );
 }
 
+// ... styles remain the same ...
 const styles = StyleSheet.create({
+  // ... (keeping all existing styles unchanged)
   container: {
     flex: 1,
   },

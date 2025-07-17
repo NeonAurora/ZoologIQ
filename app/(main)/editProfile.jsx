@@ -16,7 +16,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { updateUserData } from '@/services/supabase';
 import { uploadImage } from '@/services/supabase/storage';
-import * as ExpoImagePicker from 'expo-image-picker'; // 🔥 NEW: Import expo-image-picker
+import * as ExpoImagePicker from 'expo-image-picker';
 import ImagePicker from '@/components/createQuiz/ImagePicker';
 
 export default function EditProfileScreen() {
@@ -31,6 +31,7 @@ export default function EditProfileScreen() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    preferred_language: 'en', // 🔥 NEW: Language preference
     education_status: '',
     highest_education: '',
     city: '',
@@ -51,6 +52,7 @@ export default function EditProfileScreen() {
       setFormData({
         name: supabaseData.name || '',
         email: supabaseData.email || '',
+        preferred_language: supabaseData.preferred_language || 'en', // 🔥 NEW: Set language preference
         education_status: supabaseData.education_status || '',
         highest_education: supabaseData.highest_education || '',
         city: supabaseData.city || '',
@@ -78,15 +80,16 @@ export default function EditProfileScreen() {
     const age = parseInt(formData.age);
     const ageValid = !isNaN(age) && age >= 13 && age <= 120;
     
-    setFormValid(isValid && ageValid);
+    // Language preference should always be valid (has default)
+    const languageValid = formData.preferred_language === 'en' || formData.preferred_language === 'ms';
+    
+    setFormValid(isValid && ageValid && languageValid);
   }, [formData]);
 
-  // 🔥 NEW: Proper image picker function adapted from AddQuestionModal
   const handlePickImage = async () => {
     try {
       console.log('📷 Requesting image picker permissions...');
       
-      // Request permissions
       const { status } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -98,22 +101,19 @@ export default function EditProfileScreen() {
     
       console.log('📱 Launching image picker...');
       
-      // Launch picker with profile picture optimized settings
       const result = await ExpoImagePicker.launchImageLibraryAsync({
         mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
-        quality: 0.8, // Slightly lower quality for profile pics to save storage
+        quality: 0.8,
         allowsEditing: true,
-        aspect: [1, 1], // 🔥 Square aspect ratio for profile pictures
+        aspect: [1, 1],
       });
     
       console.log('🎯 Image picker result:', result);
       
-      // Handle selection
       if (!result.canceled && result.assets?.length > 0) {
         const imageUri = result.assets[0].uri;
         console.log('✅ Image selected:', imageUri);
         
-        // Set the local image URI (will be uploaded when profile is saved)
         setFormData(prev => ({
           ...prev,
           picture: imageUri
@@ -127,7 +127,6 @@ export default function EditProfileScreen() {
     }
   };
 
-  // 🔥 NEW: Handle image removal
   const handleRemoveImage = () => {
     console.log('🗑️ Removing profile image');
     setFormData(prev => ({
@@ -143,6 +142,15 @@ export default function EditProfileScreen() {
     }));
   };
 
+  // 🔥 NEW: Language selection handler
+  const handleLanguageSelect = (language) => {
+    console.log('🌐 Language selected:', language);
+    setFormData(prev => ({
+      ...prev,
+      preferred_language: language
+    }));
+  };
+
   const handleSave = async () => {
     if (!formValid || !user?.sub) return;
 
@@ -151,7 +159,6 @@ export default function EditProfileScreen() {
     try {
       let finalImageUrl = formData.picture;
 
-      // 🔥 UPDATED: Upload image if it's a local file (not a URL)
       if (formData.picture && !formData.picture.startsWith('http')) {
         console.log('📤 Uploading profile image...');
         setImageUploading(true);
@@ -164,7 +171,6 @@ export default function EditProfileScreen() {
         } else {
           console.log('⚠️ Image upload failed, continuing without image');
           
-          // Ask user if they want to continue without image
           const continueWithoutImage = await new Promise((resolve) => {
             Alert.alert(
               'Image Upload Failed',
@@ -182,7 +188,7 @@ export default function EditProfileScreen() {
             return;
           }
           
-          finalImageUrl = supabaseData?.picture || ''; // Keep existing or empty
+          finalImageUrl = supabaseData?.picture || '';
         }
         
         setImageUploading(false);
@@ -192,11 +198,12 @@ export default function EditProfileScreen() {
         ...formData,
         age: parseInt(formData.age),
         picture: finalImageUrl,
+        preferred_language: formData.preferred_language, // 🔥 NEW: Include language preference
         onboarding_completed: true,
         updated_at: new Date().toISOString()
       };
 
-      console.log('🔄 Updating user profile...');
+      console.log('🔄 Updating user profile with language preference...');
 
       const success = await updateUserData(user.sub, updateData);
 
@@ -269,7 +276,6 @@ export default function EditProfileScreen() {
             {isOnboarding ? 'Welcome!' : 'Edit Profile'}
           </ThemedText>
           
-          {/* Onboarding Message */}
           {isOnboarding && (
             <ThemedView style={[
               styles.welcomeCard,
@@ -288,7 +294,7 @@ export default function EditProfileScreen() {
           )}
         </ThemedView>
 
-        {/* 🔥 UPDATED: Profile Picture Section with proper ImagePicker integration */}
+        {/* Profile Picture Section */}
         <FormSection title="Profile Picture (Optional)" isDark={isDark}>
           <ThemedView style={styles.imageSection}>
             <ThemedText style={[
@@ -300,12 +306,11 @@ export default function EditProfileScreen() {
             
             <ImagePicker
               image={formData.picture}
-              onPickImage={handlePickImage} // 🔥 NEW: Use our proper image picker function
+              onPickImage={handlePickImage}
               onRemoveImage={handleRemoveImage}
               isUploading={imageUploading}
             />
             
-            {/* 🔥 NEW: Additional guidance for profile pictures */}
             <ThemedView style={styles.imageGuidance}>
               <ThemedText style={[
                 styles.imageGuidanceText,
@@ -329,7 +334,90 @@ export default function EditProfileScreen() {
           </ThemedView>
         </FormSection>
 
-        {/* Form Sections */}
+        {/* 🔥 NEW: Language Preference Section */}
+        <FormSection title="Language Preference" isDark={isDark}>
+          <ThemedView style={styles.languageSection}>
+            <ThemedText style={[
+              styles.languageSectionDescription,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              Choose your preferred language for quiz content and lessons
+            </ThemedText>
+            
+            <ThemedView style={styles.languageOptions}>
+              <TouchableOpacity
+                style={[
+                  styles.languageOption,
+                  {
+                    backgroundColor: formData.preferred_language === 'en'
+                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                      : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
+                    borderColor: formData.preferred_language === 'en'
+                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                      : (isDark ? Colors.dark.border : Colors.light.border),
+                  }
+                ]}
+                onPress={() => handleLanguageSelect('en')}
+                activeOpacity={0.8}
+              >
+                <ThemedText style={[
+                  styles.languageOptionText,
+                  {
+                    color: formData.preferred_language === 'en'
+                      ? '#fff'
+                      : (isDark ? Colors.dark.text : Colors.light.text)
+                  }
+                ]}>
+                  🇺🇸 English
+                </ThemedText>
+                {formData.preferred_language === 'en' && (
+                  <ThemedText style={styles.languageCheckmark}>✓</ThemedText>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.languageOption,
+                  {
+                    backgroundColor: formData.preferred_language === 'ms'
+                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                      : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
+                    borderColor: formData.preferred_language === 'ms'
+                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                      : (isDark ? Colors.dark.border : Colors.light.border),
+                  }
+                ]}
+                onPress={() => handleLanguageSelect('ms')}
+                activeOpacity={0.8}
+              >
+                <ThemedText style={[
+                  styles.languageOptionText,
+                  {
+                    color: formData.preferred_language === 'ms'
+                      ? '#fff'
+                      : (isDark ? Colors.dark.text : Colors.light.text)
+                  }
+                ]}>
+                  🇲🇾 Malay
+                </ThemedText>
+                {formData.preferred_language === 'ms' && (
+                  <ThemedText style={styles.languageCheckmark}>✓</ThemedText>
+                )}
+              </TouchableOpacity>
+            </ThemedView>
+
+            <ThemedView style={styles.languageNote}>
+              <ThemedText style={[
+                styles.languageNoteText,
+                { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
+              ]}>
+                Note: Application menus and buttons will remain in English. Only quiz content and lesson materials will be displayed in your selected language.
+              </ThemedText>
+            </ThemedView>
+          </ThemedView>
+        </FormSection>
+
+        {/* Personal Information */}
         <FormSection title="Personal Information" isDark={isDark}>
           <FormField
             label="Full Name"
@@ -596,7 +684,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   
-  // 🔥 UPDATED: Image Section
+  // Image Section
   imageSection: {
     gap: 12,
     alignItems: 'center',
@@ -613,6 +701,50 @@ const styles = StyleSheet.create({
   imageGuidanceText: {
     fontSize: 12,
     textAlign: 'center',
+  },
+
+  // 🔥 NEW: Language Section Styles
+  languageSection: {
+    gap: 16,
+  },
+  languageSectionDescription: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  languageOptions: {
+    gap: 12,
+  },
+  languageOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  languageOptionText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  languageCheckmark: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  languageNote: {
+    marginTop: 8,
+    paddingHorizontal: 8,
+  },
+  languageNoteText: {
+    fontSize: 13,
+    textAlign: 'center',
+    lineHeight: 18,
+    fontStyle: 'italic',
   },
   
   // Form Sections

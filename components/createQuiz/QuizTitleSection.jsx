@@ -1,3 +1,4 @@
+// components/createQuiz/QuizTitleSection.jsx
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useColorScheme } from 'react-native';
@@ -9,13 +10,41 @@ export default function QuizTitleSection({ title, onTitleChange }) {
   return (
     <View style={[styles.section, isDark && styles.sectionDark]}>
       <Text style={[styles.sectionTitle, isDark && styles.textLight]}>Quiz Title</Text>
-      <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
-        placeholder="Enter quiz title"
-        placeholderTextColor={isDark ? '#aaa' : '#888'}
-        value={title}
-        onChangeText={onTitleChange}
-      />
+      
+      {/* English Title */}
+      <View style={styles.languageGroup}>
+        <Text style={[styles.languageLabel, isDark && styles.textLight]}>
+          🇺🇸 English Title *
+        </Text>
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Enter quiz title in English"
+          placeholderTextColor={isDark ? '#aaa' : '#888'}
+          value={title.en || ''}
+          onChangeText={(text) => onTitleChange({ ...title, en: text })}
+          maxLength={100}
+        />
+      </View>
+
+      {/* Malay Title */}
+      <View style={styles.languageGroup}>
+        <Text style={[styles.languageLabel, isDark && styles.textLight]}>
+          🇲🇾 Malay Title *
+        </Text>
+        <TextInput
+          style={[styles.input, isDark && styles.inputDark]}
+          placeholder="Enter quiz title in Malay"
+          placeholderTextColor={isDark ? '#aaa' : '#888'}
+          value={title.ms || ''}
+          onChangeText={(text) => onTitleChange({ ...title, ms: text })}
+          maxLength={100}
+        />
+      </View>
+
+      {/* Helper text */}
+      <Text style={[styles.helperText, isDark && styles.textLight]}>
+        Both English and Malay titles are required
+      </Text>
     </View>
   );
 }
@@ -40,10 +69,19 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     fontWeight: 'bold', 
     color: '#333', 
-    marginBottom: 12,
+    marginBottom: 16,
   },
   textLight: { 
     color: '#eee', 
+  },
+  languageGroup: {
+    marginBottom: 12,
+  },
+  languageLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
@@ -59,5 +97,11 @@ const styles = StyleSheet.create({
     borderColor: '#444', 
     backgroundColor: '#333', 
     color: '#eee' 
+  },
+  helperText: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+    marginTop: 4,
   },
 });

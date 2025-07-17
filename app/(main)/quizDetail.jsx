@@ -19,20 +19,105 @@ import { Colors } from '@/constants/Colors';
 export default function QuizDetailPage() {
   const { quizId } = useLocalSearchParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, supabaseData } = useAuth();
   const { quiz, loading, error } = useQuiz(quizId);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   
+  // 🔥 NEW: Get user's preferred language
+  const preferredLanguage = supabaseData?.preferred_language || 'en';
+  const isEnglish = preferredLanguage === 'en';
+
+  // 🔥 NEW: Bilingual text content
+  const content = {
+    en: {
+      loadingQuiz: 'Loading quiz...',
+      unableToLoad: 'Unable to load quiz',
+      goBack: 'Go Back',
+      signInRequired: 'Sign In Required',
+      signInMessage: 'Please sign in to take this quiz',
+      cancel: 'Cancel',
+      signIn: 'Sign In',
+      questions: 'Questions',
+      difficulty: 'Difficulty',
+      totalPoints: 'Total Points',
+      category: 'Category:',
+      gradeLevel: 'Grade Level:',
+      whatToExpected: 'What to Expect',
+      quizContains: 'This quiz contains',
+      questionsAbout: 'questions covering various aspects of',
+      theTopic: 'the topic',
+      difficultyLevel: 'The difficulty level is',
+      canEarn: 'You can earn up to',
+      points: 'points',
+      sampleQuestion: 'Sample Question:',
+      createdBy: 'Created by:',
+      quizAdministrator: 'Quiz Administrator',
+      noQuestionsAvailable: 'No Questions Available',
+      startQuiz: 'Start Quiz',
+      easy: 'Easy',
+      medium: 'Medium',
+      hard: 'Hard'
+    },
+    ms: {
+      loadingQuiz: 'Sedang memuatkan kuiz...',
+      unableToLoad: 'Tidak dapat memuatkan kuiz',
+      goBack: 'Kembali',
+      signInRequired: 'Log Masuk Diperlukan',
+      signInMessage: 'Sila log masuk untuk mengambil kuiz ini',
+      cancel: 'Batal',
+      signIn: 'Log Masuk',
+      questions: 'Soalan',
+      difficulty: 'Kesukaran',
+      totalPoints: 'Jumlah Mata',
+      category: 'Kategori:',
+      gradeLevel: 'Tahap Gred:',
+      whatToExpected: 'Apa Yang Dijangkakan',
+      quizContains: 'Kuiz ini mengandungi',
+      questionsAbout: 'soalan yang merangkumi pelbagai aspek',
+      theTopic: 'topik ini',
+      difficultyLevel: 'Tahap kesukaran adalah',
+      canEarn: 'Anda boleh memperoleh sehingga',
+      points: 'mata',
+      sampleQuestion: 'Contoh Soalan:',
+      createdBy: 'Dicipta oleh:',
+      quizAdministrator: 'Pentadbir Kuiz',
+      noQuestionsAvailable: 'Tiada Soalan Tersedia',
+      startQuiz: 'Mula Kuiz',
+      easy: 'Mudah',
+      medium: 'Sederhana',
+      hard: 'Sukar'
+    }
+  };
+
+  const text = content[preferredLanguage] || content.en;
+
+  // 🔥 NEW: Helper functions for bilingual content
+  const getBilingualText = (textObj, fallback = '') => {
+    if (!textObj) return fallback;
+    if (typeof textObj === 'string') return textObj;
+    return textObj[preferredLanguage] || textObj.en || fallback;
+  };
+
+  const getDifficultyText = (difficulty) => {
+    if (!difficulty) return text.medium;
+    const difficultyMap = {
+      Easy: text.easy,
+      Medium: text.medium,
+      Hard: text.hard
+    };
+    return difficultyMap[difficulty] || difficulty;
+  };
+
   const startQuiz = () => {
     if (!user) {
       Alert.alert(
-        'Sign In Required',
-        'Please sign in to take this quiz',
+        text.signInRequired,
+        text.signInMessage,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: text.cancel, style: 'cancel' },
           { 
-            text: 'Sign In', 
+            text: text.signIn, 
             onPress: () => {
               router.push('/');
             }
@@ -49,7 +134,7 @@ export default function QuizDetailPage() {
     return (
       <ThemedView style={styles.center}>
         <ActivityIndicator size="large" color={isDark ? Colors.dark.tint : Colors.light.tint} />
-        <ThemedText style={styles.loadingText}>Loading quiz...</ThemedText>
+        <ThemedText style={styles.loadingText}>{text.loadingQuiz}</ThemedText>
       </ThemedView>
     );
   }
@@ -63,7 +148,7 @@ export default function QuizDetailPage() {
             styles.errorText,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            {error || "Unable to load quiz"}
+            {error || text.unableToLoad}
           </ThemedText>
           <TouchableOpacity 
             style={[
@@ -72,7 +157,7 @@ export default function QuizDetailPage() {
             ]} 
             onPress={() => router.back()}
           >
-            <ThemedText style={styles.buttonText}>Go Back</ThemedText>
+            <ThemedText style={styles.buttonText}>{text.goBack}</ThemedText>
           </TouchableOpacity>
         </View>
       </ThemedView>
@@ -81,17 +166,29 @@ export default function QuizDetailPage() {
   
   const totalPoints = quiz.questions?.reduce((total, q) => total + (q.points || 10), 0) || 0;
   
+  // 🔥 NEW: Get bilingual quiz data
+  const quizTitle = getBilingualText(quiz.title, 'Quiz');
+  const quizDescription = getBilingualText(quiz.description, '');
+  const quizCategory = quiz.category || '';
+  
+  // 🔥 NEW: Get sample question in preferred language
+  const getSampleQuestion = () => {
+    if (!quiz.questions || quiz.questions.length === 0) return '';
+    const firstQuestion = quiz.questions[0];
+    return getBilingualText(firstQuestion.question || firstQuestion.question_text, '');
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <ThemedText type="title" style={styles.title}>{quiz.title}</ThemedText>
+        <ThemedText type="title" style={styles.title}>{quizTitle}</ThemedText>
         
-        {quiz.description && (
+        {quizDescription && (
           <ThemedText style={[
             styles.description,
             { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
           ]}>
-            {quiz.description}
+            {quizDescription}
           </ThemedText>
         )}
         
@@ -111,7 +208,7 @@ export default function QuizDetailPage() {
               styles.infoLabel,
               { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
             ]}>
-              Questions
+              {text.questions}
             </ThemedText>
           </View>
           
@@ -123,13 +220,13 @@ export default function QuizDetailPage() {
               styles.infoValue,
               { color: isDark ? Colors.dark.tint : Colors.light.tint }
             ]}>
-              {quiz.difficulty || 'Medium'}
+              {getDifficultyText(quiz.difficulty)}
             </ThemedText>
             <ThemedText style={[
               styles.infoLabel,
               { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
             ]}>
-              Difficulty
+              {text.difficulty}
             </ThemedText>
           </View>
           
@@ -147,20 +244,20 @@ export default function QuizDetailPage() {
               styles.infoLabel,
               { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
             ]}>
-              Total Points
+              {text.totalPoints}
             </ThemedText>
           </View>
         </View>
         
         {/* Category and additional info */}
         <View style={styles.detailsSection}>
-          {quiz.category && (
+          {quizCategory && (
             <View style={styles.detailRow}>
               <ThemedText style={[
                 styles.detailLabel,
                 { color: isDark ? Colors.dark.text : Colors.light.text }
               ]}>
-                Category:
+                {text.category}
               </ThemedText>
               <View style={[
                 styles.tag,
@@ -170,7 +267,7 @@ export default function QuizDetailPage() {
                   styles.tagText,
                   { color: isDark ? Colors.dark.tint : Colors.light.tint }
                 ]}>
-                  {quiz.category}
+                  {quizCategory}
                 </ThemedText>
               </View>
             </View>
@@ -182,7 +279,7 @@ export default function QuizDetailPage() {
                 styles.detailLabel,
                 { color: isDark ? Colors.dark.text : Colors.light.text }
               ]}>
-                Grade Level:
+                {text.gradeLevel}
               </ThemedText>
               <View style={[
                 styles.tag,
@@ -212,30 +309,30 @@ export default function QuizDetailPage() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            What to Expect
+            {text.whatToExpected}
           </ThemedText>
           <ThemedText style={[
             styles.previewText,
             { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
           ]}>
-            This quiz contains {quiz.questions?.length || 0} questions covering various aspects of {quiz.category || 'the topic'}.
-            {quiz.difficulty && ` The difficulty level is ${quiz.difficulty.toLowerCase()}.`}
-            {totalPoints > 0 && ` You can earn up to ${totalPoints} points.`}
+            {text.quizContains} {quiz.questions?.length || 0} {text.questionsAbout} {quizCategory || text.theTopic}.
+            {quiz.difficulty && ` ${text.difficultyLevel} ${getDifficultyText(quiz.difficulty).toLowerCase()}.`}
+            {totalPoints > 0 && ` ${text.canEarn} ${totalPoints} ${text.points}.`}
           </ThemedText>
           
-          {quiz.questions && quiz.questions.length > 0 && (
+          {quiz.questions && quiz.questions.length > 0 && getSampleQuestion() && (
             <View style={styles.questionPreview}>
               <ThemedText style={[
                 styles.previewLabel,
                 { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
               ]}>
-                Sample Question:
+                {text.sampleQuestion}
               </ThemedText>
               <ThemedText style={[
                 styles.sampleQuestion,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                "{quiz.questions[0].question}"
+                "{getSampleQuestion()}"
               </ThemedText>
             </View>
           )}
@@ -248,20 +345,22 @@ export default function QuizDetailPage() {
               styles.authorLabel,
               { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
             ]}>
-              Created by:
+              {text.createdBy}
             </ThemedText>
             <ThemedText style={[
               styles.authorName,
               { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              Quiz Administrator
+              {text.quizAdministrator}
             </ThemedText>
             {quiz.createdAt && (
               <ThemedText style={[
                 styles.dateText,
                 { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
               ]}>
-                {new Date(quiz.createdAt).toLocaleDateString()}
+                {new Date(quiz.createdAt).toLocaleDateString(
+                  isEnglish ? 'en-US' : 'ms-MY'
+                )}
               </ThemedText>
             )}
           </View>
@@ -274,7 +373,7 @@ export default function QuizDetailPage() {
             { 
               backgroundColor: (!quiz.questions || quiz.questions.length === 0) 
                 ? (isDark ? Colors.dark.backgroundSecondary : '#cccccc')
-                : (isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundTertiary)
+                : (isDark ? Colors.dark.tint : Colors.light.tint)
             }
           ]} 
           onPress={startQuiz}
@@ -285,10 +384,10 @@ export default function QuizDetailPage() {
             { 
               color: (!quiz.questions || quiz.questions.length === 0)
                 ? (isDark ? Colors.dark.textMuted : '#999')
-                : (isDark ? Colors.dark.tint : Colors.light.tint)
+                : '#fff'
             }
           ]}>
-            {(!quiz.questions || quiz.questions.length === 0) ? 'No Questions Available' : 'Start Quiz'}
+            {(!quiz.questions || quiz.questions.length === 0) ? text.noQuestionsAvailable : text.startQuiz}
           </ThemedText>
         </TouchableOpacity>
       </ScrollView>
@@ -439,6 +538,11 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   startButtonText: {
     fontSize: 18,

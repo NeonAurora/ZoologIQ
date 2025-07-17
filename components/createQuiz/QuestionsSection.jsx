@@ -1,4 +1,4 @@
-// /components/createQuiz/QuestionsSection.jsx
+// components/createQuiz/QuestionsSection.jsx
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { useColorScheme } from 'react-native';
@@ -91,14 +91,14 @@ export default function QuestionsSection({ questions, onAddPress, onEditQuestion
           {questions.map((q, idx) => (
             <QuestionCard
               key={`question-${idx}`}
-              // Core question data
-              question={q.question || ''}
-              answer={q.answer || ''}
-              options={q.options || []}
+              // 🔥 UPDATED: Pass bilingual question data correctly
+              questionText={q.question_text || { en: '', ms: '' }}
+              correctAnswer={q.correct_answer || ''}
+              options={q.options || { en: [], ms: [] }}
               points={q.points || 10}
               penalty={q.penalty || 0}
               image={q.image || null}
-              explanation={q.explanation || null}
+              explanation={q.explanation || { en: '', ms: '' }}
               
               // Display properties
               questionNumber={idx + 1}
@@ -108,7 +108,6 @@ export default function QuestionsSection({ questions, onAddPress, onEditQuestion
               onEdit={() => onEditQuestion && onEditQuestion(idx)}
               onDelete={() => {
                 console.log('QuestionsSection onDelete called for index:', idx);
-                console.log('onDeleteQuestion exists in QuestionsSection:', !!onDeleteQuestion);
                 if (onDeleteQuestion) {
                   console.log('About to call onDeleteQuestion with index:', idx);
                   onDeleteQuestion(idx);
@@ -116,10 +115,6 @@ export default function QuestionsSection({ questions, onAddPress, onEditQuestion
                   console.error('onDeleteQuestion is undefined in QuestionsSection!');
                 }
               }}
-
-              
-              // Any additional properties from the question object
-              {...(q.additionalProps || {})}
             />
           ))}
         </ScrollView>
@@ -144,7 +139,7 @@ export default function QuestionsSection({ questions, onAddPress, onEditQuestion
       <Pressable
         style={[
           styles.addButton,
-          { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }
+          { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
         ]}
         onPress={onAddPress}
       >

@@ -14,6 +14,60 @@ export default function ProfileScreen() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Get user's preferred language
+  const preferredLanguage = supabaseData?.preferred_language || 'en';
+  const isEnglish = preferredLanguage === 'en';
+
+  // 🔥 NEW: Bilingual text content
+  const content = {
+    en: {
+      loadingProfile: 'Loading profile...',
+      redirecting: 'Redirecting...',
+      personalInformation: 'Personal Information',
+      preferences: 'Preferences',
+      education: 'Education',
+      location: 'Location',
+      age: 'Age',
+      gender: 'Gender',
+      occupation: 'Occupation',
+      preferredLanguage: 'Preferred Language',
+      english: 'English',
+      malay: 'Malay',
+      status: 'Status',
+      highestLevel: 'Highest Level',
+      cityVillage: 'City/Village',
+      district: 'District',
+      stateProvince: 'State/Province',
+      notSpecified: 'Not specified',
+      editProfile: 'Edit Profile',
+      signOut: 'Sign Out'
+    },
+    ms: {
+      loadingProfile: 'Sedang memuatkan profil...',
+      redirecting: 'Sedang mengalihkan...',
+      personalInformation: 'Maklumat Peribadi',
+      preferences: 'Keutamaan',
+      education: 'Pendidikan',
+      location: 'Lokasi',
+      age: 'Umur',
+      gender: 'Jantina',
+      occupation: 'Pekerjaan',
+      preferredLanguage: 'Bahasa Pilihan',
+      english: 'Bahasa Inggeris',
+      malay: 'Bahasa Melayu',
+      status: 'Status',
+      highestLevel: 'Tahap Tertinggi',
+      cityVillage: 'Bandar/Kampung',
+      district: 'Daerah',
+      stateProvince: 'Negeri',
+      notSpecified: 'Tidak dinyatakan',
+      editProfile: 'Edit Profil',
+      signOut: 'Log Keluar'
+    }
+  };
+
+  const text = content[preferredLanguage] || content.en;
+
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/');
@@ -40,6 +94,14 @@ export default function ProfileScreen() {
     router.push('/editProfile?onboarding=false');
   };
 
+  // 🔥 NEW: Helper function to get language display name
+  const getLanguageDisplayName = (langCode) => {
+    if (langCode === 'ms') {
+      return isEnglish ? 'Malay' : 'Bahasa Melayu';
+    }
+    return isEnglish ? 'English' : 'Bahasa Inggeris';
+  };
+
   if (loading || !user || !supabaseData) {
     return (
       <ThemedView style={styles.loadingContainer}>
@@ -48,7 +110,7 @@ export default function ProfileScreen() {
           color={isDark ? Colors.dark.tint : Colors.light.tint} 
         />
         <ThemedText style={styles.loadingText}>
-          {loading ? 'Loading profile...' : 'Redirecting...'}
+          {loading ? text.loadingProfile : text.redirecting}
         </ThemedText>
       </ThemedView>
     );
@@ -107,30 +169,43 @@ export default function ProfileScreen() {
 
         {/* Information Sections */}
         <InfoSection 
-          title="Personal Information"
+          title={text.personalInformation}
           data={[
-            { label: 'Age', value: supabaseData.age || 'Not specified' },
-            { label: 'Gender', value: supabaseData.gender || 'Not specified' },
-            { label: 'Occupation', value: supabaseData.occupation || 'Not specified' },
+            { label: text.age, value: supabaseData.age || text.notSpecified },
+            { label: text.gender, value: supabaseData.gender || text.notSpecified },
+            { label: text.occupation, value: supabaseData.occupation || text.notSpecified },
+          ]}
+          isDark={isDark}
+        />
+
+        {/* 🔥 NEW: Preferences Section */}
+        <InfoSection 
+          title={text.preferences}
+          data={[
+            { 
+              label: text.preferredLanguage, 
+              value: getLanguageDisplayName(supabaseData.preferred_language || 'en'),
+              isLanguage: true
+            },
           ]}
           isDark={isDark}
         />
 
         <InfoSection 
-          title="Education"
+          title={text.education}
           data={[
-            { label: 'Status', value: supabaseData.education_status || 'Not specified' },
-            { label: 'Highest Level', value: supabaseData.highest_education || 'Not specified' },
+            { label: text.status, value: supabaseData.education_status || text.notSpecified },
+            { label: text.highestLevel, value: supabaseData.highest_education || text.notSpecified },
           ]}
           isDark={isDark}
         />
 
         <InfoSection 
-          title="Location"
+          title={text.location}
           data={[
-            { label: 'City/Village', value: supabaseData.city || 'Not specified' },
-            { label: 'District', value: supabaseData.district || 'Not specified' },
-            { label: 'State/Province', value: supabaseData.state_province || 'Not specified' },
+            { label: text.cityVillage, value: supabaseData.city || text.notSpecified },
+            { label: text.district, value: supabaseData.district || text.notSpecified },
+            { label: text.stateProvince, value: supabaseData.state_province || text.notSpecified },
           ]}
           isDark={isDark}
         />
@@ -146,7 +221,7 @@ export default function ProfileScreen() {
             activeOpacity={0.8}
           >
             <ThemedText style={styles.primaryButtonText}>
-              Edit Profile
+              {text.editProfile}
             </ThemedText>
           </TouchableOpacity>
 
@@ -165,7 +240,7 @@ export default function ProfileScreen() {
               styles.secondaryButtonText,
               { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              Sign Out
+              {text.signOut}
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>
@@ -174,7 +249,7 @@ export default function ProfileScreen() {
   );
 }
 
-// Helper Component for Information Sections
+// 🔥 UPDATED: Helper Component for Information Sections with language highlight
 function InfoSection({ title, data, isDark }) {
   return (
     <ThemedView style={[
@@ -206,12 +281,31 @@ function InfoSection({ title, data, isDark }) {
             ]}>
               {item.label}
             </ThemedText>
-            <ThemedText style={[
-              styles.infoValue,
-              { color: isDark ? Colors.dark.text : Colors.light.text }
-            ]}>
-              {item.value}
-            </ThemedText>
+            
+            {/* 🔥 NEW: Special styling for language preference */}
+            {item.isLanguage ? (
+              <ThemedView style={[
+                styles.languageBadge,
+                { 
+                  backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20',
+                  borderColor: isDark ? Colors.dark.tint : Colors.light.tint
+                }
+              ]}>
+                <ThemedText style={[
+                  styles.languageBadgeText,
+                  { color: isDark ? Colors.dark.tint : Colors.light.tint }
+                ]}>
+                  {item.value}
+                </ThemedText>
+              </ThemedView>
+            ) : (
+              <ThemedText style={[
+                styles.infoValue,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {item.value}
+              </ThemedText>
+            )}
           </ThemedView>
         ))}
       </ThemedView>
@@ -321,6 +415,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
     flex: 1.5,
     textAlign: 'right',
+  },
+  
+  // 🔥 NEW: Language badge styles
+  languageBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  languageBadgeText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   
   // Action Buttons
