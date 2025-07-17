@@ -11,6 +11,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 export default function TapirNavigation({ 
   currentIndex, 
   totalSections, 
+  currentLanguage = 'en', // 🔥 NEW: Language prop
   onNext, 
   onPrevious,
   quizId,
@@ -20,6 +21,34 @@ export default function TapirNavigation({
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const router = useRouter();
+  
+  // 🔥 NEW: Bilingual content
+  const content = {
+    en: {
+      of: 'of',
+      previous: 'Previous',
+      next: 'Next', 
+      finish: 'Finish',
+      takeQuiz: 'Take Quiz',
+      error: 'Error',
+      errorMessage: 'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
+      cancel: 'Cancel',
+      continue: 'Continue'
+    },
+    ms: {
+      of: 'daripada',
+      previous: 'Sebelumnya',
+      next: 'Seterusnya',
+      finish: 'Selesai',
+      takeQuiz: 'Ambil Kuiz',
+      error: 'Ralat',
+      errorMessage: 'Terdapat masalah untuk menyelesaikan pelajaran. Adakah anda ingin meneruskan ke kuiz?',
+      cancel: 'Batal',
+      continue: 'Teruskan'
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
   
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === totalSections - 1;
@@ -46,13 +75,15 @@ export default function TapirNavigation({
       }
     } catch (error) {
       console.error('Error completing lesson:', error);
+      
+      // 🔥 UPDATED: Bilingual alert
       Alert.alert(
-        'Error', 
-        'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
+        text.error,
+        text.errorMessage,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: text.cancel, style: 'cancel' },
           { 
-            text: 'Continue', 
+            text: text.continue, 
             onPress: () => {
               const timestamp = Date.now();
               if (sessionId && quizId) {
@@ -109,6 +140,7 @@ export default function TapirNavigation({
         onPress={onPrevious}
         disabled={isFirst || isNavigating}
         activeOpacity={0.7}
+        accessibilityLabel={text.previous} // 🔥 NEW: Accessibility
       >
         <MaterialIcons 
           name="chevron-left" 
@@ -125,11 +157,12 @@ export default function TapirNavigation({
         <View style={styles.dotsContainer}>
           {renderProgressDots()}
         </View>
+        {/* 🔥 UPDATED: Bilingual progress text */}
         <ThemedText style={[
           styles.progressText,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
-          {currentIndex + 1} of {totalSections}
+          {currentIndex + 1} {text.of} {totalSections}
         </ThemedText>
       </View>
       
@@ -147,6 +180,7 @@ export default function TapirNavigation({
         onPress={isLast ? handleFinish : onNext}
         disabled={isNavigating}
         activeOpacity={0.7}
+        accessibilityLabel={isLast ? text.takeQuiz : text.next} // 🔥 NEW: Accessibility
       >
         {isNavigating ? (
           <MaterialIcons name="hourglass-empty" size={16} color="#999999" />
@@ -172,7 +206,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    backgroundColor: 'white',
   },
   navButton: {
     width: 44,
@@ -181,6 +214,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   buttonDisabled: {
     opacity: 0.5,
@@ -204,5 +242,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
     textAlign: 'center',
+    fontWeight: '500',
   },
 });

@@ -6,187 +6,428 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TapirPopulation() {
+export default function TapirPopulation({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const globalStatus = {
-    total: '< 2,500',
-    trend: 'Declining',
-    iucnStatus: 'Endangered',
-    lastUpdate: '2024'
+  // 🔥 BILINGUAL CONTENT - Based on your provided population data
+  const content = {
+    en: {
+      // Section Headers
+      globalStatusTitle: "Global Population Status",
+      populationTrendsTitle: "Population Trends (2019-2024)",
+      recoveryChallengesTitle: "Recovery Challenges",
+      recoveryRequirementsTitle: "Recovery Requirements",
+      populationProjectionsTitle: "Population Projections",
+      populationMonitoringTitle: "Population Monitoring",
+
+      // Global Status
+      globalStatus: {
+        total: '< 2,500',
+        trend: 'Declining',
+        iucnStatus: 'Endangered',
+        lastUpdate: '2024'
+      },
+
+      // Status Labels
+      statusLabels: {
+        totalPopulation: "Total Population",
+        trend: "Trend",
+        iucnStatus: "IUCN Status",
+        lastUpdate: "Last Update"
+      },
+
+      // Country Data
+      countryData: [
+        {
+          country: 'Malaysia',
+          flag: '🇲🇾',
+          population2019: '~1,300–1,500',
+          population2024: '~1,100–1,300',
+          trend: 'decreasing',
+          trendIcon: 'trending-down',
+          status: 'Stronghold',
+          threats: ['Deforestation', 'Roadkill', 'Development projects'],
+          notes: 'Decline due to deforestation, roadkill, and development projects',
+          color: '#FF5722'
+        },
+        {
+          country: 'Thailand',
+          flag: '🇹🇭',
+          population2019: '~500–700',
+          population2024: '~400–500',
+          trend: 'decreasing',
+          trendIcon: 'trending-down',
+          status: 'Fragmented',
+          threats: ['Habitat fragmentation', 'Small populations'],
+          notes: 'Fragmented populations in protected areas like Kaeng Krachan',
+          color: '#FF7043'
+        },
+        {
+          country: 'Sumatra (Indonesia)',
+          flag: '🇮🇩',
+          population2019: '~500–700',
+          population2024: '~400–500',
+          trend: 'decreasing',
+          trendIcon: 'trending-down',
+          status: 'Critical',
+          threats: ['Palm oil plantations', 'Illegal logging'],
+          notes: 'Habitat loss from palm oil plantations; some protected areas show stable subpopulations',
+          color: '#FF8A65'
+        },
+        {
+          country: 'Myanmar',
+          flag: '🇲🇲',
+          population2019: '<50',
+          population2024: 'Possibly extinct or <30',
+          trend: 'extinct',
+          trendIcon: 'close',
+          status: 'Extinct',
+          threats: ['Complete habitat loss', 'No protection'],
+          notes: 'No recent confirmed sightings; population likely functionally extinct',
+          color: '#BDBDBD'
+        }
+      ],
+
+      // Population Challenges
+      populationChallenges: [
+        {
+          icon: 'trending-down',
+          title: 'Slow Reproduction Rate',
+          description: 'Females breed only every 2-3 years',
+          impact: 'Population recovery is extremely slow',
+          timeframe: '13-14 month gestation'
+        },
+        {
+          icon: 'scatter-plot',
+          title: 'Habitat Fragmentation',
+          description: 'Isolated populations cannot interbreed',
+          impact: 'Genetic diversity loss and inbreeding',
+          timeframe: 'Ongoing since 1990s'
+        },
+        {
+          icon: 'person',
+          title: 'Small Population Size',
+          description: 'Below minimum viable population thresholds',
+          impact: 'Increased extinction risk',
+          timeframe: 'Critical threshold reached'
+        },
+        {
+          icon: 'schedule',
+          title: 'Late Sexual Maturity',
+          description: 'First breeding at 3-5 years old',
+          impact: 'Delayed contribution to population growth',
+          timeframe: 'Generational delays'
+        }
+      ],
+
+      // Recovery Requirements
+      recoveryRequirements: [
+        {
+          requirement: 'Habitat Protection',
+          target: '10,000+ km² connected forest',
+          currentStatus: '~3,000 km² fragmented',
+          priority: 'Critical',
+          timeframe: '10 years'
+        },
+        {
+          requirement: 'Population Corridors',
+          target: '5+ wildlife bridges/underpasses',
+          currentStatus: '2 operational crossings',
+          priority: 'High',
+          timeframe: '5 years'
+        },
+        {
+          requirement: 'Captive Breeding',
+          target: '100+ breeding individuals',
+          currentStatus: '~50 in global programs',
+          priority: 'Moderate',
+          timeframe: '15 years'
+        },
+        {
+          requirement: 'Community Support',
+          target: '80% local awareness',
+          currentStatus: '~30% current awareness',
+          priority: 'High',
+          timeframe: '5 years'
+        }
+      ],
+
+      // Monitoring Methods
+      monitoringMethods: [
+        {
+          method: 'Camera Trapping',
+          locations: 'Taman Negara, Belum-Temengor',
+          data: 'Population density, activity patterns',
+          frequency: 'Continuous monitoring',
+          reliability: 'High'
+        },
+        {
+          method: 'GPS Collar Tracking',
+          locations: 'Research sites in Malaysia',
+          data: 'Movement patterns, territory size',
+          frequency: 'Real-time tracking',
+          reliability: 'Very High'
+        },
+        {
+          method: 'Footprint Surveys',
+          locations: 'Remote forest areas',
+          data: 'Presence/absence, individual identification',
+          frequency: 'Monthly surveys',
+          reliability: 'Moderate'
+        },
+        {
+          method: 'Community Reporting',
+          locations: 'Villages near forests',
+          data: 'Sightings, roadkill incidents',
+          frequency: 'Opportunistic',
+          reliability: 'Variable'
+        }
+      ],
+
+      // Projection Scenarios
+      projectionScenarios: [
+        {
+          scenario: 'Current Trends',
+          projection: 'Continued 3-5% annual decline',
+          population2030: '1,500-1,800',
+          population2040: '800-1,200',
+          outcome: 'Functionally extinct in 2 countries',
+          color: '#F44336'
+        },
+        {
+          scenario: 'Conservation Success',
+          projection: 'Stabilization + 1% annual growth',
+          population2030: '2,200-2,500',
+          population2040: '2,400-2,800',
+          outcome: 'Population recovery begins',
+          color: '#FF9800'
+        },
+        {
+          scenario: 'Optimal Protection',
+          projection: 'Habitat restoration + breeding programs',
+          population2030: '2,800-3,200',
+          population2040: '3,500-4,000',
+          outcome: 'Species secured long-term',
+          color: '#4CAF50'
+        }
+      ],
+
+      // Other Labels
+      primaryThreats: "Primary Threats:",
+      target: "Target:",
+      current: "Current:"
+    },
+
+    ms: {
+      // Section Headers
+      globalStatusTitle: "Status Populasi Global",
+      populationTrendsTitle: "Trend Populasi (2019-2024)",
+      recoveryChallengesTitle: "Cabaran Pemulihan",
+      recoveryRequirementsTitle: "Keperluan Pemulihan",
+      populationProjectionsTitle: "Unjuran Populasi",
+      populationMonitoringTitle: "Pemantauan Populasi",
+
+      // Global Status
+      globalStatus: {
+        total: '< 2,500',
+        trend: 'Menurun',
+        iucnStatus: 'Terancam',
+        lastUpdate: '2024'
+      },
+
+      // Status Labels
+      statusLabels: {
+        totalPopulation: "Jumlah Populasi",
+        trend: "Trend",
+        iucnStatus: "Status IUCN",
+        lastUpdate: "Kemaskini Terakhir"
+      },
+
+      // Country Data (from your provided content)
+      countryData: [
+        {
+          country: 'Malaysia',
+          flag: '🇲🇾',
+          population2019: '~1,300–1,500',
+          population2024: '~1,100–1,300',
+          trend: 'decreasing',
+          trendIcon: 'trending-down',
+          status: 'Kubu Kuat',
+          threats: ['Penebangan hutan', 'Kemalangan jalan raya', 'Projek pembangunan'],
+          notes: 'Penurunan akibat penebangan hutan, kemalangan jalan raya, dan projek pembangunan',
+          color: '#FF5722'
+        },
+        {
+          country: 'Thailand',
+          flag: '🇹🇭',
+          population2019: '~500–700',
+          population2024: '~400–500',
+          trend: 'decreasing',
+          trendIcon: 'trending-down',
+          status: 'Terpisah',
+          threats: ['Fragmentasi habitat', 'Populasi kecil'],
+          notes: 'Populasi terpisah di kawasan perlindungan seperti Kaeng Krachan',
+          color: '#FF7043'
+        },
+        {
+          country: 'Sumatera (Indonesia)',
+          flag: '🇮🇩',
+          population2019: '~500–700',
+          population2024: '~400–500',
+          trend: 'decreasing',
+          trendIcon: 'trending-down',
+          status: 'Kritikal',
+          threats: ['Ladang kelapa sawit', 'Pembalakan haram'],
+          notes: 'Kehilangan habitat akibat ladang kelapa sawit; beberapa kawasan perlindungan stabil',
+          color: '#FF8A65'
+        },
+        {
+          country: 'Myanmar',
+          flag: '🇲🇲',
+          population2019: '<50',
+          population2024: 'Mungkin pupus atau <30',
+          trend: 'extinct',
+          trendIcon: 'close',
+          status: 'Pupus',
+          threats: ['Kehilangan habitat lengkap', 'Tiada perlindungan'],
+          notes: 'Tiada pengesahan penemuan terkini; populasi berkemungkinan pupus secara fungsional',
+          color: '#BDBDBD'
+        }
+      ],
+
+      // Population Challenges
+      populationChallenges: [
+        {
+          icon: 'trending-down',
+          title: 'Kadar Reproduksi Perlahan',
+          description: 'Betina hanya membiak setiap 2-3 tahun',
+          impact: 'Pemulihan populasi amat perlahan',
+          timeframe: 'Kehamilan 13-14 bulan'
+        },
+        {
+          icon: 'scatter-plot',
+          title: 'Fragmentasi Habitat',
+          description: 'Populasi terpencil tidak dapat mengawan silang',
+          impact: 'Kehilangan kepelbagaian genetik dan pembiakan dalam keluarga',
+          timeframe: 'Berterusan sejak 1990an'
+        },
+        {
+          icon: 'person',
+          title: 'Saiz Populasi Kecil',
+          description: 'Di bawah paras minimum populasi berdaya maju',
+          impact: 'Risiko kepupusan meningkat',
+          timeframe: 'Paras kritikal dicapai'
+        },
+        {
+          icon: 'schedule',
+          title: 'Kematangan Seksual Lewat',
+          description: 'Pembiakan pertama pada usia 3-5 tahun',
+          impact: 'Sumbangan tertangguh kepada pertumbuhan populasi',
+          timeframe: 'Kelewatan generasi'
+        }
+      ],
+
+      // Recovery Requirements
+      recoveryRequirements: [
+        {
+          requirement: 'Perlindungan Habitat',
+          target: '10,000+ km² hutan bersambung',
+          currentStatus: '~3,000 km² terfragmentasi',
+          priority: 'Kritikal',
+          timeframe: '10 tahun'
+        },
+        {
+          requirement: 'Koridor Populasi',
+          target: '5+ jejambat/laluan bawah hidupan liar',
+          currentStatus: '2 lintasan beroperasi',
+          priority: 'Tinggi',
+          timeframe: '5 tahun'
+        },
+        {
+          requirement: 'Pembiakan Kurungan',
+          target: '100+ individu pembiakan',
+          currentStatus: '~50 dalam program global',
+          priority: 'Sederhana',
+          timeframe: '15 tahun'
+        },
+        {
+          requirement: 'Sokongan Komuniti',
+          target: '80% kesedaran tempatan',
+          currentStatus: '~30% kesedaran semasa',
+          priority: 'Tinggi',
+          timeframe: '5 tahun'
+        }
+      ],
+
+      // Monitoring Methods
+      monitoringMethods: [
+        {
+          method: 'Perangkap Kamera',
+          locations: 'Taman Negara, Belum-Temengor',
+          data: 'Ketumpatan populasi, corak aktiviti',
+          frequency: 'Pemantauan berterusan',
+          reliability: 'Tinggi'
+        },
+        {
+          method: 'Penjejakan GPS Collar',
+          locations: 'Tapak penyelidikan di Malaysia',
+          data: 'Corak pergerakan, saiz wilayah',
+          frequency: 'Penjejakan masa nyata',
+          reliability: 'Sangat Tinggi'
+        },
+        {
+          method: 'Tinjauan Tapak Kaki',
+          locations: 'Kawasan hutan terpencil',
+          data: 'Kehadiran/ketiadaan, pengenalan individu',
+          frequency: 'Tinjauan bulanan',
+          reliability: 'Sederhana'
+        },
+        {
+          method: 'Laporan Komuniti',
+          locations: 'Kampung berhampiran hutan',
+          data: 'Pemerhatian, insiden kemalangan jalan raya',
+          frequency: 'Secara kebetulan',
+          reliability: 'Berubah-ubah'
+        }
+      ],
+
+      // Projection Scenarios
+      projectionScenarios: [
+        {
+          scenario: 'Trend Semasa',
+          projection: 'Penurunan tahunan 3-5% berterusan',
+          population2030: '1,500-1,800',
+          population2040: '800-1,200',
+          outcome: 'Pupus secara fungsional di 2 negara',
+          color: '#F44336'
+        },
+        {
+          scenario: 'Kejayaan Pemuliharaan',
+          projection: 'Penstabilan + 1% pertumbuhan tahunan',
+          population2030: '2,200-2,500',
+          population2040: '2,400-2,800',
+          outcome: 'Pemulihan populasi bermula',
+          color: '#FF9800'
+        },
+        {
+          scenario: 'Perlindungan Optimum',
+          projection: 'Pemulihan habitat + program pembiakan',
+          population2030: '2,800-3,200',
+          population2040: '3,500-4,000',
+          outcome: 'Spesies terjamin jangka panjang',
+          color: '#4CAF50'
+        }
+      ],
+
+      // Other Labels
+      primaryThreats: "Ancaman Utama:",
+      target: "Sasaran:",
+      current: "Semasa:"
+    }
   };
 
-  const countryData = [
-    {
-      country: 'Malaysia',
-      flag: '🇲🇾',
-      population2019: '1,300-1,500',
-      population2024: '1,100-1,300',
-      trend: 'decreasing',
-      trendIcon: 'trending-down',
-      status: 'Stronghold',
-      threats: ['Deforestation', 'Roadkill', 'Development'],
-      notes: 'Primary habitat remains in protected areas',
-      color: '#FF5722'
-    },
-    {
-      country: 'Thailand',
-      flag: '🇹🇭',
-      population2019: '500-700',
-      population2024: '400-500',
-      trend: 'decreasing',
-      trendIcon: 'trending-down',
-      status: 'Fragmented',
-      threats: ['Habitat fragmentation', 'Small populations'],
-      notes: 'Limited to protected areas like Kaeng Krachan',
-      color: '#FF7043'
-    },
-    {
-      country: 'Sumatra (Indonesia)',
-      flag: '🇮🇩',
-      population2019: '500-700',
-      population2024: '400-500',
-      trend: 'decreasing',
-      trendIcon: 'trending-down',
-      status: 'Critical',
-      threats: ['Palm oil plantations', 'Illegal logging'],
-      notes: 'Some stable subpopulations in protected areas',
-      color: '#FF8A65'
-    },
-    {
-      country: 'Myanmar',
-      flag: '🇲🇲',
-      population2019: '< 50',
-      population2024: 'Possibly extinct',
-      trend: 'extinct',
-      trendIcon: 'close',
-      status: 'Extinct',
-      threats: ['Complete habitat loss', 'No protection'],
-      notes: 'No confirmed sightings in recent years',
-      color: '#BDBDBD'
-    }
-  ];
-
-  const populationChallenges = [
-    {
-      icon: 'trending-down',
-      title: 'Slow Reproduction Rate',
-      description: 'Females breed only every 2-3 years',
-      impact: 'Population recovery is extremely slow',
-      timeframe: '13-14 month gestation'
-    },
-    {
-      icon: 'scatter-plot',
-      title: 'Habitat Fragmentation',
-      description: 'Isolated populations cannot interbreed',
-      impact: 'Genetic diversity loss and inbreeding',
-      timeframe: 'Ongoing since 1990s'
-    },
-    {
-      icon: 'person',
-      title: 'Small Population Size',
-      description: 'Below minimum viable population thresholds',
-      impact: 'Increased extinction risk',
-      timeframe: 'Critical threshold reached'
-    },
-    {
-      icon: 'schedule',
-      title: 'Late Sexual Maturity',
-      description: 'First breeding at 3-5 years old',
-      impact: 'Delayed contribution to population growth',
-      timeframe: 'Generational delays'
-    }
-  ];
-
-  const recoveryRequirements = [
-    {
-      requirement: 'Habitat Protection',
-      target: '10,000+ km² connected forest',
-      currentStatus: '~3,000 km² fragmented',
-      priority: 'Critical',
-      timeframe: '10 years'
-    },
-    {
-      requirement: 'Population Corridors',
-      target: '5+ wildlife bridges/underpasses',
-      currentStatus: '2 operational crossings',
-      priority: 'High',
-      timeframe: '5 years'
-    },
-    {
-      requirement: 'Captive Breeding',
-      target: '100+ breeding individuals',
-      currentStatus: '~50 in global programs',
-      priority: 'Moderate',
-      timeframe: '15 years'
-    },
-    {
-      requirement: 'Community Support',
-      target: '80% local awareness',
-      currentStatus: '~30% current awareness',
-      priority: 'High',
-      timeframe: '5 years'
-    }
-  ];
-
-  const monitoringMethods = [
-    {
-      method: 'Camera Trapping',
-      locations: 'Taman Negara, Belum-Temengor',
-      data: 'Population density, activity patterns',
-      frequency: 'Continuous monitoring',
-      reliability: 'High'
-    },
-    {
-      method: 'GPS Collar Tracking',
-      locations: 'Research sites in Malaysia',
-      data: 'Movement patterns, territory size',
-      frequency: 'Real-time tracking',
-      reliability: 'Very High'
-    },
-    {
-      method: 'Footprint Surveys',
-      locations: 'Remote forest areas',
-      data: 'Presence/absence, individual identification',
-      frequency: 'Monthly surveys',
-      reliability: 'Moderate'
-    },
-    {
-      method: 'Community Reporting',
-      locations: 'Villages near forests',
-      data: 'Sightings, roadkill incidents',
-      frequency: 'Opportunistic',
-      reliability: 'Variable'
-    }
-  ];
-
-  const projectionScenarios = [
-    {
-      scenario: 'Current Trends',
-      projection: 'Continued 3-5% annual decline',
-      population2030: '1,500-1,800',
-      population2040: '800-1,200',
-      outcome: 'Functionally extinct in 2 countries',
-      color: '#F44336'
-    },
-    {
-      scenario: 'Conservation Success',
-      projection: 'Stabilization + 1% annual growth',
-      population2030: '2,200-2,500',
-      population2040: '2,400-2,800',
-      outcome: 'Population recovery begins',
-      color: '#FF9800'
-    },
-    {
-      scenario: 'Optimal Protection',
-      projection: 'Habitat restoration + breeding programs',
-      population2030: '2,800-3,200',
-      population2040: '3,500-4,000',
-      outcome: 'Species secured long-term',
-      color: '#4CAF50'
-    }
-  ];
+  const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -202,7 +443,7 @@ export default function TapirPopulation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Global Population Status
+            {text.globalStatusTitle}
           </ThemedText>
         </View>
         
@@ -219,13 +460,13 @@ export default function TapirPopulation() {
                 styles.statusLabel,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Total Population
+                {text.statusLabels.totalPopulation}
               </ThemedText>
               <ThemedText style={[
                 styles.statusValue,
                 { color: '#F44336' }
               ]}>
-                {globalStatus.total}
+                {text.globalStatus.total}
               </ThemedText>
             </View>
             <View style={styles.statusItem}>
@@ -233,7 +474,7 @@ export default function TapirPopulation() {
                 styles.statusLabel,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Trend
+                {text.statusLabels.trend}
               </ThemedText>
               <View style={styles.trendContainer}>
                 <MaterialIcons name="trending-down" size={16} color="#F44336" />
@@ -241,7 +482,7 @@ export default function TapirPopulation() {
                   styles.statusValue,
                   { color: '#F44336' }
                 ]}>
-                  {globalStatus.trend}
+                  {text.globalStatus.trend}
                 </ThemedText>
               </View>
             </View>
@@ -250,13 +491,13 @@ export default function TapirPopulation() {
                 styles.statusLabel,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                IUCN Status
+                {text.statusLabels.iucnStatus}
               </ThemedText>
               <ThemedText style={[
                 styles.statusValue,
                 { color: '#FF9800' }
               ]}>
-                {globalStatus.iucnStatus}
+                {text.globalStatus.iucnStatus}
               </ThemedText>
             </View>
             <View style={styles.statusItem}>
@@ -264,13 +505,13 @@ export default function TapirPopulation() {
                 styles.statusLabel,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Last Update
+                {text.statusLabels.lastUpdate}
               </ThemedText>
               <ThemedText style={[
                 styles.statusValue,
                 { color: isDark ? Colors.dark.text : Colors.light.text }
               ]}>
-                {globalStatus.lastUpdate}
+                {text.globalStatus.lastUpdate}
               </ThemedText>
             </View>
           </View>
@@ -289,12 +530,12 @@ export default function TapirPopulation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Population Trends (2019-2024)
+            {text.populationTrendsTitle}
           </ThemedText>
         </View>
         
         <View style={styles.countryGrid}>
-          {countryData.map((country, index) => (
+          {text.countryData.map((country, index) => (
             <View key={index} style={[
               styles.countryCard,
               { 
@@ -367,7 +608,7 @@ export default function TapirPopulation() {
                   styles.threatsLabel,
                   { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                 ]}>
-                  Primary Threats:
+                  {text.primaryThreats}
                 </ThemedText>
                 <ThemedText style={[
                   styles.threatsText,
@@ -400,12 +641,12 @@ export default function TapirPopulation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Recovery Challenges
+            {text.recoveryChallengesTitle}
           </ThemedText>
         </View>
         
         <View style={styles.challengesGrid}>
-          {populationChallenges.map((challenge, index) => (
+          {text.populationChallenges.map((challenge, index) => (
             <View key={index} style={[
               styles.challengeCard,
               { 
@@ -468,7 +709,7 @@ export default function TapirPopulation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Recovery Requirements
+            {text.recoveryRequirementsTitle}
           </ThemedText>
         </View>
         
@@ -479,10 +720,10 @@ export default function TapirPopulation() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {recoveryRequirements.map((req, index) => (
+          {text.recoveryRequirements.map((req, index) => (
             <View key={index} style={[
               styles.requirementItem,
-              index < recoveryRequirements.length - 1 && {
+              index < text.recoveryRequirements.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
               }
@@ -496,11 +737,11 @@ export default function TapirPopulation() {
                 </ThemedText>
                 <View style={[
                   styles.priorityBadge,
-                  { backgroundColor: req.priority === 'Critical' ? '#F4433620' : req.priority === 'High' ? '#FF980020' : '#2196F320' }
+                  { backgroundColor: req.priority === 'Critical' || req.priority === 'Kritikal' ? '#F4433620' : req.priority === 'High' || req.priority === 'Tinggi' ? '#FF980020' : '#2196F320' }
                 ]}>
                   <ThemedText style={[
                     styles.priorityText,
-                    { color: req.priority === 'Critical' ? '#F44336' : req.priority === 'High' ? '#FF9800' : '#2196F3' }
+                    { color: req.priority === 'Critical' || req.priority === 'Kritikal' ? '#F44336' : req.priority === 'High' || req.priority === 'Tinggi' ? '#FF9800' : '#2196F3' }
                   ]}>
                     {req.priority}
                   </ThemedText>
@@ -511,19 +752,19 @@ export default function TapirPopulation() {
                   styles.progressLabel,
                   { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                 ]}>
-                  Target: {req.target}
+                  {text.target} {req.target}
                 </ThemedText>
                 <ThemedText style={[
                   styles.progressCurrent,
                   { color: isDark ? Colors.dark.textMuted : '#666' }
                 ]}>
-                  Current: {req.currentStatus}
+                  {text.current} {req.currentStatus}
                 </ThemedText>
                 <ThemedText style={[
                   styles.progressTimeframe,
                   { color: isDark ? Colors.dark.textMuted : '#666' }
                 ]}>
-                  ⏰ Timeline: {req.timeframe}
+                  ⏰ {req.timeframe}
                 </ThemedText>
               </View>
             </View>
@@ -543,12 +784,12 @@ export default function TapirPopulation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Population Projections
+            {text.populationProjectionsTitle}
           </ThemedText>
         </View>
         
         <View style={styles.projectionsGrid}>
-          {projectionScenarios.map((scenario, index) => (
+          {text.projectionScenarios.map((scenario, index) => (
             <View key={index} style={[
               styles.projectionCard,
               { 
@@ -622,12 +863,12 @@ export default function TapirPopulation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Population Monitoring
+            {text.populationMonitoringTitle}
           </ThemedText>
         </View>
         
         <View style={styles.monitoringGrid}>
-          {monitoringMethods.map((method, index) => (
+          {text.monitoringMethods.map((method, index) => (
             <View key={index} style={[
               styles.monitoringCard,
               { 
@@ -662,11 +903,11 @@ export default function TapirPopulation() {
                 </ThemedText>
                 <View style={[
                   styles.reliabilityBadge,
-                  { backgroundColor: method.reliability === 'Very High' ? '#4CAF5020' : method.reliability === 'High' ? '#4CAF5020' : method.reliability === 'Moderate' ? '#FF980020' : '#FF572220' }
+                  { backgroundColor: (method.reliability === 'Very High' || method.reliability === 'Sangat Tinggi') ? '#4CAF5020' : (method.reliability === 'High' || method.reliability === 'Tinggi') ? '#4CAF5020' : (method.reliability === 'Moderate' || method.reliability === 'Sederhana') ? '#FF980020' : '#FF572220' }
                 ]}>
                   <ThemedText style={[
                     styles.reliabilityText,
-                    { color: method.reliability === 'Very High' ? '#4CAF50' : method.reliability === 'High' ? '#4CAF50' : method.reliability === 'Moderate' ? '#FF9800' : '#FF5722' }
+                    { color: (method.reliability === 'Very High' || method.reliability === 'Sangat Tinggi') ? '#4CAF50' : (method.reliability === 'High' || method.reliability === 'Tinggi') ? '#4CAF50' : (method.reliability === 'Moderate' || method.reliability === 'Sederhana') ? '#FF9800' : '#FF5722' }
                   ]}>
                     {method.reliability}
                   </ThemedText>

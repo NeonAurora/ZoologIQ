@@ -6,99 +6,226 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TapirPhysiology() {
+export default function TapirPhysiology({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const physicalFeatures = [
-    {
-      icon: 'palette',
-      title: 'Unique Coloration',
-      description: 'Black front and back with white midsection - serves as disruptive camouflage in moonlit forests',
-      details: 'The "saddle" pattern breaks their outline, confusing predators like tigers'
-    },
-    {
-      icon: 'directions',
-      title: 'Prehensile Snout',
-      description: 'Flexible, trunk-like snout acts like a "fifth limb"',
-      details: 'Can grab leaves, fruits, and underwater plants with precision'
-    },
-    {
-      icon: 'fitness-center',
-      title: 'Largest Tapir Species',
-      description: 'Weighs 250-320 kg, standing 90-110 cm tall',
-      details: 'Robust build suited for navigating dense jungle terrain'
-    },
-    {
-      icon: 'pool',
-      title: 'Semi-Aquatic Design',
-      description: 'Webbed toes and streamlined body for swimming',
-      details: 'Can walk underwater along riverbeds to escape threats'
-    }
-  ];
+  // 🔥 BILINGUAL CONTENT - Based on your provided translations
+  const content = {
+    en: {
+      // Section Headers
+      physicalFeaturesTitle: "Physical Features & Adaptations",
+      survivalAdaptationsTitle: "Survival Adaptations",
+      behaviorIntelligenceTitle: "Behavior & Intelligence",
+      reproductionTitle: "Reproduction & Family Life",
+      amazingFactTitle: "Amazing Fact!",
 
-  const adaptations = [
-    {
-      title: 'Snorkel Nose',
-      icon: 'air',
-      description: 'Flexible snout can act like a snorkel when swimming',
-      benefit: 'Allows foraging in deep water and quick escapes'
-    },
-    {
-      title: 'Night Vision',
-      icon: 'visibility',
-      description: 'Enhanced vision for nocturnal navigation',
-      benefit: 'Uses starlight to navigate dense jungle paths'
-    },
-    {
-      title: 'Silent Movement',
-      icon: 'volume-off',
-      description: 'Soft foot pads for quiet forest travel',
-      benefit: 'Avoids detection by predators and humans'
-    },
-    {
-      title: 'Strong Jaw',
-      icon: 'psychology',
-      description: 'Powerful muscles for processing tough vegetation',
-      benefit: 'Can eat bark, twigs, and fibrous plants'
-    }
-  ];
+      // Physical Features
+      physicalFeatures: [
+        {
+          icon: 'palette',
+          title: 'Unique Coloration',
+          description: 'Black front and back with white midsection - serves as disruptive camouflage in moonlit forests',
+          details: 'The "saddle" pattern breaks their outline, confusing predators like tigers'
+        },
+        {
+          icon: 'directions',
+          title: 'Prehensile Snout',
+          description: 'Flexible, trunk-like snout acts like a "fifth limb"',
+          details: 'Can grab leaves, fruits, and underwater plants with precision'
+        },
+        {
+          icon: 'fitness-center',
+          title: 'Largest Tapir Species',
+          description: 'Weighs 250-320 kg, standing 90-110 cm tall',
+          details: 'Robust build suited for navigating dense jungle terrain'
+        },
+        {
+          icon: 'pool',
+          title: 'Semi-Aquatic Design',
+          description: 'Webbed toes and streamlined body for swimming',
+          details: 'Can walk underwater along riverbeds to escape threats'
+        }
+      ],
 
-  const behaviorTraits = [
-    {
-      icon: 'bedtime',
-      title: 'Strictly Nocturnal',
-      description: 'Active only at night to avoid predators and heat',
-      timeframe: '6 PM - 6 AM'
-    },
-    {
-      icon: 'person',
-      title: 'Solitary Lifestyle',
-      description: 'Adults live alone except during mating season',
-      timeframe: 'Year-round'
-    },
-    {
-      icon: 'pool',
-      title: 'Daily Swimming',
-      description: 'Swims to cool off, escape threats, and forage',
-      timeframe: 'Multiple times daily'
-    },
-    {
-      icon: 'radio',
-      title: 'Whistle Communication',
-      description: 'High-pitched calls inaudible to humans',
-      timeframe: 'During interactions'
-    }
-  ];
+      // Survival Adaptations
+      adaptations: [
+        {
+          title: 'Snorkel Nose',
+          icon: 'air',
+          description: 'Flexible snout can act like a snorkel when swimming',
+          benefit: 'Allows foraging in deep water and quick escapes'
+        },
+        {
+          title: 'Night Vision',
+          icon: 'visibility',
+          description: 'Enhanced vision for nocturnal navigation',
+          benefit: 'Uses starlight to navigate dense jungle paths'
+        },
+        {
+          title: 'Silent Movement',
+          icon: 'volume-off',
+          description: 'Soft foot pads for quiet forest travel',
+          benefit: 'Avoids detection by predators and humans'
+        },
+        {
+          title: 'Strong Jaw',
+          icon: 'psychology',
+          description: 'Powerful muscles for processing tough vegetation',
+          benefit: 'Can eat bark, twigs, and fibrous plants'
+        }
+      ],
 
-  const reproductionFacts = [
-    { label: 'Gestation Period', value: '13-14 months', detail: 'One of the longest among land mammals' },
-    { label: 'Litter Size', value: '1 calf', detail: 'Rarely twins' },
-    { label: 'Birth Weight', value: '4-7 kg', detail: 'Triples in first weeks' },
-    { label: 'Maturity Age', value: '3-5 years', detail: 'Females: 3-4, Males: 4-5' },
-    { label: 'Breeding Interval', value: '2-3 years', detail: 'Slow reproduction rate' },
-    { label: 'Calf Independence', value: '6-8 months', detail: 'Mothers raise alone' }
-  ];
+      // Behavior Traits
+      behaviorTraits: [
+        {
+          icon: 'bedtime',
+          title: 'Strictly Nocturnal',
+          description: 'Active only at night to avoid predators and heat',
+          timeframe: '6 PM - 6 AM'
+        },
+        {
+          icon: 'person',
+          title: 'Solitary Lifestyle',
+          description: 'Adults live alone except during mating season',
+          timeframe: 'Year-round'
+        },
+        {
+          icon: 'pool',
+          title: 'Daily Swimming',
+          description: 'Swims to cool off, escape threats, and forage',
+          timeframe: 'Multiple times daily'
+        },
+        {
+          icon: 'radio',
+          title: 'Whistle Communication',
+          description: 'High-pitched calls inaudible to humans',
+          timeframe: 'During interactions'
+        }
+      ],
+
+      // Reproduction Facts
+      reproductionFacts: [
+        { label: 'Gestation Period', value: '13-14 months', detail: 'One of the longest among land mammals' },
+        { label: 'Litter Size', value: '1 calf', detail: 'Rarely twins' },
+        { label: 'Birth Weight', value: '4-7 kg', detail: 'Triples in first weeks' },
+        { label: 'Maturity Age', value: '3-5 years', detail: 'Females: 3-4, Males: 4-5' },
+        { label: 'Breeding Interval', value: '2-3 years', detail: 'Slow reproduction rate' },
+        { label: 'Calf Independence', value: '6-8 months', detail: 'Mothers raise alone' }
+      ],
+
+      // Fun Fact
+      funFactText: "🏊‍♂️ **Tapir calves can swim within hours of birth** - a crucial survival trait in flood-prone rainforests! Their striped camouflage also fades by 6 months as they develop their distinctive adult coloring."
+    },
+
+    ms: {
+      // Section Headers
+      physicalFeaturesTitle: "Ciri Fizikal & Adaptasi",
+      survivalAdaptationsTitle: "Adaptasi Kemandirian",
+      behaviorIntelligenceTitle: "Tingkah Laku & Kecerdasan",
+      reproductionTitle: "Reproduksi & Kehidupan Keluarga",
+      amazingFactTitle: "Fakta Menakjubkan!",
+
+      // Physical Features
+      physicalFeatures: [
+        {
+          icon: 'palette',
+          title: 'Warna Unik',
+          description: 'Bahagian depan dan belakang hitam dengan bahagian tengah putih - berfungsi sebagai penyamaran yang mengelirukan dalam hutan bermandikan cahaya bulan',
+          details: 'Corak "pelana" memecahkan siluet mereka, mengelirukan pemangsa seperti harimau'
+        },
+        {
+          icon: 'directions',
+          title: 'Muncung Prehensil',
+          description: 'Muncung fleksibel seperti belalai berfungsi seperti "anggota kelima"',
+          details: 'Boleh mencengkam daun, buah, dan tumbuhan air dengan tepat'
+        },
+        {
+          icon: 'fitness-center',
+          title: 'Spesies Tapir Terbesar',
+          description: 'Berat 250-320 kg, tinggi 90-110 cm',
+          details: 'Bentuk badan kukuh sesuai untuk menavigasi kawasan hutan tebal'
+        },
+        {
+          icon: 'pool',
+          title: 'Reka Bentuk Semi-Akuatik',
+          description: 'Jari berselaput dan badan ringkas untuk berenang',
+          details: 'Boleh berjalan di bawah air sepanjang dasar sungai untuk melarikan diri dari ancaman'
+        }
+      ],
+
+      // Survival Adaptations
+      adaptations: [
+        {
+          title: 'Hidung Snorkel',
+          icon: 'air',
+          description: 'Muncung fleksibel boleh berfungsi seperti snorkel ketika berenang',
+          benefit: 'Membolehkan pencarian makanan di air dalam dan melarikan diri dengan cepat'
+        },
+        {
+          title: 'Penglihatan Malam',
+          icon: 'visibility',
+          description: 'Penglihatan dipertingkatkan untuk navigasi nokturnal',
+          benefit: 'Menggunakan cahaya bintang untuk menavigasi laluan hutan tebal'
+        },
+        {
+          title: 'Pergerakan Senyap',
+          icon: 'volume-off',
+          description: 'Tapak kaki lembut untuk perjalanan hutan yang senyap',
+          benefit: 'Mengelakkan pengesanan oleh pemangsa dan manusia'
+        },
+        {
+          title: 'Rahang Kuat',
+          icon: 'psychology',
+          description: 'Otot yang kuat untuk memproses tumbuhan keras',
+          benefit: 'Boleh memakan kulit kayu, ranting, dan tumbuhan berserabut'
+        }
+      ],
+
+      // Behavior Traits
+      behaviorTraits: [
+        {
+          icon: 'bedtime',
+          title: 'Benar-benar Nokturnal',
+          description: 'Aktif hanya pada waktu malam untuk mengelak pemangsa dan haba',
+          timeframe: '6 PM - 6 AM'
+        },
+        {
+          icon: 'person',
+          title: 'Gaya Hidup Bersendirian',
+          description: 'Dewasa hidup bersendirian kecuali semasa musim mengawan',
+          timeframe: 'Sepanjang tahun'
+        },
+        {
+          icon: 'pool',
+          title: 'Berenang Harian',
+          description: 'Berenang untuk menyejukkan badan, melarikan diri dari ancaman, dan mencari makanan',
+          timeframe: 'Beberapa kali sehari'
+        },
+        {
+          icon: 'radio',
+          title: 'Komunikasi Siulan',
+          description: 'Panggilan bernada tinggi yang tidak dapat didengar manusia',
+          timeframe: 'Semasa interaksi'
+        }
+      ],
+
+      // Reproduction Facts
+      reproductionFacts: [
+        { label: 'Tempoh Kehamilan', value: '13-14 bulan', detail: 'Salah satu yang terpanjang di kalangan mamalia darat' },
+        { label: 'Saiz Anak', value: '1 anak', detail: 'Jarang kembar' },
+        { label: 'Berat Lahir', value: '4-7 kg', detail: 'Tiga kali ganda dalam minggu pertama' },
+        { label: 'Umur Kematangan', value: '3-5 tahun', detail: 'Betina: 3-4, Jantan: 4-5' },
+        { label: 'Selang Pembiakan', value: '2-3 tahun', detail: 'Kadar reproduksi perlahan' },
+        { label: 'Kemerdekaan Anak', value: '6-8 bulan', detail: 'Ibu membesarkan sendirian' }
+      ],
+
+      // Fun Fact
+      funFactText: "🏊‍♂️ **Anak tapir boleh berenang dalam beberapa jam selepas dilahirkan** - satu sifat penting untuk bertahan dalam hutan hujan yang sering banjir! Penyamaran belang mereka juga pudar menjelang 6 bulan ketika mereka mengembangkan warna dewasa yang tersendiri."
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -114,12 +241,12 @@ export default function TapirPhysiology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Physical Features & Adaptations
+            {text.physicalFeaturesTitle}
           </ThemedText>
         </View>
         
         <View style={styles.featuresGrid}>
-          {physicalFeatures.map((feature, index) => (
+          {text.physicalFeatures.map((feature, index) => (
             <View key={index} style={[
               styles.featureCard,
               { 
@@ -174,12 +301,12 @@ export default function TapirPhysiology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Survival Adaptations
+            {text.survivalAdaptationsTitle}
           </ThemedText>
         </View>
         
         <View style={styles.adaptationsGrid}>
-          {adaptations.map((adaptation, index) => (
+          {text.adaptations.map((adaptation, index) => (
             <View key={index} style={[
               styles.adaptationCard,
               { 
@@ -239,12 +366,12 @@ export default function TapirPhysiology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Behavior & Intelligence
+            {text.behaviorIntelligenceTitle}
           </ThemedText>
         </View>
         
         <View style={styles.behaviorGrid}>
-          {behaviorTraits.map((trait, index) => (
+          {text.behaviorTraits.map((trait, index) => (
             <View key={index} style={[
               styles.behaviorCard,
               { 
@@ -296,7 +423,7 @@ export default function TapirPhysiology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Reproduction & Family Life
+            {text.reproductionTitle}
           </ThemedText>
         </View>
         
@@ -307,10 +434,10 @@ export default function TapirPhysiology() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {reproductionFacts.map((fact, index) => (
+          {text.reproductionFacts.map((fact, index) => (
             <View key={index} style={[
               styles.reproductionItem,
-              index < reproductionFacts.length - 1 && {
+              index < text.reproductionFacts.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
               }
@@ -359,14 +486,14 @@ export default function TapirPhysiology() {
             styles.funFactTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Amazing Fact!
+            {text.amazingFactTitle}
           </ThemedText>
         </View>
         <ThemedText style={[
           styles.funFactText,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
-          🏊‍♂️ **Tapir calves can swim within hours of birth** - a crucial survival trait in flood-prone rainforests! Their striped camouflage also fades by 6 months as they develop their distinctive adult coloring.
+          {text.funFactText}
         </ThemedText>
       </View>
     </ScrollView>

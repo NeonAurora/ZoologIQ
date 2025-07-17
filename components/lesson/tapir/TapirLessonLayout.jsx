@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
 import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
 import TapirIntroduction from './sections/TapirIntroduction';
 import TapirPhysiology from './sections/TapirPhysiology';
@@ -20,22 +21,74 @@ import TapirFunFacts from './sections/TapirFunFacts';
 import TapirSidebar from './TapirSidebar';
 import TapirNavigation from './TapirNavigation';
 import { ThemedText } from '@/components/ThemedText';
+import LanguageToggle from '@/components/quiz/LanguageToggle';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function TapirLessonLayout({ quizId, sessionId }) {
   const { colorScheme } = useColorScheme();
+  const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
   
-  const sections = [
-    { id: 'introduction', title: 'Introduction & Basics', component: TapirIntroduction },
-    { id: 'physiology', title: 'Physical Features & Behavior', component: TapirPhysiology },
-    { id: 'ecology', title: 'Ecology & Habitat', component: TapirEcology },
-    { id: 'conservation', title: 'Conservation & Threats', component: TapirConservation },
-    { id: 'population', title: 'Population & Global Status', component: TapirPopulation },
-    { id: 'funfacts', title: 'Fun Facts & Cultural Significance', component: TapirFunFacts },
-  ];
+  // 🔥 NEW: Language state management
+  const [currentLanguage, setCurrentLanguage] = useState(
+    supabaseData?.preferred_language || 'en'
+  );
+
+  // Update language when user's preference changes
+  useEffect(() => {
+    if (supabaseData?.preferred_language) {
+      setCurrentLanguage(supabaseData.preferred_language);
+    }
+  }, [supabaseData?.preferred_language]);
+
+  // 🔥 NEW: Bilingual content
+  const content = {
+    en: {
+      lessonName: 'Malayan Tapir',
+      unableToLoadContent: 'Unable to load lesson content',
+      sections: [
+        { id: 'introduction', title: 'Introduction & Basics' },
+        { id: 'physiology', title: 'Physical Features & Behavior' },
+        { id: 'ecology', title: 'Ecology & Habitat' },
+        { id: 'conservation', title: 'Conservation & Threats' },
+        { id: 'population', title: 'Population & Global Status' },
+        { id: 'funfacts', title: 'Fun Facts & Cultural Significance' },
+      ]
+    },
+    ms: {
+      lessonName: 'Tapir Malaya',
+      unableToLoadContent: 'Tidak dapat memuatkan kandungan pelajaran',
+      sections: [
+        { id: 'introduction', title: 'Pengenalan & Asas' },
+        { id: 'physiology', title: 'Ciri Fizikal & Tingkah Laku' },
+        { id: 'ecology', title: 'Ekologi & Habitat' },
+        { id: 'conservation', title: 'Pemuliharaan & Ancaman' },
+        { id: 'population', title: 'Populasi & Status Global' },
+        { id: 'funfacts', title: 'Fakta Menarik & Kepentingan Budaya' },
+      ]
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
+
+  // 🔥 UPDATED: Sections with bilingual titles
+  const sections = text.sections.map((section, index) => {
+    const components = [
+      TapirIntroduction,
+      TapirPhysiology, 
+      TapirEcology,
+      TapirConservation,
+      TapirPopulation,
+      TapirFunFacts
+    ];
+    
+    return {
+      ...section,
+      component: components[index]
+    };
+  });
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [hasStartedLesson, setHasStartedLesson] = useState(false);
@@ -52,6 +105,12 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
 
   const safeSectionIndex = Math.max(0, Math.min(currentSectionIndex, sections.length - 1));
   const currentSection = sections[safeSectionIndex];
+
+  // 🔥 NEW: Language change handler
+  const handleLanguageChange = (newLanguage) => {
+    console.log('🌐 Lesson language changed to:', newLanguage);
+    setCurrentLanguage(newLanguage);
+  };
 
   // Sidebar animation handlers
   const openSidebar = () => {
@@ -245,7 +304,7 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
       ]}>
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>
-            Unable to load lesson content
+            {text.unableToLoadContent}
           </ThemedText>
         </View>
       </View>
@@ -294,15 +353,25 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
                 styles.lessonName,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Malayan Tapir
+                {text.lessonName}
               </ThemedText>
             </View>
+          </View>
+
+          {/* 🔥 NEW: Language Toggle */}
+          <View style={styles.languageToggleContainer}>
+            <LanguageToggle 
+              currentLanguage={currentLanguage}
+              onLanguageChange={handleLanguageChange}
+              size="compact"
+            />
           </View>
         </View>
         
         {/* Lesson Content */}
         <View style={styles.lessonContent}>
-          <CurrentSectionComponent />
+          {/* 🔥 UPDATED: Pass language to section component */}
+          <CurrentSectionComponent currentLanguage={currentLanguage} />
         </View>
       </View>
       
@@ -311,6 +380,7 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
         <TapirNavigation
           currentIndex={safeSectionIndex}
           totalSections={sections.length}
+          currentLanguage={currentLanguage}
           onNext={goToNextSection}
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
@@ -334,6 +404,7 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
             sections={sections}
             currentSection={safeSectionIndex}
             completedSections={completedSections}
+            currentLanguage={currentLanguage}
             onSectionSelect={handleSectionSelect}
             onClose={closeSidebar}
             slideAnim={slideAnim}
@@ -384,6 +455,9 @@ const styles = StyleSheet.create({
   lessonName: {
     fontSize: 12,
     marginTop: 2,
+  },
+  languageToggleContainer: {
+    marginLeft: 12,
   },
   lessonContent: {
     flex: 1,
