@@ -1,220 +1,221 @@
-// components/learning/HistoryCard.jsx
+// components/learning/ConfirmationModal.jsx
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function HistoryCard({ 
-  completedSessions,
+export default function ConfirmationModal({
+  visible,
+  title,
+  message,
   currentLanguage,
-  showHistory,
-  onToggleHistory,
-  formatDate
+  onConfirm,
+  onCancel
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // Bilingual content
+  // 🔥 Bilingual content
   const content = {
     en: {
-      history: 'History',
-      previousSessions: 'Previous sessions',
-      noCompletedSessions: 'No completed sessions yet',
-      points: 'points'
+      cancel: 'Cancel',
+      confirm: 'Confirm',
+      startNew: 'Start New'
     },
     ms: {
-      history: 'Sejarah',
-      previousSessions: 'Sesi sebelumnya',
-      noCompletedSessions: 'Belum ada sesi yang selesai',
-      points: 'mata'
+      cancel: 'Batal',
+      confirm: 'Sahkan', 
+      startNew: 'Mula Baru'
     }
   };
 
   const text = content[currentLanguage] || content.en;
 
-  return (
+  if (!visible) return null;
+
+  const handleConfirm = () => {
+    onConfirm?.();
+    onCancel?.(); // Close modal after confirm
+  };
+
+  const modalContent = (
     <View style={[
-      styles.historyCard,
-      { 
-        backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-        borderLeftColor: '#FF9800',
-      }
+      styles.overlay,
+      { backgroundColor: 'rgba(0, 0, 0, 0.5)' }
     ]}>
-      <TouchableOpacity 
-        style={styles.historyHeader}
-        onPress={onToggleHistory}
-      >
-        <View style={styles.cardHeader}>
-          <View style={[styles.statusIcon, { backgroundColor: '#FF9800' + '20' }]}>
-            <ThemedText style={[styles.statusIconText, { color: '#FF9800' }]}>
-              📊
-            </ThemedText>
+      <View style={[
+        styles.modalContainer,
+        { 
+          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+          borderColor: isDark ? Colors.dark.border : Colors.light.border
+        }
+      ]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={[
+            styles.iconContainer,
+            { backgroundColor: '#FF572220' }
+          ]}>
+            <MaterialIcons 
+              name="warning" 
+              size={24} 
+              color="#FF5722" 
+            />
           </View>
-          <View style={styles.cardHeaderText}>
-            <ThemedText style={[
-              styles.cardTitle,
-              { color: isDark ? Colors.dark.text : Colors.light.text }
-            ]}>
-              {text.history} ({completedSessions.length})
-            </ThemedText>
-            <ThemedText style={[
-              styles.cardDescription,
-              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-            ]}>
-              {text.previousSessions}
-            </ThemedText>
-          </View>
+          <ThemedText style={[
+            styles.title,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {title}
+          </ThemedText>
         </View>
+
+        {/* Message */}
         <ThemedText style={[
-          styles.expandIcon,
+          styles.message,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
-          {showHistory ? '−' : '+'}
+          {message}
         </ThemedText>
-      </TouchableOpacity>
-      
-      {showHistory && (
-        <View style={styles.historyContent}>
-          {completedSessions.length > 0 ? (
-            completedSessions.slice(0, 5).map((session, index) => (
-              <View key={session.id} style={[
-                styles.historyItem,
-                { borderBottomColor: isDark ? Colors.dark.border : Colors.light.border }
-              ]}>
-                <View style={styles.historyItemHeader}>
-                  <ThemedText style={[
-                    styles.historyDate,
-                    { color: isDark ? Colors.dark.text : Colors.light.text }
-                  ]}>
-                    {formatDate(session.created_at, currentLanguage)}
-                  </ThemedText>
-                  <View style={[
-                    styles.improvementBadge,
-                    { 
-                      backgroundColor: session.improvement.improvement >= 0 
-                        ? '#4CAF50' + '20'
-                        : '#FF5722' + '20'
-                    }
-                  ]}>
-                    <ThemedText style={[
-                      styles.improvementText,
-                      { 
-                        color: session.improvement.improvement >= 0 ? '#4CAF50' : '#FF5722'
-                      }
-                    ]}>
-                      {session.improvement.improvement >= 0 ? '+' : ''}{session.improvement.improvementPercentage.toFixed(1)}%
-                    </ThemedText>
-                  </View>
-                </View>
-                <ThemedText style={[
-                  styles.historyScore,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}>
-                  {session.improvement.preScore} → {session.improvement.postScore} {text.points}
-                </ThemedText>
-              </View>
-            ))
-          ) : (
+
+        {/* Buttons */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              styles.cancelButton,
+              { 
+                backgroundColor: isDark ? Colors.dark.backgroundSecondary : '#F5F5F5',
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
+              }
+            ]}
+            onPress={onCancel}
+            activeOpacity={0.8}
+          >
             <ThemedText style={[
-              styles.noHistoryText,
-              { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
+              styles.buttonText,
+              styles.cancelButtonText,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              {text.noCompletedSessions}
+              {text.cancel}
             </ThemedText>
-          )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.button,
+              styles.confirmButton,
+              { backgroundColor: '#FF5722' }
+            ]}
+            onPress={handleConfirm}
+            activeOpacity={0.8}
+          >
+            <ThemedText style={[
+              styles.buttonText,
+              styles.confirmButtonText
+            ]}>
+              {text.startNew}
+            </ThemedText>
+          </TouchableOpacity>
         </View>
-      )}
+      </View>
     </View>
+  );
+
+  if (Platform.OS === 'web') {
+    // For web, render directly without Modal wrapper
+    return modalContent;
+  }
+
+  // For mobile, use React Native Modal
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
+      {modalContent}
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  historyCard: {
-    marginVertical: 12,
-    borderRadius: 16,
-    borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  historyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  statusIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    zIndex: 1000,
   },
-  statusIconText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  modalContainer: {
+    margin: 20,
+    borderRadius: 16,
+    padding: 24,
+    maxWidth: 400,
+    width: '90%',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  cardHeaderText: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  cardDescription: {
-    fontSize: 14,
-    lineHeight: 18,
-  },
-  expandIcon: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    width: 24,
-    textAlign: 'center',
-  },
-  historyContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  historyItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  historyItemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  header: {
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 16,
   },
-  historyDate: {
-    fontSize: 15,
-    fontWeight: '500',
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  improvementBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  message: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
   },
-  improvementText: {
-    fontSize: 13,
+  cancelButton: {
+    borderWidth: 1,
+  },
+  confirmButton: {
+    // Background color set inline
+  },
+  buttonText: {
+    fontSize: 16,
     fontWeight: '600',
   },
-  historyScore: {
-    fontSize: 14,
+  cancelButtonText: {
+    // Color set inline based on theme
   },
-  noHistoryText: {
-    textAlign: 'center',
-    fontSize: 14,
-    paddingVertical: 16,
-    fontStyle: 'italic',
+  confirmButtonText: {
+    color: '#FFFFFF',
   },
 });

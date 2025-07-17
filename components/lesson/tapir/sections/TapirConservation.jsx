@@ -6,181 +6,394 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TapirConservation() {
+export default function TapirConservation({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const threats = [
-    {
-      icon: 'forest',
-      title: 'Habitat Loss',
-      severity: 'Critical',
-      description: 'Forests cleared for palm oil, farming, and development',
-      impact: 'Primary cause of population decline',
-      color: '#F44336'
+  // 🔥 NEW: Bilingual content structure
+  const content = {
+    en: {
+      // Section Headers
+      threatsToSurvival: 'Threats to Survival',
+      conservationStrategies: 'Conservation Strategies',
+      conservationSuccessStories: 'Conservation Success Stories',
+      howYouCanHelp: 'How You Can Help',
+      globalConservationEfforts: 'Global Conservation Efforts',
+      everyActionCounts: 'Every Action Counts',
+      
+      // Threat categories
+      threats: [
+        {
+          icon: 'forest',
+          title: 'Habitat Loss',
+          severity: 'Critical',
+          description: 'Forests cleared for palm oil, farming, and development',
+          impact: 'Primary cause of population decline',
+          color: '#F44336'
+        },
+        {
+          icon: 'directions-car',
+          title: 'Roadkill',
+          severity: 'High',
+          description: 'Nocturnal tapirs hit by vehicles crossing highways',
+          impact: '40% mortality reduction achieved with wildlife crossings',
+          color: '#FF5722'
+        },
+        {
+          icon: 'content-cut',
+          title: 'Forest Fragmentation',
+          severity: 'High',
+          description: 'Small, isolated forests trap populations',
+          impact: 'Reduced genetic diversity and breeding difficulties',
+          color: '#FF9800'
+        },
+        {
+          icon: 'gps-off',
+          title: 'Human Encroachment',
+          severity: 'Moderate',
+          description: 'Development pushes tapirs into settlements',
+          impact: 'Increased human-wildlife conflicts',
+          color: '#FFC107'
+        },
+        {
+          icon: 'thermostat',
+          title: 'Climate Change',
+          severity: 'Emerging',
+          description: 'Droughts and temperature changes affect food sources',
+          impact: 'Long-term habitat suitability concerns',
+          color: '#607D8B'
+        }
+      ],
+      
+      // Conservation strategies
+      strategies: [
+        {
+          icon: 'nature',
+          title: 'Protected Areas',
+          location: 'Malaysia',
+          description: 'Taman Negara, Belum-Temengor Forest Complex',
+          success: 'Stable populations in protected zones'
+        },
+        {
+          icon: 'bridge',
+          title: 'Wildlife Corridors',
+          location: 'Peninsular Malaysia',
+          description: 'Central Forest Spine initiative connecting habitats',
+          success: '40% reduction in roadkill deaths'
+        },
+        {
+          icon: 'security',
+          title: 'Anti-Poaching Patrols',
+          location: 'Malaysia & Indonesia',
+          description: 'PERHILITAN patrols and community monitoring',
+          success: '60% reduction in illegal hunting (Sumatra)'
+        },
+        {
+          icon: 'groups',
+          title: 'Community Engagement',
+          location: 'Regional',
+          description: 'Indigenous Orang Asli partnerships',
+          success: '1,200+ snares removed in Perak (2022)'
+        }
+      ],
+      
+      // Success stories
+      successStories: [
+        {
+          icon: 'trending-up',
+          title: 'Taman Negara Stabilization',
+          achievement: 'Maintained stable tapir population',
+          detail: 'Camera traps show increased activity in protected zones',
+          impact: 'Conservation model',
+          color: '#4CAF50'
+        },
+        {
+          icon: 'directions',
+          title: 'Highway Crossing Solutions',
+          achievement: '40% reduction in roadkill fatalities',
+          detail: 'Wildlife overpasses on East-West Highway',
+          impact: 'Infrastructure blueprint',
+          color: '#2196F3'
+        },
+        {
+          icon: 'campaign',
+          title: 'Indigenous Conservation',
+          achievement: 'Orang Asli communities as guardians',
+          detail: 'Monitoring and protection programs in Johor',
+          impact: 'Community empowerment',
+          color: '#FF9800'
+        },
+        {
+          icon: 'flight-takeoff',
+          title: 'Thailand Reintroduction',
+          achievement: 'Successful captive-bred releases',
+          detail: 'Khao Sok National Park program',
+          impact: 'Population recovery',
+          color: '#9C27B0'
+        }
+      ],
+      
+      // Action items
+      actionItems: [
+        {
+          category: 'Individual Actions',
+          icon: 'person',
+          actions: [
+            'Choose RSPO-certified palm oil products',
+            'Drive carefully in forest areas at night',
+            'Support conservation organizations (WWF, IUCN)',
+            'Share tapir facts on social media',
+            'Visit ethical wildlife sanctuaries'
+          ]
+        },
+        {
+          category: 'Community Level',
+          icon: 'groups',
+          actions: [
+            'Advocate for wildlife crossing infrastructure',
+            'Report illegal logging and poaching',
+            'Support sustainable ecotourism',
+            'Participate in forest restoration programs',
+            'Educate others about tapir conservation'
+          ]
+        },
+        {
+          category: 'Policy & Government',
+          icon: 'account-balance',
+          actions: [
+            'Enforce anti-deforestation laws',
+            'Expand protected area networks',
+            'Fund wildlife corridor construction',
+            'Strengthen penalties for wildlife crimes',
+            'Support international conservation cooperation'
+          ]
+        }
+      ],
+      
+      // Global efforts
+      globalEfforts: [
+        {
+          region: 'Southeast Asia',
+          initiative: 'ASEAN Wildlife Enforcement Network',
+          focus: 'Combat illegal wildlife trade',
+          impact: 'Regional coordination'
+        },
+        {
+          region: 'Europe',
+          initiative: 'Zoo Breeding Programs',
+          focus: 'Genetic diversity maintenance',
+          impact: '90% survival rate in captivity'
+        },
+        {
+          region: 'International',
+          initiative: '#SaveTheTapir Campaign',
+          focus: 'Public awareness',
+          impact: '10M+ people reached'
+        },
+        {
+          region: 'Scientific',
+          initiative: 'GPS Tracking Research',
+          focus: 'Movement and habitat studies',
+          impact: 'Informed conservation planning'
+        }
+      ],
+      
+      // CTA text
+      ctaText: 'The Malayan tapir\'s survival depends on immediate, coordinated conservation efforts. From supporting sustainable products to advocating for wildlife corridors, every action—no matter how small—contributes to saving this ancient species for future generations.'
     },
-    {
-      icon: 'directions-car',
-      title: 'Roadkill',
-      severity: 'High',
-      description: 'Nocturnal tapirs hit by vehicles crossing highways',
-      impact: '40% mortality reduction achieved with wildlife crossings',
-      color: '#FF5722'
-    },
-    {
-      icon: 'content-cut',
-      title: 'Forest Fragmentation',
-      severity: 'High',
-      description: 'Small, isolated forests trap populations',
-      impact: 'Reduced genetic diversity and breeding difficulties',
-      color: '#FF9800'
-    },
-    {
-      icon: 'gps-off',
-      title: 'Human Encroachment',
-      severity: 'Moderate',
-      description: 'Development pushes tapirs into settlements',
-      impact: 'Increased human-wildlife conflicts',
-      color: '#FFC107'
-    },
-    {
-      icon: 'thermostat',
-      title: 'Climate Change',
-      severity: 'Emerging',
-      description: 'Droughts and temperature changes affect food sources',
-      impact: 'Long-term habitat suitability concerns',
-      color: '#607D8B'
+    
+    ms: {
+      // Section Headers
+      threatsToSurvival: 'Ancaman terhadap Kelangsungan Hidup',
+      conservationStrategies: 'Strategi Pemuliharaan',
+      conservationSuccessStories: 'Kisah Kejayaan Pemuliharaan',
+      howYouCanHelp: 'Cara Anda Boleh Membantu',
+      globalConservationEfforts: 'Usaha Pemuliharaan Global',
+      everyActionCounts: 'Setiap Tindakan Penting',
+      
+      // Threat categories
+      threats: [
+        {
+          icon: 'forest',
+          title: 'Kehilangan Habitat',
+          severity: 'Kritikal',
+          description: 'Hutan ditebang untuk kelapa sawit, pertanian, dan pembangunan',
+          impact: 'Punca utama penurunan populasi',
+          color: '#F44336'
+        },
+        {
+          icon: 'directions-car',
+          title: 'Kemalangan Jalan Raya',
+          severity: 'Tinggi',
+          description: 'Tapir nokturnal dilanggar kenderaan ketika melintas jalan raya',
+          impact: '40% pengurangan kematian dicapai dengan lintasan hidupan liar',
+          color: '#FF5722'
+        },
+        {
+          icon: 'content-cut',
+          title: 'Fragmentasi Hutan',
+          severity: 'Tinggi',
+          description: 'Hutan kecil dan terpisah memerangkap populasi',
+          impact: 'Mengurangkan kepelbagaian genetik dan kesukaran pembiakan',
+          color: '#FF9800'
+        },
+        {
+          icon: 'gps-off',
+          title: 'Pencerobohan Manusia',
+          severity: 'Sederhana',
+          description: 'Pembangunan mendorong tapir ke kawasan penempatan',
+          impact: 'Peningkatan konflik manusia-hidupan liar',
+          color: '#FFC107'
+        },
+        {
+          icon: 'thermostat',
+          title: 'Perubahan Iklim',
+          severity: 'Baru Muncul',
+          description: 'Kemarau dan perubahan suhu menjejaskan sumber makanan',
+          impact: 'Kebimbangan kesesuaian habitat jangka panjang',
+          color: '#607D8B'
+        }
+      ],
+      
+      // Conservation strategies
+      strategies: [
+        {
+          icon: 'nature',
+          title: 'Kawasan Perlindungan',
+          location: 'Malaysia',
+          description: 'Taman Negara, Kompleks Hutan Belum-Temengor',
+          success: 'Populasi stabil di zon terlindung'
+        },
+        {
+          icon: 'bridge',
+          title: 'Koridor Hidupan Liar',
+          location: 'Semenanjung Malaysia',
+          description: 'Inisiatif Central Forest Spine yang menghubungkan habitat',
+          success: '40% pengurangan kematian akibat kemalangan jalan raya'
+        },
+        {
+          icon: 'security',
+          title: 'Rondaan Anti-Pemburuan Haram',
+          location: 'Malaysia & Indonesia',
+          description: 'Rondaan PERHILITAN dan pemantauan komuniti',
+          success: '60% pengurangan pemburuan haram (Sumatera)'
+        },
+        {
+          icon: 'groups',
+          title: 'Penglibatan Komuniti',
+          location: 'Serantau',
+          description: 'Kerjasama dengan Orang Asli',
+          success: '1,200+ jerat dikeluarkan di Perak (2022)'
+        }
+      ],
+      
+      // Success stories
+      successStories: [
+        {
+          icon: 'trending-up',
+          title: 'Penstabilan Taman Negara',
+          achievement: 'Mengekalkan populasi tapir yang stabil',
+          detail: 'Perangkap kamera menunjukkan peningkatan aktiviti di zon terlindung',
+          impact: 'Model pemuliharaan',
+          color: '#4CAF50'
+        },
+        {
+          icon: 'directions',
+          title: 'Penyelesaian Lintasan Lebuhraya',
+          achievement: '40% pengurangan kematian akibat kemalangan jalan raya',
+          detail: 'Jejambat hidupan liar di Lebuhraya Timur-Barat',
+          impact: 'Pelan tindakan infrastruktur',
+          color: '#2196F3'
+        },
+        {
+          icon: 'campaign',
+          title: 'Pemuliharaan Orang Asli',
+          achievement: 'Komuniti Orang Asli sebagai penjaga',
+          detail: 'Program pemantauan dan perlindungan di Johor',
+          impact: 'Pemerkasaan komuniti',
+          color: '#FF9800'
+        },
+        {
+          icon: 'flight-takeoff',
+          title: 'Pengenalan Semula Thailand',
+          achievement: 'Pelepasan berjaya dari pembiakan kurungan',
+          detail: 'Program Taman Negara Khao Sok',
+          impact: 'Pemulihan populasi',
+          color: '#9C27B0'
+        }
+      ],
+      
+      // Action items
+      actionItems: [
+        {
+          category: 'Tindakan Individu',
+          icon: 'person',
+          actions: [
+            'Pilih produk minyak sawit bersijil RSPO',
+            'Pandu berhati-hati di kawasan hutan pada waktu malam',
+            'Sokong organisasi pemuliharaan (WWF, IUCN)',
+            'Kongsi fakta tapir di media sosial',
+            'Lawati santuari hidupan liar yang beretika'
+          ]
+        },
+        {
+          category: 'Peringkat Komuniti',
+          icon: 'groups',
+          actions: [
+            'Perjuangkan infrastruktur lintasan hidupan liar',
+            'Laporkan pembalakan haram dan pemburuan haram',
+            'Sokong eko-pelancongan lestari',
+            'Sertai program pemulihan hutan',
+            'Didik orang lain tentang pemuliharaan tapir'
+          ]
+        },
+        {
+          category: 'Dasar & Kerajaan',
+          icon: 'account-balance',
+          actions: [
+            'Kuatkuasakan undang-undang anti-pembalakan',
+            'Kembangkan rangkaian kawasan perlindungan',
+            'Biayai pembinaan koridor hidupan liar',
+            'Perkuatkan hukuman untuk jenayah hidupan liar',
+            'Sokong kerjasama pemuliharaan antarabangsa'
+          ]
+        }
+      ],
+      
+      // Global efforts
+      globalEfforts: [
+        {
+          region: 'Asia Tenggara',
+          initiative: 'Rangkaian Penguatkuasaan Hidupan Liar ASEAN',
+          focus: 'Lawan perdagangan hidupan liar haram',
+          impact: 'Koordinasi serantau'
+        },
+        {
+          region: 'Eropah',
+          initiative: 'Program Pembiakan Zoo',
+          focus: 'Penyelenggaraan kepelbagaian genetik',
+          impact: '90% kadar kelangsungan hidup dalam kurungan'
+        },
+        {
+          region: 'Antarabangsa',
+          initiative: 'Kempen #SaveTheTapir',
+          focus: 'Kesedaran awam',
+          impact: '10J+ orang dijangkau'
+        },
+        {
+          region: 'Saintifik',
+          initiative: 'Penyelidikan Pengesan GPS',
+          focus: 'Kajian pergerakan dan habitat',
+          impact: 'Perancangan pemuliharaan bermaklumat'
+        }
+      ],
+      
+      // CTA text
+      ctaText: 'Kelangsungan hidup tapir Malaya bergantung pada usaha pemuliharaan yang segera dan tersusun. Dari menyokong produk lestari hingga memperjuangkan koridor hidupan liar, setiap tindakan—tidak kira betapa kecilnya—menyumbang untuk menyelamatkan spesies purba ini untuk generasi akan datang.'
     }
-  ];
-
-  const conservationStrategies = [
-    {
-      icon: 'nature',
-      title: 'Protected Areas',
-      location: 'Malaysia',
-      description: 'Taman Negara, Belum-Temengor Forest Complex',
-      success: 'Stable populations in protected zones'
-    },
-    {
-      icon: 'bridge',
-      title: 'Wildlife Corridors',
-      location: 'Peninsular Malaysia',
-      description: 'Central Forest Spine initiative connecting habitats',
-      success: '40% reduction in roadkill deaths'
-    },
-    {
-      icon: 'security',
-      title: 'Anti-Poaching Patrols',
-      location: 'Malaysia & Indonesia',
-      description: 'PERHILITAN patrols and community monitoring',
-      success: '60% reduction in illegal hunting (Sumatra)'
-    },
-    {
-      icon: 'groups',
-      title: 'Community Engagement',
-      location: 'Regional',
-      description: 'Indigenous Orang Asli partnerships',
-      success: '1,200+ snares removed in Perak (2022)'
-    }
-  ];
-
-  const successStories = [
-    {
-      icon: 'trending-up',
-      title: 'Taman Negara Stabilization',
-      achievement: 'Maintained stable tapir population',
-      detail: 'Camera traps show increased activity in protected zones',
-      impact: 'Conservation model',
-      color: '#4CAF50'
-    },
-    {
-      icon: 'directions',
-      title: 'Highway Crossing Solutions',
-      achievement: '40% reduction in roadkill fatalities',
-      detail: 'Wildlife overpasses on East-West Highway',
-      impact: 'Infrastructure blueprint',
-      color: '#2196F3'
-    },
-    {
-      icon: 'campaign',
-      title: 'Indigenous Conservation',
-      achievement: 'Orang Asli communities as guardians',
-      detail: 'Monitoring and protection programs in Johor',
-      impact: 'Community empowerment',
-      color: '#FF9800'
-    },
-    {
-      icon: 'flight-takeoff',
-      title: 'Thailand Reintroduction',
-      achievement: 'Successful captive-bred releases',
-      detail: 'Khao Sok National Park program',
-      impact: 'Population recovery',
-      color: '#9C27B0'
-    }
-  ];
-
-  const actionItems = [
-    {
-      category: 'Individual Actions',
-      icon: 'person',
-      actions: [
-        'Choose RSPO-certified palm oil products',
-        'Drive carefully in forest areas at night',
-        'Support conservation organizations (WWF, IUCN)',
-        'Share tapir facts on social media',
-        'Visit ethical wildlife sanctuaries'
-      ]
-    },
-    {
-      category: 'Community Level',
-      icon: 'groups',
-      actions: [
-        'Advocate for wildlife crossing infrastructure',
-        'Report illegal logging and poaching',
-        'Support sustainable ecotourism',
-        'Participate in forest restoration programs',
-        'Educate others about tapir conservation'
-      ]
-    },
-    {
-      category: 'Policy & Government',
-      icon: 'account-balance',
-      actions: [
-        'Enforce anti-deforestation laws',
-        'Expand protected area networks',
-        'Fund wildlife corridor construction',
-        'Strengthen penalties for wildlife crimes',
-        'Support international conservation cooperation'
-      ]
-    }
-  ];
-
-  const globalEfforts = [
-    {
-      region: 'Southeast Asia',
-      initiative: 'ASEAN Wildlife Enforcement Network',
-      focus: 'Combat illegal wildlife trade',
-      impact: 'Regional coordination'
-    },
-    {
-      region: 'Europe',
-      initiative: 'Zoo Breeding Programs',
-      focus: 'Genetic diversity maintenance',
-      impact: '90% survival rate in captivity'
-    },
-    {
-      region: 'International',
-      initiative: '#SaveTheTapir Campaign',
-      focus: 'Public awareness',
-      impact: '10M+ people reached'
-    },
-    {
-      region: 'Scientific',
-      initiative: 'GPS Tracking Research',
-      focus: 'Movement and habitat studies',
-      impact: 'Informed conservation planning'
-    }
-  ];
+  };
+  const language = currentLanguage; // <- from prop, not supabase
+  const text = content[language] || content.en;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -196,12 +409,12 @@ export default function TapirConservation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Threats to Survival
+            {text.threatsToSurvival}
           </ThemedText>
         </View>
         
         <View style={styles.threatsGrid}>
-          {threats.map((threat, index) => (
+          {text.threats.map((threat, index) => (
             <View key={index} style={[
               styles.threatCard,
               { 
@@ -270,12 +483,12 @@ export default function TapirConservation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Conservation Strategies
+            {text.conservationStrategies}
           </ThemedText>
         </View>
         
         <View style={styles.strategiesGrid}>
-          {conservationStrategies.map((strategy, index) => (
+          {text.strategies.map((strategy, index) => (
             <View key={index} style={[
               styles.strategyCard,
               { 
@@ -343,12 +556,12 @@ export default function TapirConservation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Conservation Success Stories
+            {text.conservationSuccessStories}
           </ThemedText>
         </View>
         
         <View style={styles.successGrid}>
-          {successStories.map((story, index) => (
+          {text.successStories.map((story, index) => (
             <View key={index} style={[
               styles.successCard,
               { 
@@ -416,12 +629,12 @@ export default function TapirConservation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            How You Can Help
+            {text.howYouCanHelp}
           </ThemedText>
         </View>
         
         <View style={styles.actionsGrid}>
-          {actionItems.map((category, index) => (
+          {text.actionItems.map((category, index) => (
             <View key={index} style={[
               styles.actionCard,
               { 
@@ -480,12 +693,12 @@ export default function TapirConservation() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Global Conservation Efforts
+            {text.globalConservationEfforts}
           </ThemedText>
         </View>
         
         <View style={styles.globalGrid}>
-          {globalEfforts.map((effort, index) => (
+          {text.globalEfforts.map((effort, index) => (
             <View key={index} style={[
               styles.globalCard,
               { 
@@ -546,14 +759,14 @@ export default function TapirConservation() {
             styles.ctaTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Every Action Counts
+            {text.everyActionCounts}
           </ThemedText>
         </View>
         <ThemedText style={[
           styles.ctaText,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
-          The Malayan tapir's survival depends on immediate, coordinated conservation efforts. From supporting sustainable products to advocating for wildlife corridors, every action—no matter how small—contributes to saving this ancient species for future generations.
+          {text.ctaText}
         </ThemedText>
       </View>
     </ScrollView>

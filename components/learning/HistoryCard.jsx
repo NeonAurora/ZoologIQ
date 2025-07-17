@@ -15,6 +15,16 @@ export default function HistoryCard({
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 SAFETY CHECKS: Handle all potential undefined values
+  const safeSessions = Array.isArray(completedSessions) ? completedSessions : [];
+  const safeFormatDate = formatDate || ((date) => {
+    try {
+      return new Date(date).toLocaleDateString();
+    } catch {
+      return 'Invalid Date';
+    }
+  });
+
   // Bilingual content
   const content = {
     en: {
@@ -56,7 +66,7 @@ export default function HistoryCard({
               styles.cardTitle,
               { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              {text.history} ({completedSessions.length})
+              {text.history} ({safeSessions.length})
             </ThemedText>
             <ThemedText style={[
               styles.cardDescription,
@@ -76,45 +86,56 @@ export default function HistoryCard({
       
       {showHistory && (
         <View style={styles.historyContent}>
-          {completedSessions.length > 0 ? (
-            completedSessions.slice(0, 5).map((session, index) => (
-              <View key={session.id} style={[
-                styles.historyItem,
-                { borderBottomColor: isDark ? Colors.dark.border : Colors.light.border }
-              ]}>
-                <View style={styles.historyItemHeader}>
-                  <ThemedText style={[
-                    styles.historyDate,
-                    { color: isDark ? Colors.dark.text : Colors.light.text }
-                  ]}>
-                    {formatDate(session.created_at, currentLanguage)}
-                  </ThemedText>
-                  <View style={[
-                    styles.improvementBadge,
-                    { 
-                      backgroundColor: session.improvement.improvement >= 0 
-                        ? '#4CAF50' + '20'
-                        : '#FF5722' + '20'
-                    }
-                  ]}>
+          {safeSessions.length > 0 ? (
+            safeSessions.slice(0, 5).map((session, index) => {
+              // 🔥 SAFETY: Check if session and improvement exist
+              if (!session) return null;
+              
+              const improvement = session.improvement || {};
+              const improvementValue = improvement.improvement ?? 0;
+              const improvementPercentage = improvement.improvementPercentage ?? 0;
+              const preScore = improvement.preScore ?? 0;
+              const postScore = improvement.postScore ?? 0;
+              
+              return (
+                <View key={session.id || index} style={[
+                  styles.historyItem,
+                  { borderBottomColor: isDark ? Colors.dark.border : Colors.light.border }
+                ]}>
+                  <View style={styles.historyItemHeader}>
                     <ThemedText style={[
-                      styles.improvementText,
+                      styles.historyDate,
+                      { color: isDark ? Colors.dark.text : Colors.light.text }
+                    ]}>
+                      {safeFormatDate(session.created_at, currentLanguage)}
+                    </ThemedText>
+                    <View style={[
+                      styles.improvementBadge,
                       { 
-                        color: session.improvement.improvement >= 0 ? '#4CAF50' : '#FF5722'
+                        backgroundColor: improvementValue >= 0 
+                          ? '#4CAF50' + '20'
+                          : '#FF5722' + '20'
                       }
                     ]}>
-                      {session.improvement.improvement >= 0 ? '+' : ''}{session.improvement.improvementPercentage.toFixed(1)}%
-                    </ThemedText>
+                      <ThemedText style={[
+                        styles.improvementText,
+                        { 
+                          color: improvementValue >= 0 ? '#4CAF50' : '#FF5722'
+                        }
+                      ]}>
+                        {improvementValue >= 0 ? '+' : ''}{improvementPercentage.toFixed(1)}%
+                      </ThemedText>
+                    </View>
                   </View>
+                  <ThemedText style={[
+                    styles.historyScore,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]}>
+                    {preScore} → {postScore} {text.points}
+                  </ThemedText>
                 </View>
-                <ThemedText style={[
-                  styles.historyScore,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}>
-                  {session.improvement.preScore} → {session.improvement.postScore} {text.points}
-                </ThemedText>
-              </View>
-            ))
+              );
+            })
           ) : (
             <ThemedText style={[
               styles.noHistoryText,

@@ -6,152 +6,354 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TapirEcology() {
+export default function TapirEcology({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const language = currentLanguage;
 
-  const habitatPreferences = [
-    {
-      icon: 'forest',
-      title: 'Dense Tropical Rainforests',
-      location: 'Peninsular Malaysia, Southern Thailand, Sumatra',
-      description: 'Primary habitat with thick canopy cover',
-      details: 'Requires undisturbed forests with diverse plant species'
-    },
-    {
-      icon: 'water',
-      title: 'Near Water Sources',
-      location: 'Rivers, streams, swamps',
-      description: 'Essential for drinking, cooling, and escape routes',
-      details: 'Daily access to water is critical for survival'
-    },
-    {
-      icon: 'terrain',
-      title: 'Lowland Areas',
-      location: 'Below 1,000m elevation',
-      description: 'Prefers gentle terrain with rich vegetation',
-      details: 'Avoids steep mountainous regions'
-    },
-    {
-      icon: 'nature-people',
-      title: 'Minimal Human Disturbance',
-      location: 'Protected areas and remote forests',
-      description: 'Highly sensitive to human activities',
-      details: 'Abandons areas with regular human presence'
-    }
-  ];
 
-  const ecologicalRoles = [
-    {
-      icon: 'eco',
-      title: 'Seed Dispersal',
-      impact: 'Thousands of seeds daily',
-      description: 'Primary forest regeneration mechanism',
-      benefit: 'Maintains forest diversity across large areas'
-    },
-    {
-      icon: 'balance',
-      title: 'Vegetation Control',
-      impact: 'Natural pruning',
-      description: 'Prevents overgrowth of certain plant species',
-      benefit: 'Promotes diverse plant communities'
-    },
-    {
-      icon: 'route',
-      title: 'Path Creation',
-      impact: 'Forest trail networks',
-      description: 'Creates pathways used by other wildlife',
-      benefit: 'Facilitates animal movement and gene flow'
-    },
-    {
-      icon: 'recycling',
-      title: 'Nutrient Cycling',
-      impact: 'Soil enrichment',
-      description: 'Distributes nutrients through dung',
-      benefit: 'Improves soil fertility across territories'
-    }
-  ];
+  // 🔥 SAFETY: Helper function to ensure we render strings
+  const safeRender = (value, fallback = '') => {
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number') return value.toString();
+    if (value === null || value === undefined) return fallback;
+    // If it's an object, return fallback to prevent rendering error
+    return fallback;
+  };
 
-  const dietDetails = [
-    {
-      category: 'Fruits',
-      percentage: '40%',
-      examples: 'Figs, berries, palm fruits',
-      seasonality: 'Year-round, peak in fruiting seasons',
-      role: 'Primary seed dispersal source'
+  // 🔥 NEW: Bilingual content structure
+  const content = {
+    en: {
+      // Section Headers
+      habitatRequirements: 'Habitat Requirements',
+      ecologicalRolesImpact: 'Ecological Roles & Impact',
+      dietForagingBehavior: 'Diet & Foraging Behavior',
+      keystoneSpeciesImpact: 'Keystone Species Impact',
+      conservationValue: 'Conservation Value',
+      
+      // Habitat Preferences
+      habitatPreferences: [
+        {
+          icon: 'forest',
+          title: 'Dense Tropical Rainforests',
+          location: 'Peninsular Malaysia, Southern Thailand, Sumatra',
+          description: 'Primary habitat with thick canopy cover',
+          details: 'Requires undisturbed forests with diverse plant species'
+        },
+        {
+          icon: 'water',
+          title: 'Near Water Sources',
+          location: 'Rivers, streams, swamps',
+          description: 'Essential for drinking, cooling, and escape routes',
+          details: 'Daily access to water is critical for survival'
+        },
+        {
+          icon: 'terrain',
+          title: 'Lowland Areas',
+          location: 'Below 1,000m elevation',
+          description: 'Prefers gentle terrain with rich vegetation',
+          details: 'Avoids steep mountainous regions'
+        },
+        {
+          icon: 'nature-people',
+          title: 'Minimal Human Disturbance',
+          location: 'Protected areas and remote forests',
+          description: 'Highly sensitive to human activities',
+          details: 'Abandons areas with regular human presence'
+        }
+      ],
+      
+      // Ecological Roles
+      ecologicalRoles: [
+        {
+          icon: 'eco',
+          title: 'Seed Dispersal',
+          impact: 'Thousands of seeds daily',
+          description: 'Primary forest regeneration mechanism',
+          benefit: 'Maintains forest diversity across large areas'
+        },
+        {
+          icon: 'balance',
+          title: 'Vegetation Control',
+          impact: 'Natural pruning',
+          description: 'Prevents overgrowth of certain plant species',
+          benefit: 'Promotes diverse plant communities'
+        },
+        {
+          icon: 'route',
+          title: 'Path Creation',
+          impact: 'Forest trail networks',
+          description: 'Creates pathways used by other wildlife',
+          benefit: 'Facilitates animal movement and gene flow'
+        },
+        {
+          icon: 'recycling',
+          title: 'Nutrient Cycling',
+          impact: 'Soil enrichment',
+          description: 'Distributes nutrients through dung',
+          benefit: 'Improves soil fertility across territories'
+        }
+      ],
+      
+      // Diet Details
+      dietDetails: [
+        {
+          category: 'Fruits',
+          percentage: '40%',
+          examples: 'Figs, berries, palm fruits',
+          seasonality: 'Year-round, peak in fruiting seasons',
+          role: 'Primary seed dispersal source'
+        },
+        {
+          category: 'Leaves',
+          percentage: '30%',
+          examples: 'Young shoots, tender leaves',
+          seasonality: 'Consistent availability',
+          role: 'Main nutrition and fiber source'
+        },
+        {
+          category: 'Aquatic Plants',
+          percentage: '20%',
+          examples: 'Water lilies, algae, marsh plants',
+          seasonality: 'During water foraging',
+          role: 'Minerals and hydration'
+        },
+        {
+          category: 'Bark & Twigs',
+          percentage: '10%',
+          examples: 'Soft bark, young branches',
+          seasonality: 'Dry season supplement',
+          role: 'Emergency food during scarcity'
+        }
+      ],
+      
+      // Keystone Impacts
+      keystoneImpacts: [
+        {
+          species: 'Forest Birds',
+          relationship: 'Indirect benefit',
+          description: 'Tapir-dispersed seeds create diverse fruiting trees',
+          impact: 'Increased food sources and nesting sites'
+        },
+        {
+          species: 'Small Mammals',
+          relationship: 'Trail usage',
+          description: 'Use tapir-created paths for movement',
+          impact: 'Enhanced habitat connectivity'
+        },
+        {
+          species: 'Insects',
+          relationship: 'Habitat diversity',
+          description: 'Benefit from diverse plant communities',
+          impact: 'Higher biodiversity and pollination services'
+        },
+        {
+          species: 'Other Herbivores',
+          relationship: 'Reduced competition',
+          description: 'Tapirs control dominant plant species',
+          impact: 'More food variety for smaller herbivores'
+        }
+      ],
+      
+      // Conservation Value
+      conservationValue: [
+        {
+          aspect: 'Flagship Species',
+          description: 'Charismatic megafauna for conservation marketing',
+          value: 'Attracts funding and public attention to forest protection'
+        },
+        {
+          aspect: 'Umbrella Effect',
+          description: 'Protecting tapirs safeguards entire ecosystems',
+          value: 'Large home ranges encompass habitats of many species'
+        },
+        {
+          aspect: 'Indicator Species',
+          description: 'Tapir presence indicates healthy forest ecosystems',
+          value: 'Early warning system for environmental degradation'
+        },
+        {
+          aspect: 'Cultural Significance',
+          description: 'Important in Malaysian indigenous cultures',
+          value: 'Bridges traditional knowledge with modern conservation'
+        }
+      ],
+      
+      // Additional text
+      keystoneIntro: 'As a keystone species, tapirs have disproportionate effects on their ecosystem relative to their numbers:',
+      examples: 'Examples:'
     },
-    {
-      category: 'Leaves',
-      percentage: '30%',
-      examples: 'Young shoots, tender leaves',
-      seasonality: 'Consistent availability',
-      role: 'Main nutrition and fiber source'
-    },
-    {
-      category: 'Aquatic Plants',
-      percentage: '20%',
-      examples: 'Water lilies, algae, marsh plants',
-      seasonality: 'During water foraging',
-      role: 'Minerals and hydration'
-    },
-    {
-      category: 'Bark & Twigs',
-      percentage: '10%',
-      examples: 'Soft bark, young branches',
-      seasonality: 'Dry season supplement',
-      role: 'Emergency food during scarcity'
+    
+    ms: {
+      // Section Headers
+      habitatRequirements: 'Keperluan Habitat',
+      ecologicalRolesImpact: 'Peranan & Impak Ekologi',
+      dietForagingBehavior: 'Diet & Tingkah Laku Mencari Makanan',
+      keystoneSpeciesImpact: 'Impak Spesies Kunci',
+      conservationValue: 'Nilai Pemuliharaan',
+      
+      // Habitat Preferences
+      habitatPreferences: [
+        {
+          icon: 'forest',
+          title: 'Hutan Hujan Tropika Tebal',
+          location: 'Semenanjung Malaysia, Selatan Thailand, Sumatera',
+          description: 'Habitat utama dengan penutupan kanopi tebal',
+          details: 'Memerlukan hutan tidak terganggu dengan spesies tumbuhan yang pelbagai'
+        },
+        {
+          icon: 'water',
+          title: 'Berhampiran Sumber Air',
+          location: 'Sungai, aliran, paya',
+          description: 'Penting untuk minum, penyejukan, dan laluan melarikan diri',
+          details: 'Akses harian kepada air adalah kritikal untuk kemandirian'
+        },
+        {
+          icon: 'terrain',
+          title: 'Kawasan Tanah Rendah',
+          location: 'Bawah 1,000m ketinggian',
+          description: 'Lebih gemar bentuk muka bumi lembut dengan tumbuhan yang kaya',
+          details: 'Mengelakkan kawasan pergunungan curam'
+        },
+        {
+          icon: 'nature-people',
+          title: 'Gangguan Manusia Minimum',
+          location: 'Kawasan perlindungan dan hutan terpencil',
+          description: 'Sangat sensitif kepada aktiviti manusia',
+          details: 'Meninggalkan kawasan dengan kehadiran manusia yang tetap'
+        }
+      ],
+      
+      // Ecological Roles
+      ecologicalRoles: [
+        {
+          icon: 'eco',
+          title: 'Penyebaran Biji Benih',
+          impact: 'Beribu-ribu biji benih setiap hari',
+          description: 'Mekanisme pertumbuhan semula hutan utama',
+          benefit: 'Mengekalkan kepelbagaian hutan di kawasan yang luas'
+        },
+        {
+          icon: 'balance',
+          title: 'Kawalan Tumbuhan',
+          impact: 'Pemangkasan semula jadi',
+          description: 'Mencegah pertumbuhan berlebihan spesies tumbuhan tertentu',
+          benefit: 'Mempromosikan komuniti tumbuhan yang pelbagai'
+        },
+        {
+          icon: 'route',
+          title: 'Penciptaan Laluan',
+          impact: 'Rangkaian jejak hutan',
+          description: 'Mencipta laluan yang digunakan oleh hidupan liar lain',
+          benefit: 'Memudahkan pergerakan haiwan dan aliran gen'
+        },
+        {
+          icon: 'recycling',
+          title: 'Kitaran Nutrien',
+          impact: 'Pengayaan tanah',
+          description: 'Mengedarkan nutrien melalui najis',
+          benefit: 'Meningkatkan kesuburan tanah di seluruh wilayah'
+        }
+      ],
+      
+      // Diet Details
+      dietDetails: [
+        {
+          category: 'Buah-buahan',
+          percentage: '40%',
+          examples: 'Buah ara, beri, buah kelapa',
+          seasonality: 'Sepanjang tahun, puncak dalam musim berbuah',
+          role: 'Sumber penyebaran biji benih utama'
+        },
+        {
+          category: 'Daun',
+          percentage: '30%',
+          examples: 'Pucuk muda, daun lembut',
+          seasonality: 'Ketersediaan konsisten',
+          role: 'Sumber nutrisi dan serat utama'
+        },
+        {
+          category: 'Tumbuhan Akuatik',
+          percentage: '20%',
+          examples: 'Teratai, alga, tumbuhan paya',
+          seasonality: 'Semasa mencari makanan di air',
+          role: 'Mineral dan hidrasi'
+        },
+        {
+          category: 'Kulit Kayu & Ranting',
+          percentage: '10%',
+          examples: 'Kulit kayu lembut, dahan muda',
+          seasonality: 'Suplemen musim kering',
+          role: 'Makanan kecemasan semasa kekurangan'
+        }
+      ],
+      
+      // Keystone Impacts
+      keystoneImpacts: [
+        {
+          species: 'Burung Hutan',
+          relationship: 'Manfaat tidak langsung',
+          description: 'Biji benih yang disebarkan tapir mencipta pokok berbuah yang pelbagai',
+          impact: 'Peningkatan sumber makanan dan tempat bersarang'
+        },
+        {
+          species: 'Mamalia Kecil',
+          relationship: 'Penggunaan jejak',
+          description: 'Menggunakan laluan yang dicipta tapir untuk pergerakan',
+          impact: 'Meningkatkan sambungan habitat'
+        },
+        {
+          species: 'Serangga',
+          relationship: 'Kepelbagaian habitat',
+          description: 'Mendapat manfaat daripada komuniti tumbuhan yang pelbagai',
+          impact: 'Biodiversiti yang lebih tinggi dan perkhidmatan pendebungaan'
+        },
+        {
+          species: 'Herbivor Lain',
+          relationship: 'Mengurangkan persaingan',
+          description: 'Tapir mengawal spesies tumbuhan dominan',
+          impact: 'Lebih banyak jenis makanan untuk herbivor yang lebih kecil'
+        }
+      ],
+      
+      // Conservation Value
+      conservationValue: [
+        {
+          aspect: 'Spesies Bendera',
+          description: 'Megafauna karismatik untuk pemasaran pemuliharaan',
+          value: 'Menarik pembiayaan dan perhatian awam kepada perlindungan hutan'
+        },
+        {
+          aspect: 'Kesan Payung',
+          description: 'Melindungi tapir melindungi seluruh ekosistem',
+          value: 'Kawasan rumah yang besar merangkumi habitat banyak spesies'
+        },
+        {
+          aspect: 'Spesies Penunjuk',
+          description: 'Kehadiran tapir menunjukkan ekosistem hutan yang sihat',
+          value: 'Sistem amaran awal untuk degradasi alam sekitar'
+        },
+        {
+          aspect: 'Kepentingan Budaya',
+          description: 'Penting dalam budaya orang asli Malaysia',
+          value: 'Menghubungkan pengetahuan tradisional dengan pemuliharaan moden'
+        }
+      ],
+      
+      // Additional text
+      keystoneIntro: 'Sebagai spesies kunci, tapir mempunyai kesan yang tidak seimbang terhadap ekosistem mereka berbanding dengan bilangan mereka:',
+      examples: 'Contoh:'
     }
-  ];
+  };
 
-  const keystone_impacts = [
-    {
-      species: 'Forest Birds',
-      relationship: 'Indirect benefit',
-      description: 'Tapir-dispersed seeds create diverse fruiting trees',
-      impact: 'Increased food sources and nesting sites'
-    },
-    {
-      species: 'Small Mammals',
-      relationship: 'Trail usage',
-      description: 'Use tapir-created paths for movement',
-      impact: 'Enhanced habitat connectivity'
-    },
-    {
-      species: 'Insects',
-      relationship: 'Habitat diversity',
-      description: 'Benefit from diverse plant communities',
-      impact: 'Higher biodiversity and pollination services'
-    },
-    {
-      species: 'Other Herbivores',
-      relationship: 'Reduced competition',
-      description: 'Tapirs control dominant plant species',
-      impact: 'More food variety for smaller herbivores'
-    }
-  ];
+  const text = content[language] || content.en;
 
-  const conservationValue = [
-    {
-      aspect: 'Flagship Species',
-      description: 'Charismatic megafauna for conservation marketing',
-      value: 'Attracts funding and public attention to forest protection'
-    },
-    {
-      aspect: 'Umbrella Effect',
-      description: 'Protecting tapirs safeguards entire ecosystems',
-      value: 'Large home ranges encompass habitats of many species'
-    },
-    {
-      aspect: 'Indicator Species',
-      description: 'Tapir presence indicates healthy forest ecosystems',
-      value: 'Early warning system for environmental degradation'
-    },
-    {
-      aspect: 'Cultural Significance',
-      description: 'Important in Malaysian indigenous cultures',
-      value: 'Bridges traditional knowledge with modern conservation'
-    }
-  ];
+  // 🔥 SAFETY: Ensure arrays exist before mapping
+  const safeHabitatPreferences = Array.isArray(text.habitatPreferences) ? text.habitatPreferences : [];
+  const safeEcologicalRoles = Array.isArray(text.ecologicalRoles) ? text.ecologicalRoles : [];
+  const safeDietDetails = Array.isArray(text.dietDetails) ? text.dietDetails : [];
+  const safeKeystoneImpacts = Array.isArray(text.keystoneImpacts) ? text.keystoneImpacts : [];
+  const safeConservationValue = Array.isArray(text.conservationValue) ? text.conservationValue : [];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -167,12 +369,12 @@ export default function TapirEcology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Habitat Requirements
+            {safeRender(text.habitatRequirements)}
           </ThemedText>
         </View>
         
         <View style={styles.habitatGrid}>
-          {habitatPreferences.map((habitat, index) => (
+          {safeHabitatPreferences.map((habitat, index) => (
             <View key={index} style={[
               styles.habitatCard,
               { 
@@ -196,13 +398,13 @@ export default function TapirEcology() {
                     styles.habitatTitle,
                     { color: isDark ? Colors.dark.text : Colors.light.text }
                   ]}>
-                    {habitat.title}
+                    {safeRender(habitat.title)}
                   </ThemedText>
                   <ThemedText style={[
                     styles.habitatLocation,
                     { color: isDark ? Colors.dark.textMuted : '#666' }
                   ]}>
-                    📍 {habitat.location}
+                    📍 {safeRender(habitat.location)}
                   </ThemedText>
                 </View>
               </View>
@@ -210,7 +412,7 @@ export default function TapirEcology() {
                 styles.habitatDesc,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                {habitat.description}
+                {safeRender(habitat.description)}
               </ThemedText>
               <View style={[
                 styles.habitatDetails,
@@ -220,7 +422,7 @@ export default function TapirEcology() {
                   styles.habitatDetailsText,
                   { color: isDark ? Colors.dark.text : Colors.light.text }
                 ]}>
-                  💡 {habitat.details}
+                  💡 {safeRender(habitat.details)}
                 </ThemedText>
               </View>
             </View>
@@ -240,12 +442,12 @@ export default function TapirEcology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Ecological Roles & Impact
+            {safeRender(text.ecologicalRolesImpact)}
           </ThemedText>
         </View>
         
         <View style={styles.rolesGrid}>
-          {ecologicalRoles.map((role, index) => (
+          {safeEcologicalRoles.map((role, index) => (
             <View key={index} style={[
               styles.roleCard,
               { 
@@ -264,13 +466,13 @@ export default function TapirEcology() {
                     styles.roleTitle,
                     { color: isDark ? Colors.dark.text : Colors.light.text }
                   ]}>
-                    {role.title}
+                    {safeRender(role.title)}
                   </ThemedText>
                   <ThemedText style={[
                     styles.roleImpact,
                     { color: '#4CAF50' }
                   ]}>
-                    {role.impact}
+                    {safeRender(role.impact)}
                   </ThemedText>
                 </View>
               </View>
@@ -278,13 +480,13 @@ export default function TapirEcology() {
                 styles.roleDesc,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                {role.description}
+                {safeRender(role.description)}
               </ThemedText>
               <ThemedText style={[
                 styles.roleBenefit,
                 { color: isDark ? Colors.dark.textMuted : '#666' }
               ]}>
-                ✅ {role.benefit}
+                ✅ {safeRender(role.benefit)}
               </ThemedText>
             </View>
           ))}
@@ -303,7 +505,7 @@ export default function TapirEcology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Diet & Foraging Behavior
+            {safeRender(text.dietForagingBehavior)}
           </ThemedText>
         </View>
         
@@ -314,10 +516,10 @@ export default function TapirEcology() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {dietDetails.map((diet, index) => (
+          {safeDietDetails.map((diet, index) => (
             <View key={index} style={[
               styles.dietItem,
-              index < dietDetails.length - 1 && {
+              index < safeDietDetails.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
               }
@@ -328,7 +530,7 @@ export default function TapirEcology() {
                     styles.dietName,
                     { color: isDark ? Colors.dark.text : Colors.light.text }
                   ]}>
-                    {diet.category}
+                    {safeRender(diet.category)}
                   </ThemedText>
                   <View style={[
                     styles.percentageBadge,
@@ -338,7 +540,7 @@ export default function TapirEcology() {
                       styles.percentageText,
                       { color: isDark ? Colors.dark.tint : Colors.light.tint }
                     ]}>
-                      {diet.percentage}
+                      {safeRender(diet.percentage)}
                     </ThemedText>
                   </View>
                 </View>
@@ -347,19 +549,19 @@ export default function TapirEcology() {
                 styles.dietExamples,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Examples: {diet.examples}
+                {safeRender(text.examples)} {safeRender(diet.examples)}
               </ThemedText>
               <ThemedText style={[
                 styles.dietSeasonality,
                 { color: isDark ? Colors.dark.textMuted : '#666' }
               ]}>
-                🗓️ {diet.seasonality}
+                🗓️ {safeRender(diet.seasonality)}
               </ThemedText>
               <ThemedText style={[
                 styles.dietRole,
                 { color: isDark ? Colors.dark.textMuted : '#666' }
               ]}>
-                🎯 {diet.role}
+                🎯 {safeRender(diet.role)}
               </ThemedText>
             </View>
           ))}
@@ -378,7 +580,7 @@ export default function TapirEcology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Keystone Species Impact
+            {safeRender(text.keystoneSpeciesImpact)}
           </ThemedText>
         </View>
         
@@ -386,11 +588,11 @@ export default function TapirEcology() {
           styles.keystoneIntro,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
-          As a keystone species, tapirs have disproportionate effects on their ecosystem relative to their numbers:
+          {safeRender(text.keystoneIntro)}
         </ThemedText>
         
         <View style={styles.keystoneGrid}>
-          {keystone_impacts.map((impact, index) => (
+          {safeKeystoneImpacts.map((impact, index) => (
             <View key={index} style={[
               styles.keystoneCard,
               { 
@@ -403,7 +605,7 @@ export default function TapirEcology() {
                   styles.keystoneSpecies,
                   { color: isDark ? Colors.dark.text : Colors.light.text }
                 ]}>
-                  {impact.species}
+                  {safeRender(impact.species)}
                 </ThemedText>
                 <View style={[
                   styles.relationshipBadge,
@@ -413,7 +615,7 @@ export default function TapirEcology() {
                     styles.relationshipText,
                     { color: '#2196F3' }
                   ]}>
-                    {impact.relationship}
+                    {safeRender(impact.relationship)}
                   </ThemedText>
                 </View>
               </View>
@@ -421,13 +623,13 @@ export default function TapirEcology() {
                 styles.keystoneDesc,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                {impact.description}
+                {safeRender(impact.description)}
               </ThemedText>
               <ThemedText style={[
                 styles.keystoneImpact,
                 { color: isDark ? Colors.dark.textMuted : '#666' }
               ]}>
-                📈 {impact.impact}
+                📈 {safeRender(impact.impact)}
               </ThemedText>
             </View>
           ))}
@@ -446,12 +648,12 @@ export default function TapirEcology() {
             styles.sectionTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Conservation Value
+            {safeRender(text.conservationValue)}
           </ThemedText>
         </View>
         
         <View style={styles.valueList}>
-          {conservationValue.map((value, index) => (
+          {safeConservationValue.map((value, index) => (
             <View key={index} style={[
               styles.valueItem,
               { 
@@ -463,13 +665,13 @@ export default function TapirEcology() {
                 styles.valueAspect,
                 { color: isDark ? Colors.dark.text : Colors.light.text }
               ]}>
-                🌟 {value.aspect}
+                🌟 {safeRender(value.aspect)}
               </ThemedText>
               <ThemedText style={[
                 styles.valueDesc,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                {value.description}
+                {safeRender(value.description)}
               </ThemedText>
               <View style={[
                 styles.valueBox,
@@ -479,7 +681,7 @@ export default function TapirEcology() {
                   styles.valueText,
                   { color: isDark ? Colors.dark.text : Colors.light.text }
                 ]}>
-                  💰 {value.value}
+                  💰 {safeRender(value.value)}
                 </ThemedText>
               </View>
             </View>

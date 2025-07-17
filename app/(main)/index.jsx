@@ -49,7 +49,7 @@ export default function HomePage() {
       title: isEnglish ? "Malayan Tapir" : "Tapir Malaya",
       icon: "forest",
       color: "#4CAF50",
-      quizId: "4b3d9bbc-bb0f-498e-81e8-be4f10d67afc"
+      quizId: "1f021dc7-3103-4768-97ac-1d9b654b07d1"
     },
     {
       topic: "turtle",
