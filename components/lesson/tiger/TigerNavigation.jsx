@@ -10,7 +10,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TigerNavigation({ 
   currentIndex, 
-  totalSections, 
+  totalSections,
+  currentLanguage = 'en', // 🔥 NEW: Language prop
   onNext, 
   onPrevious,
   quizId,
@@ -23,6 +24,26 @@ export default function TigerNavigation({
   
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === totalSections - 1;
+
+  // 🔥 NEW: Bilingual content
+  const content = {
+    en: {
+      of: 'of',
+      error: 'Error',
+      errorCompletingLesson: 'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
+      cancel: 'Cancel',
+      continue: 'Continue'
+    },
+    ms: {
+      of: 'daripada',
+      error: 'Ralat',
+      errorCompletingLesson: 'Terdapat masalah dalam menyelesaikan pelajaran. Adakah anda ingin meneruskan ke kuiz?',
+      cancel: 'Batal',
+      continue: 'Teruskan'
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
   
   const handleFinish = async () => {
     if (isNavigating) {
@@ -47,12 +68,12 @@ export default function TigerNavigation({
     } catch (error) {
       console.error('Error completing lesson:', error);
       Alert.alert(
-        'Error', 
-        'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
+        text.error,
+        text.errorCompletingLesson,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: text.cancel, style: 'cancel' },
           { 
-            text: 'Continue', 
+            text: text.continue, 
             onPress: () => {
               const timestamp = Date.now();
               if (sessionId && quizId) {
@@ -129,7 +150,7 @@ export default function TigerNavigation({
           styles.progressText,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
         ]}>
-          {currentIndex + 1} of {totalSections}
+          {currentIndex + 1} {text.of} {totalSections}
         </ThemedText>
       </View>
       

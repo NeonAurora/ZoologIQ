@@ -42,7 +42,7 @@ export default function HomePage() {
       title: isEnglish ? "Malayan Tiger" : "Harimau Malaya",
       icon: "pets",
       color: "#FF6B35",
-      quizId: "744a1763-0b1b-4b60-913e-cf74df153746"
+      quizId: "a781f992-0c9e-4928-a438-c574e65f165a"
     },
     {
       topic: "tapir",
@@ -56,7 +56,7 @@ export default function HomePage() {
       title: isEnglish ? "Green Sea Turtle" : "Penyu Agar",
       icon: "waves",
       color: "#2196F3",
-      quizId: "5650b2ca-b502-48ff-b810-d6178ec39a20"
+      quizId: "49da865c-5cb7-4f24-9489-711f634d09a7"
     }
   ];
 

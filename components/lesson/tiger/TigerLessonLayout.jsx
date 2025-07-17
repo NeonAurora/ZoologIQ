@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
 import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
 import TigerIntroduction from './sections/TigerIntroduction';
 import TigerBiology from './sections/TigerBiology';
@@ -18,20 +19,68 @@ import TigerConservation from './sections/TigerConservation';
 import TigerSidebar from './TigerSidebar';
 import TigerNavigation from './TigerNavigation';
 import { ThemedText } from '@/components/ThemedText';
+import LanguageToggle from '@/components/quiz/LanguageToggle';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function TigerLessonLayout({ quizId, sessionId }) {
   const { colorScheme } = useColorScheme();
+  const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
   
-  const sections = [
-    { id: 'introduction', title: 'Introduction', component: TigerIntroduction },
-    { id: 'biology', title: 'Biology & Classification', component: TigerBiology },
-    { id: 'ecology', title: 'Ecology & Behavior', component: TigerEcology },
-    { id: 'conservation', title: 'Conservation', component: TigerConservation },
-  ];
+  // 🔥 NEW: Language state management
+  const [currentLanguage, setCurrentLanguage] = useState(
+    supabaseData?.preferred_language || 'en'
+  );
+
+  // Update language when user's preference changes
+  useEffect(() => {
+    if (supabaseData?.preferred_language) {
+      setCurrentLanguage(supabaseData.preferred_language);
+    }
+  }, [supabaseData?.preferred_language]);
+
+  // 🔥 NEW: Bilingual content
+  const content = {
+    en: {
+      lessonName: 'Malayan Tiger',
+      unableToLoadContent: 'Unable to load lesson content',
+      sections: [
+        { id: 'introduction', title: 'Introduction' },
+        { id: 'biology', title: 'Biology & Classification' },
+        { id: 'ecology', title: 'Ecology & Behavior' },
+        { id: 'conservation', title: 'Conservation' },
+      ]
+    },
+    ms: {
+      lessonName: 'Harimau Malaya',
+      unableToLoadContent: 'Tidak dapat memuatkan kandungan pelajaran',
+      sections: [
+        { id: 'introduction', title: 'Pengenalan' },
+        { id: 'biology', title: 'Biologi & Klasifikasi' },
+        { id: 'ecology', title: 'Ekologi & Tingkah Laku' },
+        { id: 'conservation', title: 'Pemuliharaan' },
+      ]
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
+
+  // 🔥 UPDATED: Sections with bilingual titles
+  const sections = text.sections.map((section, index) => {
+    const components = [
+      TigerIntroduction,
+      TigerBiology,
+      TigerEcology,
+      TigerConservation
+    ];
+    
+    return {
+      ...section,
+      component: components[index]
+    };
+  });
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [hasStartedLesson, setHasStartedLesson] = useState(false);
@@ -40,7 +89,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
   const [isNavigating, setIsNavigating] = useState(false);
   
   // Animation for sidebar
-  const slideAnim = useRef(new Animated.Value(-240)).current; // Start off-screen
+  const slideAnim = useRef(new Animated.Value(-240)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   
   const navigationTimeoutRef = useRef(null);
@@ -48,6 +97,12 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
 
   const safeSectionIndex = Math.max(0, Math.min(currentSectionIndex, sections.length - 1));
   const currentSection = sections[safeSectionIndex];
+
+  // 🔥 NEW: Language change handler
+  const handleLanguageChange = (newLanguage) => {
+    console.log('🌐 Lesson language changed to:', newLanguage);
+    setCurrentLanguage(newLanguage);
+  };
 
   // Sidebar animation handlers
   const openSidebar = () => {
@@ -230,7 +285,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     setIsNavigating(true);
     markCurrentSectionCompleted();
     safeSetCurrentSectionIndex(index);
-    closeSidebar(); // Close sidebar after selection
+    closeSidebar();
   };
 
   if (!currentSection || !currentSection.component) {
@@ -241,7 +296,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
       ]}>
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>
-            Unable to load lesson content
+            {text.unableToLoadContent}
           </ThemedText>
         </View>
       </View>
@@ -290,15 +345,25 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
                 styles.lessonName,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Malayan Tiger
+                {text.lessonName}
               </ThemedText>
             </View>
+          </View>
+
+          {/* 🔥 NEW: Language Toggle */}
+          <View style={styles.languageToggleContainer}>
+            <LanguageToggle 
+              currentLanguage={currentLanguage}
+              onLanguageChange={handleLanguageChange}
+              size="compact"
+            />
           </View>
         </View>
         
         {/* Lesson Content */}
         <View style={styles.lessonContent}>
-          <CurrentSectionComponent />
+          {/* 🔥 UPDATED: Pass language to section component */}
+          <CurrentSectionComponent currentLanguage={currentLanguage} />
         </View>
       </View>
       
@@ -307,6 +372,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
         <TigerNavigation
           currentIndex={safeSectionIndex}
           totalSections={sections.length}
+          currentLanguage={currentLanguage}
           onNext={goToNextSection}
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
@@ -330,6 +396,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
             sections={sections}
             currentSection={safeSectionIndex}
             completedSections={completedSections}
+            currentLanguage={currentLanguage}
             onSectionSelect={handleSectionSelect}
             onClose={closeSidebar}
             slideAnim={slideAnim}
@@ -380,6 +447,9 @@ const styles = StyleSheet.create({
   lessonName: {
     fontSize: 12,
     marginTop: 2,
+  },
+  languageToggleContainer: {
+    marginLeft: 12,
   },
   lessonContent: {
     flex: 1,

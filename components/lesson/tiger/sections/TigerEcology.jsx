@@ -1,3 +1,4 @@
+// components/lesson/tiger/sections/TigerEcology.jsx
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
@@ -5,115 +6,262 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TigerEcology() {
+export default function TigerEcology({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const behaviors = [
-    {
-      icon: 'location-on',
-      title: 'Territory Marking',
-      description: 'Use scent marks and scratches to claim large territories',
-      color: '#FF9800'
-    },
-    {
-      icon: 'home',
-      title: 'Solitary Lifestyle',
-      description: 'Maintain territories of 50–150 km² with minimal overlap',
-      color: '#2196F3'
-    },
-    {
-      icon: 'psychology',
-      title: 'Hunting Intelligence',
-      description: 'Advanced problem-solving and prey call mimicry',
-      color: '#9C27B0'
-    }
-  ];
+  // 🔥 BILINGUAL CONTENT - Structured from Tiger ecology content
+  const content = {
+    en: {
+      // Section Headers
+      behaviorIntelligence: 'Behavior & Intelligence',
+      reproductionFamily: 'Reproduction & Family Life',
+      globalTigerPopulation: 'Global Tiger Population',
+      keyInsights: 'Key Insights',
 
-  const reproductionData = [
-    {
-      icon: 'family-restroom',
-      label: 'Litter Size',
-      value: '2–4 cubs every 2–3 years'
-    },
-    {
-      icon: 'family-restroom',
-      label: 'Maternal Care',
-      value: 'Cubs stay with mother for up to 2 years'
-    },
-    {
-      icon: 'man',
-      label: 'Paternal Role',
-      value: 'Males defend territory but don\'t raise cubs'
-    }
-  ];
+      // Behaviors
+      behaviors: [
+        {
+          icon: 'location-on',
+          title: 'Territorial Markers',
+          description: 'Spray urine and scratch trees to mark their turf—needing 50–150 km² territory',
+          color: '#FF9800'
+        },
+        {
+          icon: 'person',
+          title: 'Solo Travelers',
+          description: 'Adults live alone with minimal territory overlap, avoiding other tigers',
+          color: '#2196F3'
+        },
+        {
+          icon: 'psychology',
+          title: 'Smart Hunters',
+          description: 'Mimic prey calls (e.g., deer sounds) to lure them closer—advanced problem-solving',
+          color: '#9C27B0'
+        },
+        {
+          icon: 'record-voice-over',
+          title: 'Chatty Cats',
+          description: 'Communicate with roars, growls, and "chuffing" sounds (friendly greeting)',
+          color: '#795548'
+        },
+        {
+          icon: 'visibility',
+          title: 'Night Vision Experts',
+          description: '6x better night vision than humans—eyes glow due to reflective layer',
+          color: '#3F51B5'
+        },
+        {
+          icon: 'pool',
+          title: 'Swimming Stars',
+          description: 'Unlike most cats, they love water and swim to cool off or hunt',
+          color: '#00BCD4'
+        }
+      ],
 
-  const globalData = [
-    {
-      country: 'India',
-      population2020: '2,967',
-      population2023: '3,167',
-      trend: 'up',
-      trendText: '↑ 6.7%',
-      threats: 'Habitat loss, human conflict',
-      isHighlighted: false
-    },
-    {
-      country: 'Malaysia',
-      population2020: '<150',
-      population2023: '<150',
-      trend: 'stable',
-      trendText: '↔ Stable',
-      threats: 'Poaching, deforestation',
-      isHighlighted: true
-    },
-    {
-      country: 'Indonesia',
-      population2020: '400',
-      population2023: '350',
-      trend: 'down',
-      trendText: '↓ 12.5%',
-      threats: 'Palm oil deforestation',
-      isHighlighted: false
-    },
-    {
-      country: 'Russia',
-      population2020: '540',
-      population2023: '600',
-      trend: 'up',
-      trendText: '↑ 11%',
-      threats: 'Logging, climate change',
-      isHighlighted: false
-    },
-    {
-      country: 'Bangladesh',
-      population2020: '114',
-      population2023: '106',
-      trend: 'down',
-      trendText: '↓ 7%',
-      threats: 'Sea-level rise',
-      isHighlighted: false
-    }
-  ];
+      // Reproduction Data
+      reproductionData: [
+        {
+          icon: 'family-restroom',
+          label: 'Slow Breeders',
+          value: 'Females give birth to 2–4 cubs every 2–3 years after 3–4 month pregnancy'
+        },
+        {
+          icon: 'woman',
+          label: 'Super Moms',
+          value: 'Cubs stay with mothers for 18–24 months to learn hunting and survival skills'
+        },
+        {
+          icon: 'man',
+          label: 'Dad\'s Role',
+          value: 'Males don\'t raise cubs but protect territory from rival tigers'
+        }
+      ],
 
-  const keyInsights = [
-    {
-      region: 'India',
-      insight: 'Highest density (75% of global tigers)'
+      // Global Population Data
+      globalData: [
+        {
+          country: 'India',
+          population2020: '2,967',
+          population2023: '3,167',
+          trend: 'up',
+          trendText: '↑ 6.7%',
+          threats: 'Habitat loss, human conflict',
+          isHighlighted: false
+        },
+        {
+          country: 'Malaysia',
+          population2020: '<150',
+          population2023: '<150',
+          trend: 'stable',
+          trendText: '↔ Stable',
+          threats: 'Poaching, deforestation',
+          isHighlighted: true
+        },
+        {
+          country: 'Indonesia',
+          population2020: '400',
+          population2023: '350',
+          trend: 'down',
+          trendText: '↓ 12.5%',
+          threats: 'Palm oil deforestation',
+          isHighlighted: false
+        },
+        {
+          country: 'Russia',
+          population2020: '540',
+          population2023: '600',
+          trend: 'up',
+          trendText: '↑ 11%',
+          threats: 'Climate change, logging',
+          isHighlighted: false
+        },
+        {
+          country: 'Bangladesh',
+          population2020: '114',
+          population2023: '106',
+          trend: 'down',
+          trendText: '↓ 7%',
+          threats: 'Sea-level rise (Sundarbans)',
+          isHighlighted: false
+        }
+      ],
+
+      // Key Insights
+      keyInsights: [
+        'India: Highest density (75% of global population) due to strict anti-poaching laws',
+        'Malaysia & Indonesia: Fastest decline due to palm oil expansion—requiring urgent conservation action',
+        'Russia: Recovery success: Siberian tigers rebounded via anti-poaching patrols',
+        'Global Trend: Increased from 3,200 (2010) to ~3,900 (2023) but still 96% below historic 100,000'
+      ]
     },
-    {
-      region: 'Malaysia & Indonesia',
-      insight: 'Critical decline zones requiring urgent action'
-    },
-    {
-      region: 'Russia',
-      insight: 'Notable recovery through enhanced patrol efforts'
-    },
-    {
-      region: 'Global',
-      insight: '3,200 → ~3,900 wild tigers (still 96% below historic levels)'
+    
+    ms: {
+      // Section Headers
+      behaviorIntelligence: 'Tingkah Laku & Kecerdasan',
+      reproductionFamily: 'Pembiakan & Kehidupan Keluarga',
+      globalTigerPopulation: 'Populasi Harimau Global',
+      keyInsights: 'Penemuan Utama',
+
+      // Behaviors
+      behaviors: [
+        {
+          icon: 'location-on',
+          title: 'Penanda Wilayah',
+          description: 'Menyembur air kencing dan mencakar pokok untuk menanda wilayah—memerlukan 50–150 km²',
+          color: '#FF9800'
+        },
+        {
+          icon: 'person',
+          title: 'Pengembara Solo',
+          description: 'Dewasa hidup bersendirian dengan pertindihan wilayah minimum, mengelakkan harimau lain',
+          color: '#2196F3'
+        },
+        {
+          icon: 'psychology',
+          title: 'Pemburu Bijak',
+          description: 'Meniru panggilan mangsa (contohnya bunyi rusa) untuk memikat mendekat—penyelesaian masalah canggih',
+          color: '#9C27B0'
+        },
+        {
+          icon: 'record-voice-over',
+          title: 'Kucing yang Bercakap-cakap',
+          description: 'Berkomunikasi dengan raungan, geraman, dan bunyi "chuffing" (sapaan mesra)',
+          color: '#795548'
+        },
+        {
+          icon: 'visibility',
+          title: 'Pakar Penglihatan Malam',
+          description: 'Penglihatan malam 6x lebih baik daripada manusia—mata bersinar kerana lapisan pemantul',
+          color: '#3F51B5'
+        },
+        {
+          icon: 'pool',
+          title: 'Perenang Handal',
+          description: 'Tidak seperti kebanyakan kucing, mereka suka air dan berenang untuk menyejukkan badan',
+          color: '#00BCD4'
+        }
+      ],
+
+      // Reproduction Data
+      reproductionData: [
+        {
+          icon: 'family-restroom',
+          label: 'Pembiak Lambat',
+          value: 'Betina melahirkan 2–4 anak setiap 2–3 tahun selepas mengandung 3–4 bulan'
+        },
+        {
+          icon: 'woman',
+          label: 'Ibu yang Hebat',
+          value: 'Anak tinggal dengan ibu selama 18–24 bulan untuk belajar memburu dan kemahiran survival'
+        },
+        {
+          icon: 'man',
+          label: 'Peranan Bapa',
+          value: 'Jantan tidak membesarkan anak tetapi melindungi wilayah dari harimau saingan'
+        }
+      ],
+
+      // Global Population Data
+      globalData: [
+        {
+          country: 'India',
+          population2020: '2,967',
+          population2023: '3,167',
+          trend: 'up',
+          trendText: '↑ 6.7%',
+          threats: 'Kehilangan habitat, konflik manusia',
+          isHighlighted: false
+        },
+        {
+          country: 'Malaysia',
+          population2020: '<150',
+          population2023: '<150',
+          trend: 'stable',
+          trendText: '↔ Stabil',
+          threats: 'Pemburuan haram, pembalakan',
+          isHighlighted: true
+        },
+        {
+          country: 'Indonesia',
+          population2020: '400',
+          population2023: '350',
+          trend: 'down',
+          trendText: '↓ 12.5%',
+          threats: 'Pembukaan hutan kelapa sawit',
+          isHighlighted: false
+        },
+        {
+          country: 'Rusia',
+          population2020: '540',
+          population2023: '600',
+          trend: 'up',
+          trendText: '↑ 11%',
+          threats: 'Perubahan iklim, pembalakan',
+          isHighlighted: false
+        },
+        {
+          country: 'Bangladesh',
+          population2020: '114',
+          population2023: '106',
+          trend: 'down',
+          trendText: '↓ 7%',
+          threats: 'Kenaikan paras laut (Sundarbans)',
+          isHighlighted: false
+        }
+      ],
+
+      // Key Insights
+      keyInsights: [
+        'India: Kepadatan tertinggi (75% populasi global) akibat undang-undang anti-pemburuan ketat',
+        'Malaysia & Indonesia: Penurunan tercepat akibat perluasan kelapa sawit—memerlukan tindakan pemuliharaan segera',
+        'Rusia: Kejayaan pemulihan: Harimau Siberia pulih melalui rondaan anti-pemburuan haram',
+        'Trend Global: Meningkat dari 3,200 (2010) kepada ~3,900 (2023) tetapi masih 96% di bawah paras sejarah 100,000'
+      ]
     }
-  ];
+  };
+
+  const text = content[currentLanguage] || content.en;
 
   const getTrendColor = (trend) => {
     switch (trend) {
@@ -143,11 +291,16 @@ export default function TigerEcology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Behavior & Intelligence</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.behaviorIntelligence}
+          </ThemedText>
         </View>
         
         <View style={styles.behaviorsGrid}>
-          {behaviors.map((behavior, index) => (
+          {text.behaviors.map((behavior, index) => (
             <View key={index} style={[
               styles.behaviorCard,
               { 
@@ -167,10 +320,16 @@ export default function TigerEcology() {
               </View>
               
               <View style={styles.behaviorContent}>
-                <ThemedText style={styles.behaviorTitle}>
+                <ThemedText style={[
+                  styles.behaviorTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
                   {behavior.title}
                 </ThemedText>
-                <ThemedText style={styles.behaviorDesc}>
+                <ThemedText style={[
+                  styles.behaviorDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
                   {behavior.description}
                 </ThemedText>
               </View>
@@ -187,7 +346,12 @@ export default function TigerEcology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Reproduction & Family</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.reproductionFamily}
+          </ThemedText>
         </View>
         
         <View style={[
@@ -197,10 +361,10 @@ export default function TigerEcology() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {reproductionData.map((item, index) => (
+          {text.reproductionData.map((item, index) => (
             <View key={index} style={[
               styles.reproductionItem,
-              index !== reproductionData.length - 1 && {
+              index !== text.reproductionData.length - 1 && {
                 borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
                 borderBottomWidth: 1
               }
@@ -211,11 +375,17 @@ export default function TigerEcology() {
                   size={18} 
                   color={isDark ? Colors.dark.textSecondary : Colors.light.textSecondary} 
                 />
-                <ThemedText style={styles.reproductionLabel}>
+                <ThemedText style={[
+                  styles.reproductionLabel,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
                   {item.label}
                 </ThemedText>
               </View>
-              <ThemedText style={styles.reproductionValue}>
+              <ThemedText style={[
+                styles.reproductionValue,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
                 {item.value}
               </ThemedText>
             </View>
@@ -231,11 +401,16 @@ export default function TigerEcology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Global Tiger Population</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.globalTigerPopulation}
+          </ThemedText>
         </View>
         
         <View style={styles.comparisonContainer}>
-          {globalData.map((country, index) => (
+          {text.globalData.map((country, index) => (
             <View key={index} style={[
               styles.countryCard,
               { 
@@ -248,15 +423,19 @@ export default function TigerEcology() {
               }
             ]}>
               <View style={styles.countryHeader}>
-                <ThemedText style={[
-                  styles.countryName,
-                  country.isHighlighted && styles.highlightedCountry
-                ]}>
-                  {country.country}
+                {/* 🔥 FIXED: Separated text and icon */}
+                <View style={styles.countryNameContainer}>
+                  <ThemedText style={[
+                    styles.countryName,
+                    { color: isDark ? Colors.dark.text : Colors.light.text },
+                    country.isHighlighted && styles.highlightedCountry
+                  ]}>
+                    {country.country}
+                  </ThemedText>
                   {country.isHighlighted && (
-                    <MaterialIcons name="star" size={16} color="#FF6B35" style={{ marginLeft: 4 }} />
+                    <MaterialIcons name="star" size={16} color="#FF6B35" style={styles.starIcon} />
                   )}
-                </ThemedText>
+                </View>
                 
                 <View style={[
                   styles.trendBadge,
@@ -278,8 +457,18 @@ export default function TigerEcology() {
               
               <View style={styles.populationData}>
                 <View style={styles.populationItem}>
-                  <ThemedText style={styles.populationLabel}>2020</ThemedText>
-                  <ThemedText style={styles.populationValue}>{country.population2020}</ThemedText>
+                  <ThemedText style={[
+                    styles.populationLabel,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]}>
+                    2020
+                  </ThemedText>
+                  <ThemedText style={[
+                    styles.populationValue,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    {country.population2020}
+                  </ThemedText>
                 </View>
                 
                 <MaterialIcons 
@@ -289,8 +478,18 @@ export default function TigerEcology() {
                 />
                 
                 <View style={styles.populationItem}>
-                  <ThemedText style={styles.populationLabel}>2023</ThemedText>
-                  <ThemedText style={styles.populationValue}>{country.population2023}</ThemedText>
+                  <ThemedText style={[
+                    styles.populationLabel,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]}>
+                    2023
+                  </ThemedText>
+                  <ThemedText style={[
+                    styles.populationValue,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    {country.population2023}
+                  </ThemedText>
                 </View>
               </View>
               
@@ -300,14 +499,19 @@ export default function TigerEcology() {
                   size={14} 
                   color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
                 />
-                <ThemedText style={styles.threatsText}>{country.threats}</ThemedText>
+                <ThemedText style={[
+                  styles.threatsText,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {country.threats}
+                </ThemedText>
               </View>
             </View>
           ))}
         </View>
       </View>
 
-      {/* Key Insights */}
+      {/* Key Insights - 🔥 FIXED: Simplified to plain strings */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons 
@@ -315,7 +519,12 @@ export default function TigerEcology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Key Insights</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.keyInsights}
+          </ThemedText>
         </View>
         
         <View style={[
@@ -325,14 +534,17 @@ export default function TigerEcology() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {keyInsights.map((insight, index) => (
+          {text.keyInsights.map((insight, index) => (
             <View key={index} style={styles.insightItem}>
               <View style={[
                 styles.insightBullet,
                 { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
               ]} />
-              <ThemedText style={styles.insightText}>
-                <ThemedText style={styles.insightRegion}>{insight.region}:</ThemedText> {insight.insight}
+              <ThemedText style={[
+                styles.insightText,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {insight}
               </ThemedText>
             </View>
           ))}
@@ -401,7 +613,6 @@ const styles = StyleSheet.create({
   behaviorDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
   },
 
   // Reproduction Card
@@ -453,13 +664,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  countryNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   countryName: {
     fontSize: 16,
     fontWeight: '600',
-    flex: 1,
   },
   highlightedCountry: {
     color: '#FF6B35',
+  },
+  starIcon: {
+    marginLeft: 6,
   },
   trendBadge: {
     flexDirection: 'row',
@@ -485,7 +703,6 @@ const styles = StyleSheet.create({
   },
   populationLabel: {
     fontSize: 12,
-    opacity: 0.7,
     marginBottom: 2,
   },
   populationValue: {
@@ -499,7 +716,6 @@ const styles = StyleSheet.create({
   },
   threatsText: {
     fontSize: 13,
-    opacity: 0.8,
     flex: 1,
   },
 
@@ -530,8 +746,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     flex: 1,
-  },
-  insightRegion: {
-    fontWeight: '600',
   },
 });

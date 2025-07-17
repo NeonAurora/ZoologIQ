@@ -10,12 +10,29 @@ export default function TigerSidebar({
   sections, 
   currentSection, 
   completedSections,
+  currentLanguage = 'en', // 🔥 NEW: Language prop
   onSectionSelect,
   onClose,
   slideAnim
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔥 NEW: Bilingual content
+  const content = {
+    en: {
+      lessonSections: 'Lesson Sections',
+      progress: 'Progress',
+      completed: 'completed'
+    },
+    ms: {
+      lessonSections: 'Bahagian Pelajaran',
+      progress: 'Kemajuan',
+      completed: 'selesai'
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
 
   return (
     <Animated.View style={[
@@ -37,7 +54,7 @@ export default function TigerSidebar({
             styles.sidebarTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Lesson Sections
+            {text.lessonSections}
           </ThemedText>
           <TouchableOpacity 
             style={styles.closeButton}
@@ -102,7 +119,7 @@ export default function TigerSidebar({
             styles.progressText,
             { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
           ]}>
-            Progress: {completedSections.size}/{sections.length} completed
+            {text.progress}: {completedSections.size}/{sections.length} {text.completed}
           </ThemedText>
         </View>
       </View>

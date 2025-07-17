@@ -1,65 +1,223 @@
+// components/lesson/tiger/sections/TigerIntroduction.jsx
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TigerIntroduction() {
+export default function TigerIntroduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const importanceReasons = [
-    {
-      icon: 'nature',
-      title: 'Apex Predator',
-      description: 'Vital for ecosystem stability and balance',
-      color: '#4CAF50'
+  // 🔥 BILINGUAL CONTENT - Structured from your provided Tiger content
+  const content = {
+    en: {
+      // Hero Section
+      heroTitle: "Malaysia's Critically Endangered National Symbol",
+      heroSubtitle: "The Malayan Tiger (Panthera tigris jacksoni)",
+      heroDescription: "Malaysia's critically endangered national symbol, with fewer than 150 remaining in the wild. These apex predators maintain healthy forests by controlling prey populations, while their habitats provide clean water and store carbon. Threatened by habitat loss, poaching, and human conflict, their survival depends on immediate conservation action.",
+      criticalStatus: "**Critical Status:** Fewer than 150 individuals remain in the wild, making this one of the world's most endangered tiger subspecies.",
+      
+      // Section Headers
+      quickFacts: "Quick Facts",
+      whatMakesSpecial: "What Makes Malayan Tigers Special",
+      whyMatters: "Why the Malayan Tiger Matters",
+      scientificClassification: "Scientific Classification",
+      bePartOfSolution: "Be Part of the Solution",
+      
+      // Basic Info
+      basicInfo: [
+        { label: 'Scientific Name', value: 'Panthera tigris jacksoni', icon: 'science' },
+        { label: 'Conservation Status', value: 'Critically Endangered (IUCN)', icon: 'warning' },
+        { label: 'Population', value: '< 150 in wild', icon: 'groups' },
+        { label: 'Lifespan', value: '15-20 years in wild', icon: 'schedule' },
+      ],
+      
+      // Key Features
+      keyFeatures: [
+        {
+          icon: 'straighten',
+          title: 'Smallest Mainland Tiger',
+          description: 'Males: 2.5-2.8m long, 120-130kg. Smaller than other tiger subspecies',
+          color: '#FF9800'
+        },
+        {
+          icon: 'palette',
+          title: 'Distinctive Coloring',
+          description: 'Darker orange coat with black stripes, unique fingerprint-like patterns',
+          color: '#9C27B0'
+        },
+        {
+          icon: 'visibility',
+          title: 'Night Vision Expert',
+          description: 'Eyes glow in dark due to reflective layer, perfect night hunters',
+          color: '#3F51B5'
+        },
+        {
+          icon: 'pool',
+          title: 'Swimming Star',
+          description: 'Unlike most cats, they love water and swim to cool off or hunt',
+          color: '#00BCD4'
+        }
+      ],
+      
+      // Why It Matters
+      whyItMatters: [
+        {
+          icon: 'eco',
+          title: 'Ecosystem Engineer',
+          description: 'Regulates prey populations, preventing overgrazing and maintaining forest balance'
+        },
+        {
+          icon: 'flag',
+          title: 'National Heritage',
+          description: 'Featured on Malaysia\'s coat of arms and currency, representing strength and heritage'
+        },
+        {
+          icon: 'health-and-safety',
+          title: 'Biodiversity Indicator',
+          description: 'Healthy tiger populations signal well-functioning, biodiverse ecosystems'
+        },
+        {
+          icon: 'account-balance',
+          title: 'Economic Value',
+          description: 'Ecotourism generates RM5 million for local communities through tiger-friendly tourism'
+        },
+        {
+          icon: 'public',
+          title: 'Climate Guardian',
+          description: 'Protecting tiger forests stores carbon—Malaysia\'s rainforests absorb ~1.2 billion tons annually'
+        },
+        {
+          icon: 'biotech',
+          title: 'Unique Genetics',
+          description: 'One of only 6 surviving tiger subspecies with distinct DNA—losing them erases unique evolution'
+        }
+      ],
+      
+      // Taxonomy
+      taxonomy: [
+        { rank: 'Kingdom', name: 'Animalia' },
+        { rank: 'Phylum', name: 'Chordata' },
+        { rank: 'Class', name: 'Mammalia' },
+        { rank: 'Order', name: 'Carnivora' },
+        { rank: 'Family', name: 'Felidae' },
+        { rank: 'Genus', name: 'Panthera' },
+        { rank: 'Species', name: 'P. tigris' },
+        { rank: 'Subspecies', name: 'P. t. jacksoni' }
+      ],
+      
+      // Call to Action
+      ctaText: "Every Malaysian can help protect these iconic stripes for future generations. By learning about the Malayan tiger, you're already contributing to conservation efforts. Knowledge leads to awareness, and awareness leads to action that can save this remarkable species."
     },
-    {
-      icon: 'flag',
-      title: 'National Heritage',
-      description: 'Featured on coat of arms and Malaysian folklore',
-      color: '#FF9800'
-    },
-    {
-      icon: 'account-balance',
-      title: 'Economic Value',
-      description: 'Supports ecotourism and rural economies',
-      color: '#2196F3'
-    },
-    {
-      icon: 'eco',
-      title: 'Environmental Guardian',
-      description: 'Protecting tigers means protecting forests and water',
-      color: '#8BC34A'
-    },
-    {
-      icon: 'public',
-      title: 'Climate Solutions',
-      description: 'Critical for forest carbon storage and climate action',
-      color: '#00BCD4'
-    },
-    {
-      icon: 'biotech',
-      title: 'Unique Genetics',
-      description: 'One of only 6 tiger subspecies with distinct DNA',
-      color: '#9C27B0'
+    
+    ms: {
+      // Hero Section
+      heroTitle: "Simbol Kebangsaan Malaysia yang Kritikal Terancam",
+      heroSubtitle: "Harimau Malaya (Panthera tigris jacksoni)",
+      heroDescription: "Simbol kebangsaan Malaysia yang kini berada dalam keadaan kritikal terancam, dengan kurang daripada 150 ekor yang masih tinggal di hutan. Predator puncak ini mengekalkan kesihatan hutan dengan mengawal populasi mangsa, sementara habitat mereka menyediakan air bersih dan menyimpan karbon. Terancam oleh kehilangan habitat, pemburuan haram, dan konflik dengan manusia, kelangsungan hidup mereka bergantung pada tindakan pemuliharaan segera.",
+      criticalStatus: "**Status Kritikal:** Kurang daripada 150 individu masih tinggal di alam liar, menjadikan ini salah satu subspesies harimau paling terancam di dunia.",
+      
+      // Section Headers
+      quickFacts: "Fakta Pantas",
+      whatMakesSpecial: "Apa yang Menjadikan Harimau Malaya Istimewa",
+      whyMatters: "Mengapa Harimau Malaya Penting",
+      scientificClassification: "Klasifikasi Saintifik",
+      bePartOfSolution: "Menjadi Sebahagian Penyelesaian",
+      
+      // Basic Info
+      basicInfo: [
+        { label: 'Nama Saintifik', value: 'Panthera tigris jacksoni', icon: 'science' },
+        { label: 'Status Pemuliharaan', value: 'Kritikal Terancam (IUCN)', icon: 'warning' },
+        { label: 'Populasi', value: '< 150 di alam liar', icon: 'groups' },
+        { label: 'Jangka Hayat', value: '15-20 tahun di alam liar', icon: 'schedule' },
+      ],
+      
+      // Key Features
+      keyFeatures: [
+        {
+          icon: 'straighten',
+          title: 'Harimau Tanah Besar Terkecil',
+          description: 'Jantan: 2.5-2.8m panjang, 120-130kg. Lebih kecil daripada subspesies harimau lain',
+          color: '#FF9800'
+        },
+        {
+          icon: 'palette',
+          title: 'Warna Tersendiri',
+          description: 'Bulu oren gelap dengan belang hitam, corak unik seperti cap jari',
+          color: '#9C27B0'
+        },
+        {
+          icon: 'visibility',
+          title: 'Pakar Penglihatan Malam',
+          description: 'Mata bersinar dalam gelap kerana lapisan pemantul, pemburu malam yang sempurna',
+          color: '#3F51B5'
+        },
+        {
+          icon: 'pool',
+          title: 'Perenang Handal',
+          description: 'Tidak seperti kebanyakan kucing, mereka suka air dan berenang untuk menyejukkan badan',
+          color: '#00BCD4'
+        }
+      ],
+      
+      // Why It Matters
+      whyItMatters: [
+        {
+          icon: 'eco',
+          title: 'Jurutera Ekosistem',
+          description: 'Mengawal populasi mangsa, mencegah overgrazing dan mengekalkan keseimbangan hutan'
+        },
+        {
+          icon: 'flag',
+          title: 'Warisan Kebangsaan',
+          description: 'Dipaparkan pada jata negara dan mata wang Malaysia, melambangkan kekuatan dan warisan'
+        },
+        {
+          icon: 'health-and-safety',
+          title: 'Petunjuk Biodiversiti',
+          description: 'Populasi harimau yang sihat menandakan ekosistem yang berfungsi baik dan kaya biodiversiti'
+        },
+        {
+          icon: 'account-balance',
+          title: 'Nilai Ekonomi',
+          description: 'Ekopelancongan menjana RM5 juta untuk komuniti tempatan melalui pelancongan mesra harimau'
+        },
+        {
+          icon: 'public',
+          title: 'Penjaga Iklim',
+          description: 'Melindungi hutan harimau menyimpan karbon—hutan hujan Malaysia menyerap ~1.2 bilion tan setiap tahun'
+        },
+        {
+          icon: 'biotech',
+          title: 'Genetik Unik',
+          description: 'Salah satu daripada 6 subspesies harimau yang masih wujud dengan DNA tersendiri—kehilangan mereka memadamkan evolusi unik'
+        }
+      ],
+      
+      // Taxonomy
+      taxonomy: [
+        { rank: 'Kingdom', name: 'Animalia' },
+        { rank: 'Filum', name: 'Chordata' },
+        { rank: 'Kelas', name: 'Mammalia' },
+        { rank: 'Order', name: 'Carnivora' },
+        { rank: 'Keluarga', name: 'Felidae' },
+        { rank: 'Genus', name: 'Panthera' },
+        { rank: 'Spesies', name: 'P. tigris' },
+        { rank: 'Subspesies', name: 'P. t. jacksoni' }
+      ],
+      
+      // Call to Action
+      ctaText: "Setiap rakyat Malaysia boleh membantu melindungi belang ikonik ini untuk generasi akan datang. Dengan mempelajari tentang harimau Malaya, anda sudah menyumbang kepada usaha pemuliharaan. Pengetahuan membawa kepada kesedaran, dan kesedaran membawa kepada tindakan yang boleh menyelamatkan spesies luar biasa ini."
     }
-  ];
+  };
 
-  const biodiversityRoles = [
-    'Regulates prey populations, preventing overgrazing',
-    'Protects biodiversity in forest ecosystems',
-    'Serves as indicator of healthy forest systems',
-    'Influences forest regeneration through prey behavior',
-    'Generates income through responsible ecotourism',
-    'Supports carbon storage and climate mitigation'
-  ];
-  
+  const text = content[currentLanguage] || content.en;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Hero Section */}
+      {/* Hero Introduction */}
       <View style={[
         styles.heroCard,
         { 
@@ -67,49 +225,154 @@ export default function TigerIntroduction() {
           borderColor: isDark ? Colors.dark.border : Colors.light.border
         }
       ]}>
-        <View style={styles.heroContent}>
-          <View style={[
-            styles.iconContainer,
-            { backgroundColor: '#FF6B35' + '20' }
-          ]}>
-            <MaterialIcons name="pets" size={40} color="#FF6B35" />
+        <View style={styles.heroHeader}>
+          <ThemedText style={styles.heroEmoji}>🐅</ThemedText>
+          <View style={styles.heroTitleContainer}>
+            <ThemedText style={[
+              styles.heroTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.heroTitle}
+            </ThemedText>
+            <ThemedText style={[
+              styles.heroSubtitle,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.heroSubtitle}
+            </ThemedText>
           </View>
-          
-          <ThemedText type="title" style={styles.title}>
-            Malayan Tiger
-          </ThemedText>
-          
-          <ThemedText style={styles.scientificName}>
-            Panthera tigris jacksoni
-          </ThemedText>
-          
-          <ThemedText style={styles.description}>
-            Malaysia's critically endangered national symbol, with fewer than 150 remaining in the wild. As apex predators, they maintain healthy forests by controlling prey populations and supporting biodiversity.
+        </View>
+        
+        <ThemedText style={[
+          styles.heroDescription,
+          { color: isDark ? Colors.dark.text : Colors.light.text }
+        ]}>
+          {text.heroDescription}
+        </ThemedText>
+
+        <View style={[
+          styles.alertBox,
+          { 
+            backgroundColor: isDark ? '#B71C1C20' : '#FFEBEE',
+            borderLeftColor: '#F44336'
+          }
+        ]}>
+          <MaterialIcons name="warning" size={20} color="#F44336" />
+          <ThemedText style={[
+            styles.alertText,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.criticalStatus}
           </ThemedText>
         </View>
       </View>
 
-      {/* Conservation Status */}
-      <View style={[
-        styles.statusCard,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderColor: '#F44336',
-          borderLeftColor: '#F44336'
-        }
-      ]}>
-        <View style={styles.statusHeader}>
-          <MaterialIcons name="warning" size={24} color="#F44336" />
-          <ThemedText style={styles.statusTitle}>Conservation Status</ThemedText>
+      {/* Basic Information */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="info" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.quickFacts}
+          </ThemedText>
         </View>
         
-        <ThemedText style={[styles.statusValue, { color: '#F44336' }]}>
-          Critically Endangered
-        </ThemedText>
+        <View style={styles.infoGrid}>
+          {text.basicInfo.map((info, index) => (
+            <View key={index} style={[
+              styles.infoCard,
+              { 
+                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
+              }
+            ]}>
+              <View style={[
+                styles.infoIcon,
+                { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
+              ]}>
+                <MaterialIcons 
+                  name={info.icon} 
+                  size={20} 
+                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
+                />
+              </View>
+              <View style={styles.infoContent}>
+                <ThemedText style={[
+                  styles.infoLabel,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {info.label}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.infoValue,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {info.value}
+                </ThemedText>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Key Features */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="star" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.whatMakesSpecial}
+          </ThemedText>
+        </View>
         
-        <ThemedText style={styles.statusDescription}>
-          Fewer than 150 individuals remain in the wild (2023)
-        </ThemedText>
+        <View style={styles.featuresGrid}>
+          {text.keyFeatures.map((feature, index) => (
+            <View key={index} style={[
+              styles.featureCard,
+              { 
+                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
+              }
+            ]}>
+              <View style={[
+                styles.featureIcon,
+                { backgroundColor: feature.color + '20' }
+              ]}>
+                <MaterialIcons 
+                  name={feature.icon} 
+                  size={20} 
+                  color={feature.color} 
+                />
+              </View>
+              <View style={styles.featureContent}>
+                <ThemedText style={[
+                  styles.featureTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {feature.title}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.featureDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {feature.description}
+                </ThemedText>
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
 
       {/* Why Tigers Matter */}
@@ -120,13 +383,18 @@ export default function TigerIntroduction() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Why Tigers Matter</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.whyMatters}
+          </ThemedText>
         </View>
         
-        <View style={styles.importanceGrid}>
-          {importanceReasons.map((reason, index) => (
+        <View style={styles.importanceList}>
+          {text.whyItMatters.map((item, index) => (
             <View key={index} style={[
-              styles.importanceCard,
+              styles.importanceItem,
               { 
                 backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
                 borderColor: isDark ? Colors.dark.border : Colors.light.border
@@ -134,21 +402,26 @@ export default function TigerIntroduction() {
             ]}>
               <View style={[
                 styles.importanceIcon,
-                { backgroundColor: reason.color + '20' }
+                { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
               ]}>
                 <MaterialIcons 
-                  name={reason.icon} 
-                  size={20} 
-                  color={reason.color} 
+                  name={item.icon} 
+                  size={18} 
+                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
                 />
               </View>
-              
               <View style={styles.importanceContent}>
-                <ThemedText style={styles.importanceTitle}>
-                  {reason.title}
+                <ThemedText style={[
+                  styles.importanceTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {item.title}
                 </ThemedText>
-                <ThemedText style={styles.importanceDesc}>
-                  {reason.description}
+                <ThemedText style={[
+                  styles.importanceDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {item.description}
                 </ThemedText>
               </View>
             </View>
@@ -156,35 +429,45 @@ export default function TigerIntroduction() {
         </View>
       </View>
 
-      {/* Biodiversity Role */}
+      {/* Taxonomic Classification */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons 
-            name="nature-people" 
+            name="account-tree" 
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Ecosystem Role</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.scientificClassification}
+          </ThemedText>
         </View>
         
         <View style={[
-          styles.biodiversityCard,
+          styles.taxonomyCard,
           { 
             backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          <View style={styles.biodiversityList}>
-            {biodiversityRoles.map((role, index) => (
-              <View key={index} style={styles.biodiversityItem}>
-                <View style={[
-                  styles.biodiversityBullet,
-                  { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
-                ]} />
-                <ThemedText style={styles.biodiversityText}>{role}</ThemedText>
-              </View>
-            ))}
-          </View>
+          {text.taxonomy.map((item, index) => (
+            <View key={index} style={styles.taxonomyRow}>
+              <ThemedText style={[
+                styles.taxonomyRank,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {item.rank}:
+              </ThemedText>
+              <ThemedText style={[
+                styles.taxonomyName,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {item.name}
+              </ThemedText>
+            </View>
+          ))}
         </View>
       </View>
 
@@ -192,21 +475,29 @@ export default function TigerIntroduction() {
       <View style={[
         styles.ctaCard,
         { 
-          backgroundColor: isDark ? Colors.dark.backgroundTertiary : Colors.light.backgroundSecondary,
-          borderColor: isDark ? Colors.dark.tint : Colors.light.tint
+          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+          borderColor: isDark ? Colors.dark.border : Colors.light.border,
+          borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
         }
       ]}>
         <View style={styles.ctaHeader}>
           <MaterialIcons 
-            name="campaign" 
-            size={24} 
+            name="lightbulb" 
+            size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.ctaTitle}>Take Action</ThemedText>
+          <ThemedText style={[
+            styles.ctaTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.bePartOfSolution}
+          </ThemedText>
         </View>
-        
-        <ThemedText style={styles.ctaText}>
-          Threatened by habitat loss, poaching, and human conflict, their survival depends on immediate conservation action. Everyone in Malaysia can help protect these magnificent cats for future generations.
+        <ThemedText style={[
+          styles.ctaText,
+          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+        ]}>
+          {text.ctaText}
         </ThemedText>
       </View>
     </ScrollView>
@@ -221,12 +512,12 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 32,
   },
-  
+
   // Hero Section
   heroCard: {
     borderRadius: 16,
     padding: 20,
-    marginBottom: 16,
+    marginBottom: 24,
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -234,65 +525,44 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  heroContent: {
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  scientificName: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    opacity: 0.7,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-
-  // Status Card
-  statusCard: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  statusHeader: {
+  heroHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginBottom: 16,
   },
-  statusTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+  heroEmoji: {
+    fontSize: 32,
+    marginRight: 16,
   },
-  statusValue: {
-    fontSize: 20,
+  heroTitleContainer: {
+    flex: 1,
+  },
+  heroTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 4,
   },
-  statusDescription: {
+  heroSubtitle: {
+    fontSize: 16,
+    fontStyle: 'italic',
+  },
+  heroDescription: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 16,
+  },
+  alertBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+  },
+  alertText: {
     fontSize: 14,
-    opacity: 0.8,
+    lineHeight: 20,
+    marginLeft: 8,
+    flex: 1,
   },
 
   // Section Structure
@@ -303,18 +573,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
   },
 
-  // Importance Grid
-  importanceGrid: {
+  // Info Grid
+  infoGrid: {
     gap: 12,
   },
-  importanceCard: {
+  infoCard: {
     flexDirection: 'row',
     padding: 16,
     borderRadius: 12,
@@ -326,13 +596,87 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  importanceIcon: {
+  infoIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  // Features Grid
+  featuresGrid: {
+    gap: 12,
+  },
+  featureCard: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  featureIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  featureContent: {
+    flex: 1,
+  },
+  featureTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  featureDesc: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+
+  // Importance List
+  importanceList: {
+    gap: 12,
+  },
+  importanceItem: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  importanceIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    marginTop: 2,
   },
   importanceContent: {
     flex: 1,
@@ -345,11 +689,10 @@ const styles = StyleSheet.create({
   importanceDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
   },
 
-  // Biodiversity Section
-  biodiversityCard: {
+  // Taxonomy
+  taxonomyCard: {
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
@@ -359,23 +702,17 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  biodiversityList: {
-    gap: 12,
-  },
-  biodiversityItem: {
+  taxonomyRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    paddingVertical: 6,
   },
-  biodiversityBullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginTop: 8,
-    marginRight: 12,
+  taxonomyRank: {
+    fontSize: 14,
+    width: 90,
   },
-  biodiversityText: {
-    fontSize: 15,
-    lineHeight: 22,
+  taxonomyName: {
+    fontSize: 14,
+    fontWeight: '500',
     flex: 1,
   },
 
