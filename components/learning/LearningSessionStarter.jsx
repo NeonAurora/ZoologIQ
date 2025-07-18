@@ -122,15 +122,14 @@ export default function LearningSessionStarter({ topic, quizId }) {
     }
   };
 
+  // In LearningSessionStarter.jsx - UPDATE loadSessionData
   const loadSessionData = useCallback(async () => {
-    if (!user || !topic) {
-      console.log('❌ Missing user or topic, skipping load');
-      return;
-    }
+    if (!user || !topic) return;
     
     try {
       console.log('🔄 Loading session data for topic:', topic);
       
+      // ✅ Force fresh data fetch
       const categoryData = await getCategoryBySlug(topic);
       if (!categoryData) {
         console.error('❌ Category not found for topic:', topic);
@@ -140,20 +139,25 @@ export default function LearningSessionStarter({ topic, quizId }) {
       
       setCategory(categoryData);
       
+      // ✅ Add timestamp to force fresh data
+      const timestamp = Date.now();
       const [availability, completed] = await Promise.all([
-        checkSessionAvailability(user.sub, categoryData.id),
+        checkSessionAvailability(user.sub, categoryData.id, timestamp),  // Pass timestamp
         getUserCompletedSessions(user.sub, categoryData.id)
       ]);
       
-      setSessionState(availability);
-      setCompletedSessions(completed);
+      // ✅ Validate the data consistency
+      if (availability.activeSession?.session_status === 'post_quiz_completed') {
+        console.warn('⚠️ Active session is actually completed, cleaning up');
+        await cleanupIncompleteSessionsForCategory(user.sub, categoryData.id);
+        // Reload after cleanup
+        const freshAvailability = await checkSessionAvailability(user.sub, categoryData.id);
+        setSessionState(freshAvailability);
+      } else {
+        setSessionState(availability);
+      }
       
-      console.log('✅ Session data loaded:', {
-        canStartNew: availability.canStartNew,
-        hasActiveSession: !!availability.activeSession,
-        activeSessionStatus: availability.activeSession?.session_status,
-        completedCount: completed.length
-      });
+      setCompletedSessions(completed);
       
     } catch (error) {
       console.error('❌ Error loading session data:', error);
@@ -210,6 +214,7 @@ export default function LearningSessionStarter({ topic, quizId }) {
     }
   };
 
+  // In LearningSessionStarter.jsx - UPDATE handleContinueSession
   const handleContinueSession = () => {
     if (isCreatingSession) return;
     
@@ -217,6 +222,21 @@ export default function LearningSessionStarter({ topic, quizId }) {
     const nextAction = sessionState.nextAction;
     
     console.log('🚀 Continuing session with action:', nextAction);
+    console.log('🔍 Session status:', session?.session_status);
+    
+    // ✅ DEFENSIVE CHECK: Don't continue completed sessions
+    if (session?.session_status === 'post_quiz_completed') {
+      console.warn('⚠️ Attempted to continue completed session, starting fresh');
+      handleStartNewSession();
+      return;
+    }
+    
+    // ✅ ADDITIONAL CHECK: Validate nextAction makes sense
+    if (nextAction === 'view_results' && session?.session_status !== 'post_quiz_completed') {
+      console.warn('⚠️ Invalid action for session status, starting fresh');
+      handleStartNewSession();
+      return;
+    }
     
     switch (nextAction) {
       case 'take_pre_quiz':
@@ -224,13 +244,19 @@ export default function LearningSessionStarter({ topic, quizId }) {
         break;
       case 'start_lesson':
       case 'continue_lesson':
-        router.push(`/${topic}Lesson?sessionId=${session.id}&quizId=${quizId}`);
+        router.push(`/${topic}Lesson?sessionId=${session.id}&quizId=${quizId}&fresh=true`);
         break;
       case 'take_post_quiz':
         router.push(`/quizPlay?sessionId=${session.id}&type=post-lesson&quizId=${quizId}&fresh=true`);
         break;
       case 'view_results':
-        router.push(`/learningResults?sessionId=${session.id}`);
+        // ✅ ONLY navigate if truly completed
+        if (session?.session_status === 'post_quiz_completed') {
+          router.push(`/learningResults?sessionId=${session.id}&fresh=true`);
+        } else {
+          console.warn('⚠️ view_results action for incomplete session, starting fresh');
+          handleStartNewSession();
+        }
         break;
       default:
         console.log('⚠️ Unknown action, starting new session');

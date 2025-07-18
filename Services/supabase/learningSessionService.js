@@ -51,6 +51,7 @@ export const createLearningSession = async (userId, categoryId, quizId) => {
  * @param {string} categoryId - Quiz category ID
  * @returns {Promise<object>} Active session or null
  */
+// In learningSessionService.js - UPDATE getActiveLearningSession
 export const getActiveLearningSession = async (userId, categoryId) => {
   try {
     const { data: session, error } = await supabase
@@ -58,15 +59,12 @@ export const getActiveLearningSession = async (userId, categoryId) => {
       .select(`
         *,
         quiz_categories(name, slug),
-        pre_study_quiz:quizzes!pre_study_quiz_id(id, title, difficulty),
-        post_study_quiz:quizzes!post_study_quiz_id(id, title, difficulty),
         pre_study_result:quiz_results!pre_study_result_id(id, score, completed_at),
         post_study_result:quiz_results!post_study_result_id(id, score, completed_at)
       `)
       .eq('user_id', userId)
       .eq('category_id', categoryId)
-      .neq('session_status', 'post_quiz_completed')
-      .neq('session_status', 'abandoned') // 🔥 NEW: Exclude abandoned sessions
+      .not('session_status', 'in', '("post_quiz_completed","abandoned")')  // ✅ More explicit filtering
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -74,6 +72,12 @@ export const getActiveLearningSession = async (userId, categoryId) => {
     if (error) {
       console.error('Error getting active session:', error);
       return null;
+    }
+    
+    // ✅ ADDITIONAL CHECK: Validate session is truly active
+    if (session && session.session_status === 'post_quiz_completed') {
+      console.warn('⚠️ Found completed session marked as active, cleaning up');
+      return null;  // Treat as no active session
     }
     
     return session;
