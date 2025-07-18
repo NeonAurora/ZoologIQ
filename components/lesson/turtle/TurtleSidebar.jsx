@@ -4,6 +4,7 @@ import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TurtleSidebar({ 
@@ -16,6 +17,26 @@ export default function TurtleSidebar({
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔥 NEW: Language detection
+  const { supabaseData } = useAuth();
+  const preferredLanguage = supabaseData?.preferred_language || 'en';
+
+  // 🔥 NEW: Bilingual content
+  const content = {
+    en: {
+      lessonSections: 'Lesson Sections',
+      progress: 'Progress',
+      completed: 'completed'
+    },
+    ms: {
+      lessonSections: 'Bahagian Pelajaran',
+      progress: 'Kemajuan',
+      completed: 'selesai'
+    }
+  };
+
+  const text = content[preferredLanguage] || content.en;
 
   return (
     <Animated.View style={[
@@ -40,7 +61,7 @@ export default function TurtleSidebar({
             styles.sidebarTitle,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
-            Lesson Sections
+            {text.lessonSections}
           </ThemedText>
           <TouchableOpacity 
             style={styles.closeButton}
@@ -105,7 +126,7 @@ export default function TurtleSidebar({
             styles.progressText,
             { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
           ]}>
-            Progress: {completedSections.size}/{sections.length} completed
+            {text.progress}: {completedSections.size}/{sections.length} {text.completed}
           </ThemedText>
         </View>
       </View>

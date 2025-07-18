@@ -6,44 +6,183 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TurtleIntroduction() {
+export default function TurtleIntroduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const importanceData = [
-    {
-      icon: '🌱',
-      title: 'Seagrass Maintenance',
-      description: 'Grazing helps maintain healthy seagrass meadows, promoting growth and preventing overgrowth',
-      color: '#4CAF50'
+  // 🔥 BILINGUAL CONTENT - Based on your provided content
+  const content = {
+    en: {
+      // Hero Section
+      heroTitle: "Meet the Green Sea Turtle",
+      heroSubtitle: "Chelonia mydas",
+      heroDescription: "The Green Sea Turtle is a gentle giant of the ocean, named not for its shell but for the green fat beneath it, thanks to its seagrass diet! Found in warm coastal waters and coral reefs, this turtle can grow up to 1 meter and weigh as much as 160 kg.",
+      
+      // Section Headers
+      quickFacts: "Quick Facts",
+      ecologicalRole: "Ecological Role",
+      biodiversityImportance: "Why Green Sea Turtles Matter in Biodiversity",
+      scientificClassification: "Scientific Classification",
+      conservationStatus: "Conservation Challenge",
+      
+      // Basic Info
+      basicInfo: [
+        { label: 'Common Name', value: 'Green Sea Turtle', icon: 'pets' },
+        { label: 'Scientific Name', value: 'Chelonia mydas', icon: 'science' },
+        { label: 'Habitat', value: 'Warm oceans, coastal areas, coral reefs', icon: 'waves' },
+        { label: 'Physical Features', value: 'Smooth, greenish shell; up to 160 kg, ~1 meter', icon: 'straighten' },
+        { label: 'Diet', value: 'Mainly seagrasses and algae', icon: 'grass' },
+        { label: 'Reproduction', value: '80–120 eggs per clutch on sandy beaches', icon: 'child_care' },
+        { label: 'Lifespan', value: 'About 60–70 years', icon: 'schedule' },
+        { label: 'Conservation Status', value: 'Endangered', icon: 'warning' },
+      ],
+      
+      // Ecological Role
+      ecologicalRoles: [
+        {
+          icon: 'grass',
+          title: 'Seagrass Maintenance',
+          description: 'Grazing helps maintain healthy seagrass meadows, promoting growth and preventing overgrowth',
+        },
+        {
+          icon: 'water',
+          title: 'Coral Reef Health',
+          description: 'Controls algae on coral reefs, allowing corals to thrive and maintain reef ecosystems',
+        },
+        {
+          icon: 'sync',
+          title: 'Nutrient Cycling',
+          description: 'Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems',
+        },
+        {
+          icon: 'restaurant',
+          title: 'Food Web Dynamics',
+          description: 'Eggs and hatchlings are a food source for predators like crabs, birds, and fish',
+        },
+        {
+          icon: 'diversity_3',
+          title: 'Biodiversity Support',
+          description: 'Seagrass meadows and coral reefs, supported by turtles, provide habitats for diverse marine life',
+        },
+        {
+          icon: 'monitor_heart',
+          title: 'Indicator Species',
+          description: 'Acts as a biological indicator of ocean health due to its sensitivity to habitat changes',
+        }
+      ],
+      
+      // Biodiversity Points
+      biodiversityPoints: [
+        'Grazing by Chelonia mydas keeps seagrass meadows healthy, preventing overgrowth and fostering biodiversity',
+        'Controls algae on coral reefs, promoting a balanced environment for corals and marine life',
+        'Transports nutrients between nesting beaches and feeding grounds, enriching ecosystems',
+        'Eggs and hatchlings are a vital food source for predators such as birds, crabs, and fish',
+        'Maintains seagrass beds that serve as habitats for numerous marine organisms',
+        'Acts as an indicator species, reflecting the health of marine ecosystems'
+      ],
+      
+      // Taxonomy
+      taxonomy: [
+        { rank: 'Kingdom', name: 'Animalia' },
+        { rank: 'Phylum', name: 'Chordata' },
+        { rank: 'Class', name: 'Reptilia' },
+        { rank: 'Order', name: 'Testudines' },
+        { rank: 'Family', name: 'Cheloniidae' },
+        { rank: 'Genus', name: 'Chelonia' },
+        { rank: 'Species', name: 'Chelonia mydas' },
+      ],
+      
+      // Conservation CTA
+      ctaTitle: "Conservation Challenge",
+      ctaText: "These fantastic creatures play a crucial role in maintaining the ocean's health. By munching on seagrass and algae, they prevent overgrowth and allow marine ecosystems to thrive. Their long migrations—from feeding spots to nesting beaches—also help spread nutrients across the seas. Green Sea Turtles live for 60–70 years, but they face many threats like habitat loss, plastic pollution, fishing nets, and climate change. Despite being endangered, conservation efforts around the world—from Malaysia to Costa Rica—are giving them a fighting chance. By protecting beaches, reducing plastic use, and supporting eco-friendly tourism, we can help save this ancient mariner—and the vibrant world it supports."
     },
-    {
-      icon: '🪸',
-      title: 'Coral Reef Health',
-      description: 'Controls algae on coral reefs, allowing corals to thrive and maintain reef ecosystems',
-      color: '#FF7043'
-    },
-    {
-      icon: '🔄',
-      title: 'Nutrient Cycling',
-      description: 'Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems',
-      color: '#2196F3'
-    },
-    {
-      icon: '🐟',
-      title: 'Food Web Support',
-      description: 'Eggs and hatchlings are a vital food source for predators such as birds, crabs, and fish',
-      color: '#9C27B0'
+    ms: {
+      // Hero Section
+      heroTitle: "Kenali Penyu Agar",
+      heroSubtitle: "Chelonia mydas",
+      heroDescription: "Penyu Agar ialah gergasi lembut lautan, dinamakan bukan kerana cengkerangnya tetapi kerana lemak hijau di bawahnya—hasil daripada diet rumpai lautnya! Ia ditemui di perairan pantai yang hangat dan terumbu karang, dan boleh membesar sehingga 1 meter panjang serta mencapai berat sehingga 160 kg.",
+      
+      // Section Headers
+      quickFacts: "Fakta Pantas",
+      ecologicalRole: "Peranan Ekologi",
+      biodiversityImportance: "Mengapa Penyu Agar Penting dalam Kepelbagaian Biologi",
+      scientificClassification: "Klasifikasi Saintifik",
+      conservationStatus: "Cabaran Pemuliharaan",
+      
+      // Basic Info
+      basicInfo: [
+        { label: 'Nama Biasa', value: 'Penyu Agar', icon: 'pets' },
+        { label: 'Nama Saintifik', value: 'Chelonia mydas', icon: 'science' },
+        { label: 'Habitat', value: 'Lautan tropika, kawasan pantai, terumbu karang', icon: 'waves' },
+        { label: 'Ciri Fizikal', value: 'Cengkerang licin kehijauan; hingga 160 kg, ~1 meter', icon: 'straighten' },
+        { label: 'Diet', value: 'Terutamanya rumpai laut dan alga', icon: 'grass' },
+        { label: 'Pembiakan', value: '80–120 biji telur setiap sarang di pantai berpasir', icon: 'child_care' },
+        { label: 'Jangka Hayat', value: 'Kira-kira 60–70 tahun', icon: 'schedule' },
+        { label: 'Status Pemuliharaan', value: 'Terancam', icon: 'warning' },
+      ],
+      
+      // Ecological Role
+      ecologicalRoles: [
+        {
+          icon: 'grass',
+          title: 'Penyelenggaraan Rumpai Laut',
+          description: 'Pemakanan membantu mengekalkan padang rumpai laut yang sihat, menggalakkan pertumbuhan dan mencegah pertumbuhan berlebihan',
+        },
+        {
+          icon: 'water',
+          title: 'Kesihatan Terumbu Karang',
+          description: 'Mengawal alga di terumbu karang, membolehkan karang hidup subur dan mengekalkan ekosistem terumbu',
+        },
+        {
+          icon: 'sync',
+          title: 'Kitaran Nutrien',
+          description: 'Pergerakan antara pantai penetasan dan kawasan makan mengedarkan nutrien, memperkayakan ekosistem',
+        },
+        {
+          icon: 'restaurant',
+          title: 'Dinamik Rangkaian Makanan',
+          description: 'Telur dan anak penyu menjadi sumber makanan kepada pemangsa seperti ketam, burung, dan ikan',
+        },
+        {
+          icon: 'diversity_3',
+          title: 'Sokongan Kepelbagaian Biologi',
+          description: 'Padang rumpai laut dan terumbu karang yang disokong oleh penyu menyediakan habitat untuk pelbagai hidupan marin',
+        },
+        {
+          icon: 'monitor_heart',
+          title: 'Spesies Penunjuk',
+          description: 'Bertindak sebagai penunjuk biologi terhadap kesihatan laut kerana kepekaannya terhadap perubahan habitat',
+        }
+      ],
+      
+      // Biodiversity Points
+      biodiversityPoints: [
+        'Pemakanan oleh Chelonia mydas membantu mengekalkan padang rumpai laut yang sihat, mencegah pertumbuhan berlebihan dan menyokong kepelbagaian biologi',
+        'Mengawal pertumbuhan alga di terumbu karang, mewujudkan persekitaran seimbang untuk karang dan hidupan marin',
+        'Mengangkut nutrien antara pantai penetasan dan kawasan makan, memperkayakan ekosistem',
+        'Telur dan anak penyu menjadi sumber makanan penting kepada pemangsa seperti burung, ketam, dan ikan',
+        'Mengekalkan padang rumpai laut yang menjadi habitat bagi pelbagai organisma laut',
+        'Bertindak sebagai spesies penunjuk, mencerminkan kesihatan ekosistem marin'
+      ],
+      
+      // Taxonomy
+      taxonomy: [
+        { rank: 'Kingdom', name: 'Animalia' },
+        { rank: 'Phylum', name: 'Chordata' },
+        { rank: 'Class', name: 'Reptilia' },
+        { rank: 'Order', name: 'Testudines' },
+        { rank: 'Family', name: 'Cheloniidae' },
+        { rank: 'Genus', name: 'Chelonia' },
+        { rank: 'Species', name: 'Chelonia mydas' },
+      ],
+      
+      // Conservation CTA
+      ctaTitle: "Cabaran Pemuliharaan",
+      ctaText: "Makhluk menakjubkan ini memainkan peranan penting dalam mengekalkan kesihatan lautan. Dengan memakan rumpai laut dan alga, mereka mengelakkan pertumbuhan berlebihan dan membolehkan ekosistem marin berkembang maju. Migrasi mereka yang jauh—dari kawasan makan ke pantai penetasan—juga membantu menyebarkan nutrien ke seluruh lautan. Penyu Agar hidup selama 60–70 tahun, tetapi menghadapi pelbagai ancaman seperti kehilangan habitat, pencemaran plastik, jaring perikanan, dan perubahan iklim. Walaupun berstatus terancam, usaha pemuliharaan di seluruh dunia—dari Malaysia hingga Costa Rica—memberikan mereka peluang untuk terus hidup. Dengan melindungi pantai, mengurangkan penggunaan plastik, dan menyokong pelancongan mesra alam, kita dapat membantu menyelamatkan pelayar purba ini—dan dunia laut yang penuh warna yang disokongnya."
     }
-  ];
+  };
 
-  const biodiversityPoints = [
-    'Maintains seagrass beds that serve as habitats for numerous marine organisms',
-    'Acts as an indicator species, reflecting the health of marine ecosystems',
-    'Supports biodiversity in both coastal and open ocean environments',
-    'Creates feeding opportunities for various marine species through their activities',
-    'Helps maintain balance in marine food webs across multiple ocean zones'
-  ];
+  const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView 
@@ -56,25 +195,37 @@ export default function TurtleIntroduction() {
         styles.heroCard,
         { 
           backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderColor: isDark ? Colors.dark.border : Colors.light.border
+          borderColor: isDark ? Colors.dark.border : Colors.light.border,
+          borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
         }
       ]}>
         <View style={styles.heroHeader}>
           <ThemedText style={styles.heroEmoji}>🐢</ThemedText>
           <View style={styles.heroTitleContainer}>
-            <ThemedText style={styles.heroTitle}>Green Sea Turtle</ThemedText>
-            <ThemedText style={styles.heroSubtitle}>Chelonia mydas</ThemedText>
+            <ThemedText style={[
+              styles.heroTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.heroTitle}
+            </ThemedText>
+            <ThemedText style={[
+              styles.heroSubtitle,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.heroSubtitle}
+            </ThemedText>
           </View>
         </View>
         
-        <ThemedText style={styles.heroDescription}>
-          The Green Sea Turtle is a gentle giant of the ocean, named not for its shell but for the 
-          green fat beneath it, thanks to its seagrass diet! Found in warm coastal waters and coral reefs, 
-          this turtle can grow up to 1 meter and weigh as much as 160 kg.
+        <ThemedText style={[
+          styles.heroDescription,
+          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+        ]}>
+          {text.heroDescription}
         </ThemedText>
       </View>
 
-      {/* Basic Information Grid */}
+      {/* Quick Facts */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons 
@@ -82,57 +233,57 @@ export default function TurtleIntroduction() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Quick Facts</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.quickFacts}
+          </ThemedText>
         </View>
-
-        <View style={styles.factsGrid}>
-          <View style={[
-            styles.factCard,
-            { 
-              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-              borderColor: isDark ? Colors.dark.border : Colors.light.border
-            }
-          ]}>
-            <ThemedText style={styles.factLabel}>Habitat</ThemedText>
-            <ThemedText style={styles.factValue}>Warm oceans, coastal areas, coral reefs</ThemedText>
-          </View>
-
-          <View style={[
-            styles.factCard,
-            { 
-              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-              borderColor: isDark ? Colors.dark.border : Colors.light.border
-            }
-          ]}>
-            <ThemedText style={styles.factLabel}>Diet</ThemedText>
-            <ThemedText style={styles.factValue}>Seagrasses and algae</ThemedText>
-          </View>
-
-          <View style={[
-            styles.factCard,
-            { 
-              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-              borderColor: isDark ? Colors.dark.border : Colors.light.border
-            }
-          ]}>
-            <ThemedText style={styles.factLabel}>Lifespan</ThemedText>
-            <ThemedText style={styles.factValue}>60-70 years</ThemedText>
-          </View>
-
-          <View style={[
-            styles.factCard,
-            { 
-              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-              borderColor: isDark ? Colors.dark.border : Colors.light.border
-            }
-          ]}>
-            <ThemedText style={styles.factLabel}>Status</ThemedText>
-            <ThemedText style={[styles.factValue, { color: '#FF5722' }]}>Endangered</ThemedText>
-          </View>
+        
+        <View style={styles.infoGrid}>
+          {text.basicInfo.map((info, index) => (
+            <View key={index} style={[
+              styles.infoCard,
+              { 
+                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
+              }
+            ]}>
+              <View style={[
+                styles.infoIcon,
+                { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
+              ]}>
+                <MaterialIcons 
+                  name={info.icon} 
+                  size={20} 
+                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
+                />
+              </View>
+              <View style={styles.infoContent}>
+                <ThemedText style={[
+                  styles.infoLabel,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {info.label}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.infoValue,
+                  { 
+                    color: info.label.toLowerCase().includes('status') || info.label.toLowerCase().includes('pemuliharaan')
+                      ? '#FF5722' 
+                      : (isDark ? Colors.dark.text : Colors.light.text)
+                  }
+                ]}>
+                  {info.value}
+                </ThemedText>
+              </View>
+            </View>
+          ))}
         </View>
       </View>
 
-      {/* Importance in Ecosystem */}
+      {/* Ecological Role */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons 
@@ -140,41 +291,68 @@ export default function TurtleIntroduction() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Why They Matter</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.ecologicalRole}
+          </ThemedText>
         </View>
-
-        <View style={styles.importanceGrid}>
-          {importanceData.map((item, index) => (
+        
+        <View style={styles.rolesGrid}>
+          {text.ecologicalRoles.map((role, index) => (
             <View key={index} style={[
-              styles.importanceCard,
+              styles.roleCard,
               { 
                 backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
                 borderColor: isDark ? Colors.dark.border : Colors.light.border
               }
             ]}>
-              <View style={[styles.importanceIcon, { backgroundColor: `${item.color}20` }]}>
-                <ThemedText style={styles.importanceEmoji}>{item.icon}</ThemedText>
+              <View style={[
+                styles.roleIcon,
+                { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
+              ]}>
+                <MaterialIcons 
+                  name={role.icon} 
+                  size={18} 
+                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
+                />
               </View>
-              <View style={styles.importanceContent}>
-                <ThemedText style={styles.importanceTitle}>{item.title}</ThemedText>
-                <ThemedText style={styles.importanceDesc}>{item.description}</ThemedText>
+              <View style={styles.roleContent}>
+                <ThemedText style={[
+                  styles.roleTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {role.title}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.roleDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {role.description}
+                </ThemedText>
               </View>
             </View>
           ))}
         </View>
       </View>
 
-      {/* Biodiversity Support */}
+      {/* Biodiversity Importance */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons 
-            name="nature" 
+            name="diversity_3" 
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Supporting Marine Biodiversity</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.biodiversityImportance}
+          </ThemedText>
         </View>
-
+        
         <View style={[
           styles.biodiversityCard,
           { 
@@ -183,40 +361,103 @@ export default function TurtleIntroduction() {
           }
         ]}>
           <View style={styles.biodiversityList}>
-            {biodiversityPoints.map((point, index) => (
+            {text.biodiversityPoints.map((point, index) => (
               <View key={index} style={styles.biodiversityItem}>
                 <View style={[
                   styles.biodiversityBullet,
                   { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
                 ]} />
-                <ThemedText style={styles.biodiversityText}>{point}</ThemedText>
+                <ThemedText style={[
+                  styles.biodiversityText,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {point}
+                </ThemedText>
               </View>
             ))}
           </View>
         </View>
       </View>
 
-      {/* Conservation Call to Action */}
+      {/* Scientific Classification */}
       <View style={styles.section}>
-        <View style={[
-          styles.ctaCard,
-          { 
-            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-            borderColor: isDark ? Colors.dark.border : Colors.light.border,
-            borderLeftColor: '#2196F3'
-          }
-        ]}>
-          <View style={styles.ctaHeader}>
-            <MaterialIcons name="campaign" size={20} color="#2196F3" />
-            <ThemedText style={styles.ctaTitle}>Conservation Matters</ThemedText>
-          </View>
-          <ThemedText style={styles.ctaText}>
-            These fantastic creatures play a crucial role in maintaining the ocean's health. 
-            Despite being endangered, conservation efforts around the world—from Malaysia to Costa Rica—are 
-            giving them a fighting chance. By protecting beaches, reducing plastic use, and supporting 
-            eco-friendly tourism, we can help save this ancient mariner and the vibrant world it supports.
+        <View style={styles.sectionHeader}>
+          <MaterialIcons 
+            name="account-tree" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.scientificClassification}
           </ThemedText>
         </View>
+        
+        <View style={[
+          styles.taxonomyCard,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
+          {text.taxonomy.map((item, index) => (
+            <View key={index} style={[
+              styles.taxonomyRow,
+              index < text.taxonomy.length - 1 && {
+                borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
+                borderBottomWidth: 1
+              }
+            ]}>
+              <ThemedText style={[
+                styles.taxonomyRank,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {item.rank}:
+              </ThemedText>
+              <ThemedText style={[
+                styles.taxonomyName,
+                { 
+                  color: isDark ? Colors.dark.text : Colors.light.text,
+                  fontStyle: item.rank === 'Species' ? 'italic' : 'normal'
+                }
+              ]}>
+                {item.name}
+              </ThemedText>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Conservation Call to Action */}
+      <View style={[
+        styles.ctaCard,
+        { 
+          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+          borderColor: isDark ? Colors.dark.border : Colors.light.border,
+          borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
+        }
+      ]}>
+        <View style={styles.ctaHeader}>
+          <MaterialIcons 
+            name="shield" 
+            size={20} 
+            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          />
+          <ThemedText style={[
+            styles.ctaTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.ctaTitle}
+          </ThemedText>
+        </View>
+        <ThemedText style={[
+          styles.ctaText,
+          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+        ]}>
+          {text.ctaText}
+        </ThemedText>
       </View>
     </ScrollView>
   );
@@ -233,10 +474,11 @@ const styles = StyleSheet.create({
 
   // Hero Section
   heroCard: {
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 20,
-    marginBottom: 24,
     borderWidth: 1,
+    borderLeftWidth: 4,
+    marginBottom: 24,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -246,10 +488,10 @@ const styles = StyleSheet.create({
   heroHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   heroEmoji: {
-    fontSize: 32,
+    fontSize: 28,
     marginRight: 16,
   },
   heroTitleContainer: {
@@ -257,48 +499,17 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
     marginBottom: 4,
   },
   heroSubtitle: {
     fontSize: 16,
     fontStyle: 'italic',
-    opacity: 0.7,
+    opacity: 0.8,
   },
   heroDescription: {
     fontSize: 16,
     lineHeight: 24,
-  },
-
-  // Facts Grid
-  factsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  factCard: {
-    flex: 1,
-    minWidth: '45%',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  factLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    opacity: 0.7,
-    marginBottom: 4,
-    textTransform: 'uppercase',
-  },
-  factValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 20,
   },
 
   // Section Structure
@@ -309,18 +520,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
   },
 
-  // Importance Grid
-  importanceGrid: {
+  // Info Grid
+  infoGrid: {
     gap: 12,
   },
-  importanceCard: {
+  infoCard: {
     flexDirection: 'row',
     padding: 16,
     borderRadius: 12,
@@ -332,7 +543,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  importanceIcon: {
+  infoIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -340,21 +551,58 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 12,
   },
-  importanceEmoji: {
-    fontSize: 20,
-  },
-  importanceContent: {
+  infoContent: {
     flex: 1,
   },
-  importanceTitle: {
+  infoLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    opacity: 0.7,
+  },
+  infoValue: {
+    fontSize: 15,
+    fontWeight: '500',
+    lineHeight: 20,
+  },
+
+  // Roles Grid
+  rolesGrid: {
+    gap: 12,
+  },
+  roleCard: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  roleIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    marginTop: 2,
+  },
+  roleContent: {
+    flex: 1,
+  },
+  roleTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
-  importanceDesc: {
+  roleDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
   },
 
   // Biodiversity Section
@@ -388,17 +636,44 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Call to Action
-  ctaCard: {
+  // Taxonomy
+  taxonomyCard: {
     borderRadius: 12,
-    padding: 16,
     borderWidth: 1,
-    borderLeftWidth: 4,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+  },
+  taxonomyRow: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  taxonomyRank: {
+    fontSize: 14,
+    width: 90,
+    fontWeight: '500',
+  },
+  taxonomyName: {
+    fontSize: 14,
+    fontWeight: '500',
+    flex: 1,
+  },
+
+  // Call to Action
+  ctaCard: {
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   ctaHeader: {
     flexDirection: 'row',
@@ -407,11 +682,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   ctaTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   ctaText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
   },
 });

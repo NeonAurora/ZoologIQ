@@ -674,9 +674,7 @@ function SessionSummary({ session, isDark, text, getCategoryName }) {
   );
 }
 
-// ... styles remain the same ...
 const styles = StyleSheet.create({
-  // ... (keeping all existing styles unchanged)
   container: {
     flex: 1,
   },

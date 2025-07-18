@@ -6,57 +6,157 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TurtleBiodiversity() {
+export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const ecosystemRoles = [
-    {
-      icon: '🌱',
-      title: 'Seagrass Maintenance',
-      description: 'Grazing helps maintain healthy seagrass meadows, promoting growth and preventing overgrowth',
-      impact: 'Critical for seagrass ecosystem health',
-      color: '#4CAF50'
+  // 🔥 BILINGUAL CONTENT - Based on your provided content
+  const content = {
+    en: {
+      // Section Headers
+      roleInBiodiversity: "Role in Biodiversity",
+      populationTrends: "Population Trends (2019-2024)",
+      supportingMarineHabitats: "Supporting Marine Habitats",
+      foodWebConnections: "Food Web Connections",
+      climateChangeVulnerability: "Climate Change Vulnerability",
+
+      // Ecosystem Roles
+      ecosystemRoles: [
+        {
+          icon: '🌱',
+          title: 'Seagrass Maintenance',
+          description: 'Grazing helps maintain healthy seagrass meadows, promoting growth and preventing overgrowth',
+          impact: 'Critical for seagrass ecosystem health',
+          color: '#4CAF50'
+        },
+        {
+          icon: '🪸',
+          title: 'Coral Reef Health',
+          description: 'Controls algae on coral reefs, allowing corals to thrive and maintain reef ecosystems',
+          impact: 'Essential for coral survival',
+          color: '#FF7043'
+        },
+        {
+          icon: '🔄',
+          title: 'Nutrient Cycling',
+          description: 'Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems',
+          impact: 'Connects marine and terrestrial systems',
+          color: '#2196F3'
+        },
+        {
+          icon: '🎯',
+          title: 'Indicator Species',
+          description: 'Acts as a biological indicator of ocean health due to sensitivity to habitat changes',
+          impact: 'Reflects ecosystem condition',
+          color: '#9C27B0'
+        }
+      ],
+
+      // Population Data
+      populationHeader: "Nesting Females (Estimates)",
+      populationData: [
+        { year: '2019', malaysia: '3,900', global: '450,000', trend: 'Baseline: steady nesting activity globally' },
+        { year: '2020', malaysia: '4,500', global: '460,000', trend: 'Slight increase amid pandemic restrictions' },
+        { year: '2021', malaysia: '5,200', global: '475,000', trend: 'Continued recovery and nesting success' },
+        { year: '2022', malaysia: '6,700', global: '490,000', trend: 'Positive trend from conservation efforts' },
+        { year: '2023', malaysia: '10,100', global: '510,000', trend: 'Significant jump in Malaysia; global growth' },
+        { year: '2024', malaysia: '9,200', global: '520,000', trend: 'Slight dip in Malaysia; global increase steady' }
+      ],
+
+      // Labels
+      labels: {
+        malaysia: 'Malaysia:',
+        global: 'Global:'
+      },
+
+      // Habitat Support
+      habitatSupport: [
+        'Seagrass meadows serve as nurseries for fish and invertebrates',
+        'Coral reefs provide habitat for 25% of all marine species',
+        'Beach ecosystems benefit from turtle nesting activities',
+        'Open ocean food webs depend on turtle migrations',
+        'Coastal vegetation benefits from nutrient deposition'
+      ],
+
+      // Detailed Explanations
+      foodWebText: "Green Sea Turtles are integral to marine food webs. Their eggs and hatchlings provide crucial food sources for predators like crabs, birds, and fish. As adults, they help maintain the balance between primary producers (seagrasses and algae) and the ecosystems that depend on them. Their presence indicates a healthy, functioning marine environment.",
+
+      climateText: "As ectothermic animals sensitive to temperature changes, Green Sea Turtles serve as early indicators of climate change impacts. Rising sea temperatures affect their food sources, while increasing sand temperatures alter hatchling sex ratios. Their vulnerability makes them important sentinels for ocean health and climate change monitoring."
     },
-    {
-      icon: '🪸',
-      title: 'Coral Reef Health',
-      description: 'Controls algae on coral reefs, allowing corals to thrive and maintain reef ecosystems',
-      impact: 'Essential for coral survival',
-      color: '#FF7043'
-    },
-    {
-      icon: '🔄',
-      title: 'Nutrient Cycling',
-      description: 'Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems',
-      impact: 'Connects marine and terrestrial systems',
-      color: '#2196F3'
-    },
-    {
-      icon: '🎯',
-      title: 'Indicator Species',
-      description: 'Acts as a biological indicator of ocean health due to sensitivity to habitat changes',
-      impact: 'Reflects ecosystem condition',
-      color: '#9C27B0'
+    ms: {
+      // Section Headers
+      roleInBiodiversity: "Peranan dalam Kepelbagaian Biologi",
+      populationTrends: "Trend Populasi (2019-2024)",
+      supportingMarineHabitats: "Menyokong Habitat Marin",
+      foodWebConnections: "Hubungan Rangkaian Makanan",
+      climateChangeVulnerability: "Kerentanan Perubahan Iklim",
+
+      // Ecosystem Roles
+      ecosystemRoles: [
+        {
+          icon: '🌱',
+          title: 'Penyelenggaraan Rumpai Laut',
+          description: 'Pemakanan membantu mengekalkan padang rumpai laut yang sihat, menggalakkan pertumbuhan dan mencegah pertumbuhan berlebihan',
+          impact: 'Kritikal untuk kesihatan ekosistem rumpai laut',
+          color: '#4CAF50'
+        },
+        {
+          icon: '🪸',
+          title: 'Kesihatan Terumbu Karang',
+          description: 'Mengawal alga di terumbu karang, membolehkan karang hidup subur dan mengekalkan ekosistem terumbu',
+          impact: 'Penting untuk kelangsungan hidup karang',
+          color: '#FF7043'
+        },
+        {
+          icon: '🔄',
+          title: 'Kitaran Nutrien',
+          description: 'Pergerakan antara pantai penetasan dan kawasan makan mengedarkan nutrien, memperkayakan ekosistem',
+          impact: 'Menghubungkan sistem marin dan daratan',
+          color: '#2196F3'
+        },
+        {
+          icon: '🎯',
+          title: 'Spesies Penunjuk',
+          description: 'Bertindak sebagai penunjuk biologi terhadap kesihatan laut kerana kepekaannya terhadap perubahan habitat',
+          impact: 'Mencerminkan keadaan ekosistem',
+          color: '#9C27B0'
+        }
+      ],
+
+      // Population Data
+      populationHeader: "Penyu Betina Bertelur (Anggaran)",
+      populationData: [
+        { year: '2019', malaysia: '3,900', global: '450,000', trend: 'Asas: aktiviti penetasan stabil di peringkat global' },
+        { year: '2020', malaysia: '4,500', global: '460,000', trend: 'Peningkatan kecil semasa sekatan pandemik' },
+        { year: '2021', malaysia: '5,200', global: '475,000', trend: 'Pemulihan berterusan dan kejayaan penetasan' },
+        { year: '2022', malaysia: '6,700', global: '490,000', trend: 'Trend positif hasil usaha pemuliharaan' },
+        { year: '2023', malaysia: '10,100', global: '510,000', trend: 'Lonjakan ketara di Malaysia; pertumbuhan global' },
+        { year: '2024', malaysia: '9,200', global: '520,000', trend: 'Penurunan sedikit di Malaysia; peningkatan global berterusan' }
+      ],
+
+      // Labels
+      labels: {
+        malaysia: 'Malaysia:',
+        global: 'Global:'
+      },
+
+      // Habitat Support
+      habitatSupport: [
+        'Padang rumpai laut berfungsi sebagai nurseri untuk ikan dan invertebrat',
+        'Terumbu karang menyediakan habitat untuk 25% daripada semua spesies marin',
+        'Ekosistem pantai mendapat manfaat daripada aktiviti penetasan penyu',
+        'Rangkaian makanan lautan terbuka bergantung kepada migrasi penyu',
+        'Tumbuhan pantai mendapat manfaat daripada pemendapan nutrien'
+      ],
+
+      // Detailed Explanations
+      foodWebText: "Penyu Agar adalah bahagian penting dalam rangkaian makanan marin. Telur dan anak penyu mereka menyediakan sumber makanan yang penting kepada pemangsa seperti ketam, burung, dan ikan. Sebagai dewasa, mereka membantu mengekalkan keseimbangan antara pengeluar utama (rumpai laut dan alga) dan ekosistem yang bergantung kepada mereka. Kehadiran mereka menunjukkan persekitaran marin yang sihat dan berfungsi.",
+
+      climateText: "Sebagai haiwan ektotermik yang sensitif kepada perubahan suhu, Penyu Agar berfungsi sebagai penunjuk awal kesan perubahan iklim. Peningkatan suhu laut mempengaruhi sumber makanan mereka, manakala peningkatan suhu pasir mengubah nisbah jantina anak penyu. Kerentanan mereka menjadikan mereka pengawal penting untuk kesihatan laut dan pemantauan perubahan iklim."
     }
-  ];
+  };
 
-  const populationData = [
-    { year: '2019', malaysia: '3,900', global: '450,000', trend: 'Baseline activity' },
-    { year: '2020', malaysia: '4,500', global: '460,000', trend: 'Pandemic restrictions helped' },
-    { year: '2021', malaysia: '5,200', global: '475,000', trend: 'Recovery continued' },
-    { year: '2022', malaysia: '6,700', global: '490,000', trend: 'Conservation efforts paying off' },
-    { year: '2023', malaysia: '10,100', global: '510,000', trend: 'Significant jump in Malaysia' },
-    { year: '2024', malaysia: '9,200', global: '520,000', trend: 'Slight dip, but globally stable' }
-  ];
-
-  const habitatSupport = [
-    'Seagrass meadows serve as nurseries for fish and invertebrates',
-    'Coral reefs provide habitat for 25% of all marine species',
-    'Beach ecosystems benefit from turtle nesting activities',
-    'Open ocean food webs depend on turtle migrations',
-    'Coastal vegetation benefits from nutrient deposition'
-  ];
+  const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView 
@@ -72,11 +172,16 @@ export default function TurtleBiodiversity() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Role in Biodiversity</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.roleInBiodiversity}
+          </ThemedText>
         </View>
 
         <View style={styles.rolesGrid}>
-          {ecosystemRoles.map((role, index) => (
+          {text.ecosystemRoles.map((role, index) => (
             <View key={index} style={[
               styles.roleCard,
               { 
@@ -88,8 +193,18 @@ export default function TurtleBiodiversity() {
                 <ThemedText style={styles.roleEmoji}>{role.icon}</ThemedText>
               </View>
               <View style={styles.roleContent}>
-                <ThemedText style={styles.roleTitle}>{role.title}</ThemedText>
-                <ThemedText style={styles.roleDesc}>{role.description}</ThemedText>
+                <ThemedText style={[
+                  styles.roleTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {role.title}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.roleDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {role.description}
+                </ThemedText>
                 <View style={[styles.impactBadge, { backgroundColor: `${role.color}15` }]}>
                   <ThemedText style={[styles.impactText, { color: role.color }]}>
                     {role.impact}
@@ -109,7 +224,12 @@ export default function TurtleBiodiversity() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Population Trends (2019-2024)</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.populationTrends}
+          </ThemedText>
         </View>
 
         <View style={[
@@ -119,31 +239,69 @@ export default function TurtleBiodiversity() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          <View style={styles.populationHeader}>
-            <ThemedText style={styles.populationTitle}>Nesting Females (Estimates)</ThemedText>
+          <View style={[
+            styles.populationHeader,
+            { borderBottomColor: isDark ? Colors.dark.border : Colors.light.border }
+          ]}>
+            <ThemedText style={[
+              styles.populationTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.populationHeader}
+            </ThemedText>
           </View>
           
-          {populationData.map((data, index) => (
+          {text.populationData.map((data, index) => (
             <View key={index} style={[
               styles.populationRow,
-              index < populationData.length - 1 && {
+              index < text.populationData.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
               }
             ]}>
               <View style={styles.yearColumn}>
-                <ThemedText style={styles.yearText}>{data.year}</ThemedText>
+                <ThemedText style={[
+                  styles.yearText,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {data.year}
+                </ThemedText>
               </View>
               <View style={styles.dataColumn}>
-                <ThemedText style={styles.dataLabel}>Malaysia:</ThemedText>
-                <ThemedText style={styles.dataValue}>{data.malaysia}</ThemedText>
+                <ThemedText style={[
+                  styles.dataLabel,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {text.labels.malaysia}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.dataValue,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {data.malaysia}
+                </ThemedText>
               </View>
               <View style={styles.dataColumn}>
-                <ThemedText style={styles.dataLabel}>Global:</ThemedText>
-                <ThemedText style={styles.dataValue}>{data.global}</ThemedText>
+                <ThemedText style={[
+                  styles.dataLabel,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {text.labels.global}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.dataValue,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {data.global}
+                </ThemedText>
               </View>
               <View style={styles.trendColumn}>
-                <ThemedText style={styles.trendText}>{data.trend}</ThemedText>
+                <ThemedText style={[
+                  styles.trendText,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {data.trend}
+                </ThemedText>
               </View>
             </View>
           ))}
@@ -158,7 +316,12 @@ export default function TurtleBiodiversity() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Supporting Marine Habitats</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.supportingMarineHabitats}
+          </ThemedText>
         </View>
 
         <View style={[
@@ -169,13 +332,18 @@ export default function TurtleBiodiversity() {
           }
         ]}>
           <View style={styles.habitatList}>
-            {habitatSupport.map((support, index) => (
+            {text.habitatSupport.map((support, index) => (
               <View key={index} style={styles.habitatItem}>
                 <View style={[
                   styles.habitatBullet,
                   { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
                 ]} />
-                <ThemedText style={styles.habitatText}>{support}</ThemedText>
+                <ThemedText style={[
+                  styles.habitatText,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {support}
+                </ThemedText>
               </View>
             ))}
           </View>
@@ -194,13 +362,18 @@ export default function TurtleBiodiversity() {
         ]}>
           <View style={styles.foodWebHeader}>
             <MaterialIcons name="account-tree" size={20} color="#4CAF50" />
-            <ThemedText style={styles.foodWebTitle}>Food Web Connections</ThemedText>
+            <ThemedText style={[
+              styles.foodWebTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.foodWebConnections}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.foodWebText}>
-            Green Sea Turtles are integral to marine food webs. Their eggs and hatchlings provide crucial 
-            food sources for predators like crabs, birds, and fish. As adults, they help maintain the 
-            balance between primary producers (seagrasses and algae) and the ecosystems that depend on them. 
-            Their presence indicates a healthy, functioning marine environment.
+          <ThemedText style={[
+            styles.foodWebText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.foodWebText}
           </ThemedText>
         </View>
       </View>
@@ -217,13 +390,18 @@ export default function TurtleBiodiversity() {
         ]}>
           <View style={styles.climateHeader}>
             <MaterialIcons name="thermostat" size={20} color="#FF5722" />
-            <ThemedText style={styles.climateTitle}>Climate Change Vulnerability</ThemedText>
+            <ThemedText style={[
+              styles.climateTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.climateChangeVulnerability}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.climateText}>
-            As ectothermic animals sensitive to temperature changes, Green Sea Turtles serve as early 
-            indicators of climate change impacts. Rising sea temperatures affect their food sources, 
-            while increasing sand temperatures alter hatchling sex ratios. Their vulnerability makes 
-            them important sentinels for ocean health and climate change monitoring.
+          <ThemedText style={[
+            styles.climateText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.climateText}
           </ThemedText>
         </View>
       </View>
@@ -293,7 +471,6 @@ const styles = StyleSheet.create({
   roleDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
     marginBottom: 8,
   },
   impactBadge: {
@@ -321,7 +498,6 @@ const styles = StyleSheet.create({
   populationHeader: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
   populationTitle: {
     fontSize: 16,
@@ -347,7 +523,6 @@ const styles = StyleSheet.create({
   },
   dataLabel: {
     fontSize: 12,
-    opacity: 0.7,
   },
   dataValue: {
     fontSize: 14,
@@ -359,7 +534,6 @@ const styles = StyleSheet.create({
   },
   trendText: {
     fontSize: 12,
-    opacity: 0.8,
     textAlign: 'right',
   },
 

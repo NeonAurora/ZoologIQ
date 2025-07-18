@@ -8,11 +8,306 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
-export default function TurtleConservation() {
+export default function TurtleConservation({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  
   // 🔒 HARDCODED PDF URL - Replace with your actual PDF URL
   const PDF_DOWNLOAD_URL = "https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751086680717.pdf";
+
+  // 🔥 BILINGUAL CONTENT - Based on your provided content
+  const content = {
+    en: {
+      // Section Headers
+      conservationStrategies: "Conservation Strategies",
+      conservationSuccessStories: "Conservation Success Stories",
+      howYouCanHelp: "How You Can Help",
+      researchMonitoring: "Research & Monitoring",
+      ecoTourismImpact: "Eco-Tourism Impact",
+      globalCollaboration: "Global Collaboration",
+      joinConservationEffort: "Join the Conservation Effort",
+      downloadPdf: "Download PDF",
+
+      // Alert Messages
+      downloadComplete: "Download Complete",
+      downloadFailed: "Download Failed",
+      unableToDownload: "Unable to download the file. Please try again.",
+      error: "Error",
+      downloadError: "An error occurred while downloading the file.",
+      unableToOpen: "Unable to open the file. You can find it in your Downloads folder.",
+      cancel: "Cancel",
+      open: "Open",
+
+      // Conservation Strategies
+      conservationStrategiesData: [
+        {
+          icon: '🏛️',
+          title: 'Marine Protected Areas',
+          description: 'Establish and enforce MPAs to safeguard critical habitats such as nesting and feeding grounds',
+          status: 'Active',
+          color: '#2196F3'
+        },
+        {
+          icon: '🎣',
+          title: 'Sustainable Fishing Practices',
+          description: 'Implement turtle excluder devices (TEDs) and enforce bycatch reduction measures',
+          status: 'Expanding',
+          color: '#4CAF50'
+        },
+        {
+          icon: '🌱',
+          title: 'Habitat Restoration',
+          description: 'Rehabilitate degraded nesting beaches and seagrass meadows to support turtle populations',
+          status: 'Ongoing',
+          color: '#8BC34A'
+        },
+        {
+          icon: '⚖️',
+          title: 'Legislation & Enforcement',
+          description: 'Strengthen laws against poaching, illegal trade, and habitat destruction',
+          status: 'Critical',
+          color: '#FF9800'
+        },
+        {
+          icon: '🌡️',
+          title: 'Climate Adaptation',
+          description: 'Implement strategies to manage rising temperatures and protect coastal nesting sites from sea level rise',
+          status: 'Urgent',
+          color: '#F44336'
+        },
+        {
+          icon: '👥',
+          title: 'Community Engagement',
+          description: 'Involve local communities in conservation efforts through education and eco-tourism initiatives',
+          status: 'Growing',
+          color: '#9C27B0'
+        }
+      ],
+
+      // Success Stories
+      successStories: [
+        {
+          location: 'Redang Island, Malaysia',
+          achievement: 'Conservation programs have increased nesting activity through protected beaches and eco-tourism initiatives',
+          flag: '🇲🇾'
+        },
+        {
+          location: 'Hawaii, USA',
+          achievement: 'The Green Sea Turtle population rebounded after the 1978 listing under the U.S. Endangered Species Act and strict protections',
+          flag: '🇺🇸'
+        },
+        {
+          location: 'Tortuguero, Costa Rica',
+          achievement: 'Community-driven conservation programs have led to a steady increase in nesting turtles',
+          flag: '🇨🇷'
+        },
+        {
+          location: 'Australia',
+          achievement: 'Raine Island Recovery Project restored nesting habitats, significantly improving hatchling success rates',
+          flag: '🇦🇺'
+        },
+        {
+          location: 'Bali, Indonesia',
+          achievement: 'Community involvement and legal action against poaching have reduced the trade in turtle products',
+          flag: '🇮🇩'
+        },
+        {
+          location: 'Oman',
+          achievement: 'Protected areas such as Ras Al Jinz have become sanctuaries for nesting turtles, supported by eco-tourism',
+          flag: '🇴🇲'
+        }
+      ],
+
+      // How to Help
+      howToHelp: [
+        {
+          action: 'Protect Nesting Beaches',
+          description: 'Establish protected areas to prevent human disturbances during nesting',
+          icon: '🏖️'
+        },
+        {
+          action: 'Reduce Bycatch',
+          description: 'Use turtle excluder devices (TEDs) in fishing gear to minimize accidental captures',
+          icon: '🎣'
+        },
+        {
+          action: 'Combat Pollution',
+          description: 'Reduce plastic use, promote recycling, and conduct ocean cleanup drives to prevent pollution',
+          icon: '🌊'
+        },
+        {
+          action: 'Mitigate Climate Change',
+          description: 'Support policies that reduce carbon emissions and protect coastal habitats from sea level rise',
+          icon: '🌍'
+        },
+        {
+          action: 'Ban Illegal Trade',
+          description: 'Enforce laws against poaching and the sale of turtle products',
+          icon: '🚫'
+        },
+        {
+          action: 'Raise Awareness',
+          description: 'Educate local communities and tourists about the importance of turtles in ecosystems',
+          icon: '📢'
+        }
+      ],
+
+      // Detailed Explanations
+      researchText: "Conduct studies to track turtle populations, migration patterns, and health for data-driven strategies. Modern technology including satellite tracking, genetic analysis, and AI-powered monitoring helps scientists understand turtle behavior and develop more effective conservation measures. Citizen science programs also allow volunteers to contribute valuable data.",
+
+      tourismText: "Responsible eco-tourism provides economic incentives for local communities to protect turtle nesting sites and marine habitats. When communities benefit financially from turtle conservation, they become active protectors rather than threats. Well-managed turtle watching programs can generate significant revenue while ensuring minimal disturbance to the animals.",
+
+      cooperationText: "Green Sea Turtle conservation requires international cooperation since these animals migrate across national boundaries. Treaties like CITES (Convention on International Trade in Endangered Species) help combat illegal trade, while regional partnerships coordinate protection efforts across turtle migration routes and feeding areas.",
+
+      ctaText: "By protecting beaches, reducing plastic use, and supporting eco-friendly tourism, we can help save this ancient mariner and the vibrant world it supports. Every action counts - from choosing sustainable seafood to supporting conservation organizations. Together, we can ensure future generations will witness the magnificent sight of Green Sea Turtles thriving in our oceans."
+    },
+    ms: {
+      // Section Headers
+      conservationStrategies: "Strategi Pemuliharaan",
+      conservationSuccessStories: "Kisah Kejayaan Pemuliharaan",
+      howYouCanHelp: "Bagaimana Anda Boleh Membantu",
+      researchMonitoring: "Penyelidikan & Pemantauan",
+      ecoTourismImpact: "Kesan Eko-Pelancongan",
+      globalCollaboration: "Kerjasama Global",
+      joinConservationEffort: "Sertai Usaha Pemuliharaan",
+      downloadPdf: "Muat Turun PDF",
+
+      // Alert Messages
+      downloadComplete: "Muat Turun Selesai",
+      downloadFailed: "Muat Turun Gagal",
+      unableToDownload: "Tidak dapat memuat turun fail. Sila cuba lagi.",
+      error: "Ralat",
+      downloadError: "Ralat berlaku semasa memuat turun fail.",
+      unableToOpen: "Tidak dapat membuka fail. Anda boleh menemuinya di folder Muat Turun anda.",
+      cancel: "Batal",
+      open: "Buka",
+
+      // Conservation Strategies
+      conservationStrategiesData: [
+        {
+          icon: '🏛️',
+          title: 'Kawasan Perlindungan Marin',
+          description: 'Menubuhkan dan menguatkuasakan MPA untuk melindungi habitat penting seperti kawasan penetasan dan pemakanan',
+          status: 'Aktif',
+          color: '#2196F3'
+        },
+        {
+          icon: '🎣',
+          title: 'Amalan Perikanan Lestari',
+          description: 'Menggunakan alat penghalang penyu (Turtle Excluder Devices - TEDs) dan menguatkuasakan langkah pengurangan tangkapan sampingan',
+          status: 'Berkembang',
+          color: '#4CAF50'
+        },
+        {
+          icon: '🌱',
+          title: 'Pemulihan Habitat',
+          description: 'Memulihkan pantai penetasan dan padang rumpai laut yang rosak untuk menyokong populasi penyu',
+          status: 'Berterusan',
+          color: '#8BC34A'
+        },
+        {
+          icon: '⚖️',
+          title: 'Perundangan & Penguatkuasaan',
+          description: 'Memperkuat undang-undang terhadap pemburuan haram, perdagangan haram, dan pemusnahan habitat',
+          status: 'Kritikal',
+          color: '#FF9800'
+        },
+        {
+          icon: '🌡️',
+          title: 'Penyesuaian Iklim',
+          description: 'Melaksanakan strategi untuk mengurus suhu yang meningkat dan melindungi tapak penetasan pantai daripada kenaikan paras laut',
+          status: 'Mendesak',
+          color: '#F44336'
+        },
+        {
+          icon: '👥',
+          title: 'Penglibatan Komuniti',
+          description: 'Melibatkan komuniti tempatan dalam usaha pemuliharaan melalui pendidikan dan inisiatif eko-pelancongan',
+          status: 'Berkembang',
+          color: '#9C27B0'
+        }
+      ],
+
+      // Success Stories
+      successStories: [
+        {
+          location: 'Pulau Redang, Malaysia',
+          achievement: 'Program pemuliharaan telah meningkatkan aktiviti penetasan melalui pantai yang dilindungi dan inisiatif eko-pelancongan',
+          flag: '🇲🇾'
+        },
+        {
+          location: 'Hawaii, Amerika Syarikat',
+          achievement: 'Populasi penyu meningkat semula selepas disenaraikan sebagai spesies terancam pada tahun 1978 dan diberikan perlindungan ketat',
+          flag: '🇺🇸'
+        },
+        {
+          location: 'Tortuguero, Costa Rica',
+          achievement: 'Program pemuliharaan yang dipacu oleh komuniti membawa kepada peningkatan berterusan penyu yang mendarat untuk bertelur',
+          flag: '🇨🇷'
+        },
+        {
+          location: 'Australia',
+          achievement: 'Projek Pemulihan Pulau Raine telah memulihkan habitat penetasan, meningkatkan kadar kejayaan penetasan dengan ketara',
+          flag: '🇦🇺'
+        },
+        {
+          location: 'Bali, Indonesia',
+          achievement: 'Penglibatan komuniti dan tindakan undang-undang terhadap pemburuan haram telah mengurangkan perdagangan produk penyu',
+          flag: '🇮🇩'
+        },
+        {
+          location: 'Oman',
+          achievement: 'Kawasan perlindungan seperti Ras Al Jinz menjadi tempat perlindungan penyu penetasan, disokong oleh eko-pelancongan',
+          flag: '🇴🇲'
+        }
+      ],
+
+      // How to Help
+      howToHelp: [
+        {
+          action: 'Lindungi Pantai Penetasan',
+          description: 'Wujudkan kawasan perlindungan untuk mengelakkan gangguan manusia semasa musim bertelur',
+          icon: '🏖️'
+        },
+        {
+          action: 'Kurangkan Tangkapan Sampingan',
+          description: 'Gunakan peralatan yang mesra penyu seperti Turtle Excluder Devices (TEDs) dalam aktiviti perikanan',
+          icon: '🎣'
+        },
+        {
+          action: 'Banteras Pencemaran',
+          description: 'Kurangkan penggunaan plastik, galakkan kitar semula dan anjurkan aktiviti pembersihan laut',
+          icon: '🌊'
+        },
+        {
+          action: 'Atasi Perubahan Iklim',
+          description: 'Sokong dasar pengurangan pelepasan karbon dan perlindungan habitat pantai daripada kenaikan paras laut',
+          icon: '🌍'
+        },
+        {
+          action: 'Haramkan Perdagangan Haram',
+          description: 'Tegakkan undang-undang terhadap pemburuan haram dan penjualan produk penyu',
+          icon: '🚫'
+        },
+        {
+          action: 'Sebarkan Kesedaran',
+          description: 'Didik komuniti setempat dan pelancong mengenai kepentingan penyu dalam ekosistem',
+          icon: '📢'
+        }
+      ],
+
+      // Detailed Explanations
+      researchText: "Menjalankan kajian untuk menjejak populasi penyu, corak migrasi, dan kesihatan untuk strategi berdasarkan data. Teknologi moden termasuk penjejakan satelit, analisis genetik, dan pemantauan berkuasa AI membantu saintis memahami tingkah laku penyu dan membangunkan langkah pemuliharaan yang lebih berkesan. Program sains warganegara juga membolehkan sukarelawan menyumbang data berharga.",
+
+      tourismText: "Eko-pelancongan yang bertanggungjawab menyediakan insentif ekonomi untuk komuniti tempatan melindungi tapak penetasan penyu dan habitat marin. Apabila komuniti mendapat manfaat kewangan daripada pemuliharaan penyu, mereka menjadi pelindung aktif dan bukannya ancaman. Program pemerhatian penyu yang diurus dengan baik boleh menjana pendapatan yang ketara sambil memastikan gangguan minimum kepada haiwan.",
+
+      cooperationText: "Pemuliharaan Penyu Agar memerlukan kerjasama antarabangsa kerana haiwan ini berhijrah merentasi sempadan negara. Perjanjian seperti CITES (Konvensyen Perdagangan Antarabangsa Spesies Terancam) membantu memerangi perdagangan haram, manakala perkongsian serantau menyelaraskan usaha perlindungan merentasi laluan migrasi dan kawasan pemakanan penyu.",
+
+      ctaText: "Dengan melindungi pantai, mengurangkan penggunaan plastik, dan menyokong pelancongan mesra alam, kita dapat membantu menyelamatkan pelayar purba ini dan dunia laut yang penuh warna yang disokongnya. Setiap tindakan penting - dari memilih makanan laut yang lestari hingga menyokong organisasi pemuliharaan. Bersama-sama, kita boleh memastikan generasi akan datang akan menyaksikan pemandangan menakjubkan Penyu Agar berkembang maju di lautan kita."
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
 
   const handleDownloadPDF = async () => {
     try {
@@ -38,12 +333,12 @@ export default function TurtleConservation() {
           const isAvailable = await Sharing.isAvailableAsync();
           
           Alert.alert(
-            'Download Complete',
+            text.downloadComplete,
             '', // ← Empty message
             [
-              { text: 'Cancel', style: 'default' },
+              { text: text.cancel, style: 'default' },
               ...(isAvailable ? [{ 
-                text: 'Open', 
+                text: text.open, 
                 onPress: async () => {
                   try {
                     await Sharing.shareAsync(uri, {
@@ -52,7 +347,7 @@ export default function TurtleConservation() {
                     });
                   } catch (shareError) {
                     console.error('Error opening file:', shareError);
-                    Alert.alert('Error', 'Unable to open the file. You can find it in your Downloads folder.');
+                    Alert.alert(text.error, text.unableToOpen);
                   }
                 },
                 style: 'default'
@@ -61,125 +356,14 @@ export default function TurtleConservation() {
           );
         } catch (error) {
           console.error('Download failed:', error);
-          Alert.alert('Download Failed', 'Unable to download the file. Please try again.');
+          Alert.alert(text.downloadFailed, text.unableToDownload);
         }
       }
     } catch (error) {
       console.error('Download error:', error);
-      Alert.alert('Error', 'An error occurred while downloading the file.');
+      Alert.alert(text.error, text.downloadError);
     }
   };
-
-  const conservationStrategies = [
-    {
-      icon: '🏛️',
-      title: 'Marine Protected Areas',
-      description: 'Establish and enforce MPAs to safeguard critical habitats such as nesting and feeding grounds',
-      status: 'Active',
-      color: '#2196F3'
-    },
-    {
-      icon: '🎣',
-      title: 'Sustainable Fishing Practices',
-      description: 'Implement turtle excluder devices (TEDs) and enforce bycatch reduction measures',
-      status: 'Expanding',
-      color: '#4CAF50'
-    },
-    {
-      icon: '🌱',
-      title: 'Habitat Restoration',
-      description: 'Rehabilitate degraded nesting beaches and seagrass meadows to support turtle populations',
-      status: 'Ongoing',
-      color: '#8BC34A'
-    },
-    {
-      icon: '⚖️',
-      title: 'Legislation & Enforcement',
-      description: 'Strengthen laws against poaching, illegal trade, and habitat destruction',
-      status: 'Critical',
-      color: '#FF9800'
-    },
-    {
-      icon: '🌡️',
-      title: 'Climate Adaptation',
-      description: 'Implement strategies to manage rising temperatures and protect coastal nesting sites',
-      status: 'Urgent',
-      color: '#F44336'
-    },
-    {
-      icon: '👥',
-      title: 'Community Engagement',
-      description: 'Involve local communities in conservation efforts through education and eco-tourism initiatives',
-      status: 'Growing',
-      color: '#9C27B0'
-    }
-  ];
-
-  const successStories = [
-    {
-      location: 'Redang Island, Malaysia',
-      achievement: 'Conservation programs have increased nesting activity through protected beaches and eco-tourism initiatives',
-      flag: '🇲🇾'
-    },
-    {
-      location: 'Hawaii, USA',
-      achievement: 'The Green Sea Turtle population rebounded after the 1978 listing under the U.S. Endangered Species Act',
-      flag: '🇺🇸'
-    },
-    {
-      location: 'Tortuguero, Costa Rica',
-      achievement: 'Community-driven conservation programs have led to a steady increase in nesting turtles',
-      flag: '🇨🇷'
-    },
-    {
-      location: 'Australia',
-      achievement: 'Raine Island Recovery Project restored nesting habitats, significantly improving hatchling success rates',
-      flag: '🇦🇺'
-    },
-    {
-      location: 'Bali, Indonesia',
-      achievement: 'Community involvement and legal action against poaching have reduced the trade in turtle products',
-      flag: '🇮🇩'
-    },
-    {
-      location: 'Oman',
-      achievement: 'Protected areas such as Ras Al Jinz have become sanctuaries for nesting turtles, supported by eco-tourism',
-      flag: '🇴🇲'
-    }
-  ];
-
-  const howToHelp = [
-    {
-      action: 'Protect Nesting Beaches',
-      description: 'Establish protected areas to prevent human disturbances during nesting',
-      icon: '🏖️'
-    },
-    {
-      action: 'Reduce Bycatch',
-      description: 'Use turtle excluder devices (TEDs) in fishing gear to minimize accidental captures',
-      icon: '🎣'
-    },
-    {
-      action: 'Combat Pollution',
-      description: 'Reduce plastic use, promote recycling, and conduct ocean cleanup drives',
-      icon: '🌊'
-    },
-    {
-      action: 'Mitigate Climate Change',
-      description: 'Support policies that reduce carbon emissions and protect coastal habitats',
-      icon: '🌍'
-    },
-    {
-      action: 'Ban Illegal Trade',
-      description: 'Enforce laws against poaching and the sale of turtle products',
-      icon: '🚫'
-    },
-    {
-      action: 'Raise Awareness',
-      description: 'Educate local communities and tourists about the importance of turtles in ecosystems',
-      icon: '📢'
-    }
-  ];
 
   return (
     <ScrollView 
@@ -195,11 +379,16 @@ export default function TurtleConservation() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Conservation Strategies</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.conservationStrategies}
+          </ThemedText>
         </View>
 
         <View style={styles.strategiesGrid}>
-          {conservationStrategies.map((strategy, index) => (
+          {text.conservationStrategiesData.map((strategy, index) => (
             <View key={index} style={[
               styles.strategyCard,
               { 
@@ -212,13 +401,23 @@ export default function TurtleConservation() {
                   <ThemedText style={styles.strategyEmoji}>{strategy.icon}</ThemedText>
                 </View>
                 <View style={styles.strategyTitleContainer}>
-                  <ThemedText style={styles.strategyTitle}>{strategy.title}</ThemedText>
+                  <ThemedText style={[
+                    styles.strategyTitle,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    {strategy.title}
+                  </ThemedText>
                   <View style={[styles.statusBadge, { backgroundColor: strategy.color }]}>
                     <ThemedText style={styles.statusText}>{strategy.status}</ThemedText>
                   </View>
                 </View>
               </View>
-              <ThemedText style={styles.strategyDesc}>{strategy.description}</ThemedText>
+              <ThemedText style={[
+                styles.strategyDesc,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {strategy.description}
+              </ThemedText>
             </View>
           ))}
         </View>
@@ -232,11 +431,16 @@ export default function TurtleConservation() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Conservation Success Stories</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.conservationSuccessStories}
+          </ThemedText>
         </View>
 
         <View style={styles.successGrid}>
-          {successStories.map((story, index) => (
+          {text.successStories.map((story, index) => (
             <View key={index} style={[
               styles.successCard,
               { 
@@ -246,9 +450,19 @@ export default function TurtleConservation() {
             ]}>
               <View style={styles.successHeader}>
                 <ThemedText style={styles.flag}>{story.flag}</ThemedText>
-                <ThemedText style={styles.location}>{story.location}</ThemedText>
+                <ThemedText style={[
+                  styles.location,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {story.location}
+                </ThemedText>
               </View>
-              <ThemedText style={styles.achievement}>{story.achievement}</ThemedText>
+              <ThemedText style={[
+                styles.achievement,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {story.achievement}
+              </ThemedText>
             </View>
           ))}
         </View>
@@ -262,11 +476,16 @@ export default function TurtleConservation() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>How You Can Help</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.howYouCanHelp}
+          </ThemedText>
         </View>
 
         <View style={styles.helpGrid}>
-          {howToHelp.map((help, index) => (
+          {text.howToHelp.map((help, index) => (
             <View key={index} style={[
               styles.helpCard,
               { 
@@ -276,9 +495,19 @@ export default function TurtleConservation() {
             ]}>
               <View style={styles.helpHeader}>
                 <ThemedText style={styles.helpIcon}>{help.icon}</ThemedText>
-                <ThemedText style={styles.helpAction}>{help.action}</ThemedText>
+                <ThemedText style={[
+                  styles.helpAction,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {help.action}
+                </ThemedText>
               </View>
-              <ThemedText style={styles.helpDesc}>{help.description}</ThemedText>
+              <ThemedText style={[
+                styles.helpDesc,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {help.description}
+              </ThemedText>
             </View>
           ))}
         </View>
@@ -296,13 +525,18 @@ export default function TurtleConservation() {
         ]}>
           <View style={styles.researchHeader}>
             <MaterialIcons name="science" size={20} color="#2196F3" />
-            <ThemedText style={styles.researchTitle}>Research & Monitoring</ThemedText>
+            <ThemedText style={[
+              styles.researchTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.researchMonitoring}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.researchText}>
-            Conduct studies to track turtle populations, migration patterns, and health for data-driven strategies. 
-            Modern technology including satellite tracking, genetic analysis, and AI-powered monitoring helps 
-            scientists understand turtle behavior and develop more effective conservation measures. 
-            Citizen science programs also allow volunteers to contribute valuable data.
+          <ThemedText style={[
+            styles.researchText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.researchText}
           </ThemedText>
         </View>
       </View>
@@ -319,13 +553,18 @@ export default function TurtleConservation() {
         ]}>
           <View style={styles.tourismHeader}>
             <MaterialIcons name="eco" size={20} color="#4CAF50" />
-            <ThemedText style={styles.tourismTitle}>Eco-Tourism Impact</ThemedText>
+            <ThemedText style={[
+              styles.tourismTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.ecoTourismImpact}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.tourismText}>
-            Responsible eco-tourism provides economic incentives for local communities to protect turtle nesting 
-            sites and marine habitats. When communities benefit financially from turtle conservation, they become 
-            active protectors rather than threats. Well-managed turtle watching programs can generate significant 
-            revenue while ensuring minimal disturbance to the animals.
+          <ThemedText style={[
+            styles.tourismText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.tourismText}
           </ThemedText>
         </View>
       </View>
@@ -342,13 +581,18 @@ export default function TurtleConservation() {
         ]}>
           <View style={styles.cooperationHeader}>
             <MaterialIcons name="public" size={20} color="#FF9800" />
-            <ThemedText style={styles.cooperationTitle}>Global Collaboration</ThemedText>
+            <ThemedText style={[
+              styles.cooperationTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.globalCollaboration}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.cooperationText}>
-            Green Sea Turtle conservation requires international cooperation since these animals migrate across 
-            national boundaries. Treaties like CITES (Convention on International Trade in Endangered Species) 
-            help combat illegal trade, while regional partnerships coordinate protection efforts across turtle 
-            migration routes and feeding areas.
+          <ThemedText style={[
+            styles.cooperationText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.cooperationText}
           </ThemedText>
         </View>
       </View>
@@ -365,16 +609,22 @@ export default function TurtleConservation() {
         ]}>
           <View style={styles.ctaHeader}>
             <MaterialIcons name="campaign" size={20} color="#2196F3" />
-            <ThemedText style={styles.ctaTitle}>Join the Conservation Effort</ThemedText>
+            <ThemedText style={[
+              styles.ctaTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.joinConservationEffort}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.ctaText}>
-            By protecting beaches, reducing plastic use, and supporting eco-friendly tourism, we can help save 
-            this ancient mariner and the vibrant world it supports. Every action counts - from choosing sustainable 
-            seafood to supporting conservation organizations. Together, we can ensure future generations will 
-            witness the magnificent sight of Green Sea Turtles thriving in our oceans.
+          <ThemedText style={[
+            styles.ctaText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.ctaText}
           </ThemedText>
         </View>
       </View>
+
       {/* 🔥 Simple Download Button */}
       <View style={styles.downloadSection}>
         <TouchableOpacity 
@@ -386,7 +636,7 @@ export default function TurtleConservation() {
           activeOpacity={0.8}
         >
           <MaterialIcons name="file-download" size={18} color="#fff" />
-          <ThemedText style={styles.simpleDownloadText}>Download PDF</ThemedText>
+          <ThemedText style={styles.simpleDownloadText}>{text.downloadPdf}</ThemedText>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -469,7 +719,6 @@ const styles = StyleSheet.create({
   strategyDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
     textAlign: 'justify',
   },
 
@@ -504,7 +753,6 @@ const styles = StyleSheet.create({
   achievement: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
     textAlign: 'justify',
   },
 
@@ -543,7 +791,6 @@ const styles = StyleSheet.create({
   helpDesc: {
     fontSize: 13,
     textAlign: 'center',
-    opacity: 0.8,
     lineHeight: 18,
   },
 

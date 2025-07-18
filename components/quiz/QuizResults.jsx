@@ -44,7 +44,8 @@ export default function QuizResults({
       viewResults: 'View Results',
       moreQuizzes: 'More Quizzes',
       saving: 'Saving...',
-      savingResults: 'Saving your results...'
+      savingResults: 'Saving your results...',
+      proceedToLessons: 'Proceed to Lessons',
     },
     ms: {
       results: 'Keputusan',
@@ -63,7 +64,8 @@ export default function QuizResults({
       viewResults: 'Lihat Keputusan',
       moreQuizzes: 'Lebih Kuiz',
       saving: 'Menyimpan...',
-      savingResults: 'Menyimpan keputusan anda...'
+      savingResults: 'Menyimpan keputusan anda...',
+      proceedToLessons: 'Teruskan ke Pelajaran',
     }
   };
 
@@ -79,11 +81,22 @@ export default function QuizResults({
   };
 
   const getCompletionButtonText = () => {
-    if (sessionId && quiz.type === 'pre-lesson') {
+    // 🔥 DEBUG: Add these console logs to see what's happening
+    console.log('Debug Quiz Results:');
+    console.log('- sessionId:', sessionId);
+    console.log('- quiz.type:', quiz.type);
+    console.log('- quiz.quiz_type:', quiz.quiz_type);
+    console.log('- quizTypeInfo.title:', quizTypeInfo.title);
+    console.log('- quizTypeInfo:', quizTypeInfo);
+    
+    if (sessionId && (quizTypeInfo.title === 'Pre-Assessment' || quizTypeInfo.title === 'Pra-Penilaian')) {
+      console.log('✅ Condition 1 met: sessionId + quiz.type');
       return `📚 ${text.startLesson}`;
-    } else if (sessionId && quiz.type === 'post-lesson') {
+    } else if (sessionId && (quizTypeInfo.title === 'Post-Assessment' || quizTypeInfo.title === 'Pasca-Penilaian')) {
+      console.log('✅ Condition 2 met: sessionId + post-lesson');
       return `📊 ${text.viewResults}`;
     } else {
+      console.log('❌ Falling back to moreQuizzes');
       return `🌟 ${text.moreQuizzes}`;
     }
   };

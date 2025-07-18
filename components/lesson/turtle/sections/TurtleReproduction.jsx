@@ -6,75 +6,207 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TurtleReproduction() {
+export default function TurtleReproduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const reproductionStages = [
-    {
-      icon: '💑',
-      title: 'Mating',
-      description: 'Green Sea Turtles mate in shallow coastal waters near nesting beaches, typically during the breeding season',
-      color: '#E91E63'
-    },
-    {
-      icon: '🏖️',
-      title: 'Nesting',
-      description: 'Females return to the same beach where they were born (natal homing) to lay eggs, often at night',
-      color: '#FF9800'
-    },
-    {
-      icon: '🥚',
-      title: 'Egg Laying',
-      description: 'Each female lays 80-120 eggs per nest, and nests multiple times (up to 7) during a single season',
-      color: '#4CAF50'
-    },
-    {
-      icon: '🌡️',
-      title: 'Incubation',
-      description: 'Eggs incubate for ~60 days; sand temperature influences the sex of hatchlings (warmer = more females)',
-      color: '#FF5722'
-    },
-    {
-      icon: '🌙',
-      title: 'Emergence',
-      description: 'Hatchlings emerge at night to avoid predators and use moonlight to navigate toward the ocean',
-      color: '#3F51B5'
-    },
-    {
-      icon: '🌊',
-      title: 'Ocean Journey',
-      description: 'Juveniles drift in ocean currents for several years, feeding on plankton before moving to coastal habitats',
-      color: '#2196F3'
-    }
-  ];
+  // 🔥 BILINGUAL CONTENT - Following established pattern
+  const content = {
+    en: {
+      // Section Headers
+      reproductionCycle: "Reproduction & Family Life",
+      lifeStages: "Life Stages",
+      nestingStatistics: "Nesting Statistics",
+      temperatureTitle: "Temperature-Dependent Sex Determination",
+      homingTitle: "Remarkable Natal Homing",
 
-  const lifeStages = [
-    {
-      stage: 'Hatchling',
-      duration: '0-1 years',
-      habitat: 'Open ocean currents',
-      diet: 'Plankton, small organisms'
+      // Reproduction Stages
+      reproductionStages: [
+        {
+          icon: '💑',
+          title: 'Mating Behavior',
+          description: 'Green Sea Turtles mate in shallow coastal waters near nesting beaches, typically during the breeding season',
+          color: '#E91E63'
+        },
+        {
+          icon: '🏖️',
+          title: 'Nesting',
+          description: 'Females return to the same beach where they were born (natal homing) to lay eggs, often at night',
+          color: '#FF9800'
+        },
+        {
+          icon: '🥚',
+          title: 'Clutch Size',
+          description: 'Each female lays 80–120 eggs per nest, and nests multiple times (up to 7) during a single season',
+          color: '#4CAF50'
+        },
+        {
+          icon: '🌡️',
+          title: 'Incubation Period',
+          description: 'Eggs incubate for ~60 days; sand temperature influences the sex of hatchlings (warmer sand = more females)',
+          color: '#FF5722'
+        },
+        {
+          icon: '🌙',
+          title: 'Hatchling Emergence',
+          description: 'Hatchlings emerge at night to avoid predators and use moonlight to navigate toward the ocean',
+          color: '#3F51B5'
+        },
+        {
+          icon: '🌊',
+          title: 'Juvenile Stage',
+          description: 'Juveniles drift in ocean currents for several years, feeding on plankton before moving to coastal habitats',
+          color: '#2196F3'
+        }
+      ],
+
+      // Life Stages - Using strings instead of objects
+      lifeStagesData: [
+        {
+          stageName: 'Hatchling',
+          duration: '0-1 years',
+          habitat: 'Open ocean currents',
+          diet: 'Plankton, small organisms'
+        },
+        {
+          stageName: 'Juvenile',
+          duration: '1-20 years',
+          habitat: 'Coastal waters, coral reefs',
+          diet: 'Transition to herbivorous diet'
+        },
+        {
+          stageName: 'Sub-adult',
+          duration: '20-30 years',
+          habitat: 'Foraging areas, seagrass beds',
+          diet: 'Seagrasses, algae'
+        },
+        {
+          stageName: 'Adult',
+          duration: '30-70 years',
+          habitat: 'Feeding and nesting areas',
+          diet: 'Primarily seagrasses and algae'
+        }
+      ],
+
+      // Statistics Labels
+      statsLabels: {
+        eggsPerClutch: 'Eggs per clutch',
+        nestsPerSeason: 'Nests per season',
+        incubationPeriod: 'Incubation period',
+        ageAtMaturity: 'Age at maturity'
+      },
+
+      // Labels
+      labels: {
+        habitat: 'Habitat:',
+        diet: 'Diet:'
+      },
+
+      // Temperature explanation
+      temperatureText: "The sex of Green Sea Turtle hatchlings is determined by the temperature of the sand during incubation. Warmer temperatures (above 29°C) produce more females, while cooler temperatures produce more males. This makes them particularly vulnerable to climate change, as rising temperatures could lead to heavily skewed sex ratios.",
+
+      // Homing explanation
+      homingText: "One of the most amazing aspects of Green Sea Turtle reproduction is natal homing - the ability of females to return to the exact beach where they were born to lay their own eggs. This incredible navigation feat occurs after decades of ocean wandering, demonstrating their exceptional memory and spatial awareness abilities."
     },
-    {
-      stage: 'Juvenile',
-      duration: '1-20 years',
-      habitat: 'Coastal waters, coral reefs',
-      diet: 'Transition to herbivorous diet'
-    },
-    {
-      stage: 'Sub-adult',
-      duration: '20-30 years',
-      habitat: 'Foraging areas, seagrass beds',
-      diet: 'Seagrasses, algae'
-    },
-    {
-      stage: 'Adult',
-      duration: '30-70 years',
-      habitat: 'Feeding and nesting areas',
-      diet: 'Primarily seagrasses and algae'
+    ms: {
+      // Section Headers
+      reproductionCycle: "Pembiakan & Kehidupan Keluarga",
+      lifeStages: "Peringkat Kehidupan",
+      nestingStatistics: "Statistik Penetasan",
+      temperatureTitle: "Penentuan Jantina Bergantung Suhu",
+      homingTitle: "Natal Homing yang Luar Biasa",
+
+      // Reproduction Stages
+      reproductionStages: [
+        {
+          icon: '💑',
+          title: 'Kelakuan Mengawan',
+          description: 'Penyu Agar mengawan di perairan pantai cetek berhampiran pantai penetasan, biasanya semasa musim pembiakan',
+          color: '#E91E63'
+        },
+        {
+          icon: '🏖️',
+          title: 'Penetasan Telur',
+          description: 'Penyu betina kembali ke pantai tempat mereka dilahirkan (natal homing) untuk bertelur, selalunya pada waktu malam',
+          color: '#FF9800'
+        },
+        {
+          icon: '🥚',
+          title: 'Bilangan Telur',
+          description: 'Setiap betina meletakkan 80–120 biji telur setiap sarang dan boleh bersarang sehingga 7 kali dalam satu musim',
+          color: '#4CAF50'
+        },
+        {
+          icon: '🌡️',
+          title: 'Tempoh Inkubasi',
+          description: 'Telur mengambil masa ~60 hari untuk menetas; suhu pasir menentukan jantina anak penyu (suhu panas = lebih banyak betina)',
+          color: '#FF5722'
+        },
+        {
+          icon: '🌙',
+          title: 'Kemunculan Anak Penyu',
+          description: 'Anak penyu muncul pada waktu malam untuk mengelak pemangsa dan menggunakan cahaya bulan untuk menuju ke laut',
+          color: '#3F51B5'
+        },
+        {
+          icon: '🌊',
+          title: 'Peringkat Juvenil',
+          description: 'Anak penyu hanyut dalam arus laut selama beberapa tahun, memakan plankton sebelum berpindah ke habitat pantai',
+          color: '#2196F3'
+        }
+      ],
+
+      // Life Stages - Using strings instead of objects
+      lifeStagesData: [
+        {
+          stageName: 'Anak Penyu',
+          duration: '0-1 tahun',
+          habitat: 'Arus laut terbuka',
+          diet: 'Plankton, organisma kecil'
+        },
+        {
+          stageName: 'Juvenil',
+          duration: '1-20 tahun',
+          habitat: 'Perairan pantai, terumbu karang',
+          diet: 'Peralihan kepada diet herbivor'
+        },
+        {
+          stageName: 'Pra-dewasa',
+          duration: '20-30 tahun',
+          habitat: 'Kawasan mencari makan, padang rumpai laut',
+          diet: 'Rumpai laut, alga'
+        },
+        {
+          stageName: 'Dewasa',
+          duration: '30-70 tahun',
+          habitat: 'Kawasan makan dan penetasan',
+          diet: 'Terutamanya rumpai laut dan alga'
+        }
+      ],
+
+      // Statistics Labels
+      statsLabels: {
+        eggsPerClutch: 'Telur setiap kelompok',
+        nestsPerSeason: 'Sarang setiap musim',
+        incubationPeriod: 'Tempoh inkubasi',
+        ageAtMaturity: 'Umur kematangan'
+      },
+
+      // Labels
+      labels: {
+        habitat: 'Habitat:',
+        diet: 'Diet:'
+      },
+
+      // Temperature explanation
+      temperatureText: "Jantina anak Penyu Agar ditentukan oleh suhu pasir semasa inkubasi. Suhu yang lebih panas (melebihi 29°C) menghasilkan lebih banyak betina, manakala suhu yang lebih sejuk menghasilkan lebih banyak jantan. Ini menjadikan mereka sangat terdedah kepada perubahan iklim, kerana peningkatan suhu boleh membawa kepada nisbah jantina yang sangat condong.",
+
+      // Homing explanation
+      homingText: "Salah satu aspek yang paling menakjubkan dalam pembiakan Penyu Agar ialah natal homing - keupayaan penyu betina untuk kembali ke pantai tempat mereka dilahirkan untuk meletakkan telur mereka sendiri. Pencapaian navigasi yang luar biasa ini berlaku selepas berdekad-dekad mengembara di lautan, menunjukkan ingatan yang luar biasa dan keupayaan kesedaran ruang mereka."
     }
-  ];
+  };
+
+  const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView 
@@ -90,11 +222,16 @@ export default function TurtleReproduction() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Reproduction Cycle</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.reproductionCycle}
+          </ThemedText>
         </View>
 
         <View style={styles.stagesGrid}>
-          {reproductionStages.map((stage, index) => (
+          {text.reproductionStages.map((stage, index) => (
             <View key={index} style={[
               styles.stageCard,
               { 
@@ -106,8 +243,18 @@ export default function TurtleReproduction() {
                 <ThemedText style={styles.stageEmoji}>{stage.icon}</ThemedText>
               </View>
               <View style={styles.stageContent}>
-                <ThemedText style={styles.stageTitle}>{stage.title}</ThemedText>
-                <ThemedText style={styles.stageDesc}>{stage.description}</ThemedText>
+                <ThemedText style={[
+                  styles.stageTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {stage.title}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.stageDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {stage.description}
+                </ThemedText>
               </View>
             </View>
           ))}
@@ -122,11 +269,16 @@ export default function TurtleReproduction() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Life Stages</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.lifeStages}
+          </ThemedText>
         </View>
 
         <View style={styles.lifeStagesContainer}>
-          {lifeStages.map((stage, index) => (
+          {text.lifeStagesData.map((stageItem, index) => (
             <View key={index} style={[
               styles.lifeStageCard,
               { 
@@ -135,19 +287,49 @@ export default function TurtleReproduction() {
               }
             ]}>
               <View style={styles.lifeStageHeader}>
-                <ThemedText style={styles.lifeStageTitle}>{stage.stage}</ThemedText>
-                <ThemedText style={styles.lifeStageDuration}>{stage.duration}</ThemedText>
+                <ThemedText style={[
+                  styles.lifeStageTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {stageItem.stageName}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.lifeStageDuration,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {stageItem.duration}
+                </ThemedText>
               </View>
               <View style={styles.lifeStageDetails}>
                 <View style={styles.lifeStageRow}>
                   <MaterialIcons name="place" size={16} color="#4CAF50" />
-                  <ThemedText style={styles.lifeStageLabel}>Habitat:</ThemedText>
-                  <ThemedText style={styles.lifeStageValue}>{stage.habitat}</ThemedText>
+                  <ThemedText style={[
+                    styles.lifeStageLabel,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    {text.labels.habitat}
+                  </ThemedText>
+                  <ThemedText style={[
+                    styles.lifeStageValue,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]}>
+                    {stageItem.habitat}
+                  </ThemedText>
                 </View>
                 <View style={styles.lifeStageRow}>
                   <MaterialIcons name="restaurant" size={16} color="#FF9800" />
-                  <ThemedText style={styles.lifeStageLabel}>Diet:</ThemedText>
-                  <ThemedText style={styles.lifeStageValue}>{stage.diet}</ThemedText>
+                  <ThemedText style={[
+                    styles.lifeStageLabel,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                    {text.labels.diet}
+                  </ThemedText>
+                  <ThemedText style={[
+                    styles.lifeStageValue,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]}>
+                    {stageItem.diet}
+                  </ThemedText>
                 </View>
               </View>
             </View>
@@ -167,13 +349,18 @@ export default function TurtleReproduction() {
         ]}>
           <View style={styles.temperatureHeader}>
             <MaterialIcons name="thermostat" size={20} color="#FF5722" />
-            <ThemedText style={styles.temperatureTitle}>Temperature-Dependent Sex Determination</ThemedText>
+            <ThemedText style={[
+              styles.temperatureTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.temperatureTitle}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.temperatureText}>
-            The sex of Green Sea Turtle hatchlings is determined by the temperature of the sand during incubation. 
-            Warmer temperatures (above 29°C) produce more females, while cooler temperatures produce more males. 
-            This makes them particularly vulnerable to climate change, as rising temperatures could lead to 
-            heavily skewed sex ratios.
+          <ThemedText style={[
+            styles.temperatureText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.temperatureText}
           </ThemedText>
         </View>
       </View>
@@ -186,7 +373,12 @@ export default function TurtleReproduction() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Nesting Statistics</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.nestingStatistics}
+          </ThemedText>
         </View>
 
         <View style={styles.statsGrid}>
@@ -198,7 +390,12 @@ export default function TurtleReproduction() {
             }
           ]}>
             <ThemedText style={styles.statNumber}>80-120</ThemedText>
-            <ThemedText style={styles.statLabel}>Eggs per clutch</ThemedText>
+            <ThemedText style={[
+              styles.statLabel,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.statsLabels.eggsPerClutch}
+            </ThemedText>
           </View>
 
           <View style={[
@@ -208,8 +405,15 @@ export default function TurtleReproduction() {
               borderColor: isDark ? Colors.dark.border : Colors.light.border
             }
           ]}>
-            <ThemedText style={styles.statNumber}>Up to 7</ThemedText>
-            <ThemedText style={styles.statLabel}>Nests per season</ThemedText>
+            <ThemedText style={styles.statNumber}>
+              {currentLanguage === 'en' ? 'Up to 7' : 'Sehingga 7'}
+            </ThemedText>
+            <ThemedText style={[
+              styles.statLabel,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.statsLabels.nestsPerSeason}
+            </ThemedText>
           </View>
 
           <View style={[
@@ -219,8 +423,15 @@ export default function TurtleReproduction() {
               borderColor: isDark ? Colors.dark.border : Colors.light.border
             }
           ]}>
-            <ThemedText style={styles.statNumber}>~60 days</ThemedText>
-            <ThemedText style={styles.statLabel}>Incubation period</ThemedText>
+            <ThemedText style={styles.statNumber}>
+              {currentLanguage === 'en' ? '~60 days' : '~60 hari'}
+            </ThemedText>
+            <ThemedText style={[
+              styles.statLabel,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.statsLabels.incubationPeriod}
+            </ThemedText>
           </View>
 
           <View style={[
@@ -230,8 +441,15 @@ export default function TurtleReproduction() {
               borderColor: isDark ? Colors.dark.border : Colors.light.border
             }
           ]}>
-            <ThemedText style={styles.statNumber}>20-50 years</ThemedText>
-            <ThemedText style={styles.statLabel}>Age at maturity</ThemedText>
+            <ThemedText style={styles.statNumber}>
+              {currentLanguage === 'en' ? '20-50 years' : '20-50 tahun'}
+            </ThemedText>
+            <ThemedText style={[
+              styles.statLabel,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.statsLabels.ageAtMaturity}
+            </ThemedText>
           </View>
         </View>
       </View>
@@ -248,13 +466,18 @@ export default function TurtleReproduction() {
         ]}>
           <View style={styles.homingHeader}>
             <MaterialIcons name="home" size={20} color="#2196F3" />
-            <ThemedText style={styles.homingTitle}>Remarkable Natal Homing</ThemedText>
+            <ThemedText style={[
+              styles.homingTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.homingTitle}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.homingText}>
-            One of the most amazing aspects of Green Sea Turtle reproduction is natal homing - the ability of 
-            females to return to the exact beach where they were born to lay their own eggs. This incredible 
-            navigation feat occurs after decades of ocean wandering, demonstrating their exceptional memory 
-            and spatial awareness abilities.
+          <ThemedText style={[
+            styles.homingText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.homingText}
           </ThemedText>
         </View>
       </View>
@@ -324,7 +547,6 @@ const styles = StyleSheet.create({
   stageDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
   },
 
   // Life Stages
@@ -353,7 +575,6 @@ const styles = StyleSheet.create({
   },
   lifeStageDuration: {
     fontSize: 14,
-    opacity: 0.7,
     fontWeight: '500',
   },
   lifeStageDetails: {
@@ -372,7 +593,6 @@ const styles = StyleSheet.create({
   lifeStageValue: {
     fontSize: 14,
     flex: 1,
-    opacity: 0.8,
   },
 
   // Stats Grid
@@ -403,7 +623,6 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 14,
     textAlign: 'center',
-    opacity: 0.8,
   },
 
   // Special Cards

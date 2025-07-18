@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { useAuth } from '@/contexts/AuthContext';
 import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
 import TurtleIntroduction from './sections/TurtleIntroduction';
 import TurtleBiology from './sections/TurtleBiology';
@@ -21,23 +22,73 @@ import TurtleConservation from './sections/TurtleConservation';
 import TurtleSidebar from './TurtleSidebar';
 import TurtleNavigation from './TurtleNavigation';
 import { ThemedText } from '@/components/ThemedText';
+import LanguageToggle from '@/components/quiz/LanguageToggle';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function TurtleLessonLayout({ quizId, sessionId }) {
   const { colorScheme } = useColorScheme();
+  const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
   
-  const sections = [
-    { id: 'introduction', title: 'Introduction & Basics', component: TurtleIntroduction },
-    { id: 'biology', title: 'Biology & Adaptations', component: TurtleBiology },
-    { id: 'behavior', title: 'Behavior & Intelligence', component: TurtleBehavior },
-    { id: 'reproduction', title: 'Reproduction & Life Cycle', component: TurtleReproduction },
-    { id: 'biodiversity', title: 'Biodiversity & Ecology', component: TurtleBiodiversity },
-    { id: 'threats', title: 'Threats & Challenges', component: TurtleThreats },
-    { id: 'conservation', title: 'Conservation & Success Stories', component: TurtleConservation },
-  ];
+  // 🔥 NEW: Language state management (similar to TigerLessonLayout)
+  const [currentLanguage, setCurrentLanguage] = useState(
+    supabaseData?.preferred_language || 'en'
+  );
+
+  // Update language when user's preference changes
+  useEffect(() => {
+    if (supabaseData?.preferred_language) {
+      setCurrentLanguage(supabaseData.preferred_language);
+    }
+  }, [supabaseData?.preferred_language]);
+
+  // 🔥 UPDATED: Bilingual content objects
+  const content = {
+    en: {
+      lessonName: 'Green Sea Turtle',
+      errorMessage: 'Unable to load lesson content',
+      sections: [
+        { id: 'introduction', title: 'Introduction & Basics' },
+        { id: 'biology', title: 'Biology & Adaptations' },
+        { id: 'behavior', title: 'Behavior & Intelligence' },
+        { id: 'reproduction', title: 'Reproduction & Life Cycle' },
+        { id: 'biodiversity', title: 'Biodiversity & Ecology' },
+        { id: 'threats', title: 'Threats & Challenges' },
+        { id: 'conservation', title: 'Conservation & Success Stories' },
+      ]
+    },
+    ms: {
+      lessonName: 'Penyu Agar',
+      errorMessage: 'Tidak dapat memuatkan kandungan pelajaran',
+      sections: [
+        { id: 'introduction', title: 'Pengenalan & Asas' },
+        { id: 'biology', title: 'Biologi & Adaptasi' },
+        { id: 'behavior', title: 'Tingkah Laku & Kecerdasan' },
+        { id: 'reproduction', title: 'Pembiakan & Kitaran Hidup' },
+        { id: 'biodiversity', title: 'Biodiversiti & Ekologi' },
+        { id: 'threats', title: 'Ancaman & Cabaran' },
+        { id: 'conservation', title: 'Pemuliharaan & Kisah Kejayaan' },
+      ]
+    }
+  };
+
+  const text = content[currentLanguage] || content.en;
+
+  // 🔥 UPDATED: Use bilingual section titles with currentLanguage
+  const sections = text.sections.map((section, index) => ({
+    ...section,
+    component: [
+      TurtleIntroduction,
+      TurtleBiology,
+      TurtleBehavior,
+      TurtleReproduction,
+      TurtleBiodiversity,
+      TurtleThreats,
+      TurtleConservation,
+    ][index]
+  }));
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [hasStartedLesson, setHasStartedLesson] = useState(false);
@@ -54,6 +105,12 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
 
   const safeSectionIndex = Math.max(0, Math.min(currentSectionIndex, sections.length - 1));
   const currentSection = sections[safeSectionIndex];
+
+  // 🔥 NEW: Language change handler (similar to TigerLessonLayout)
+  const handleLanguageChange = (newLanguage) => {
+    console.log('🌐 Turtle lesson language changed to:', newLanguage);
+    setCurrentLanguage(newLanguage);
+  };
 
   // Sidebar animation handlers
   const openSidebar = () => {
@@ -247,7 +304,7 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
       ]}>
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>
-            Unable to load lesson content
+            {text.errorMessage}
           </ThemedText>
         </View>
       </View>
@@ -296,15 +353,25 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
                 styles.lessonName,
                 { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
               ]}>
-                Green Sea Turtle
+                {text.lessonName}
               </ThemedText>
             </View>
+          </View>
+
+          {/* 🔥 NEW: Language Toggle */}
+          <View style={styles.languageToggleContainer}>
+            <LanguageToggle 
+              currentLanguage={currentLanguage}
+              onLanguageChange={handleLanguageChange}
+              size="compact"
+            />
           </View>
         </View>
         
         {/* Lesson Content */}
         <View style={styles.lessonContent}>
-          <CurrentSectionComponent />
+          {/* 🔥 UPDATED: Pass language to section component */}
+          <CurrentSectionComponent currentLanguage={currentLanguage} />
         </View>
       </View>
       
@@ -313,6 +380,7 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
         <TurtleNavigation
           currentIndex={safeSectionIndex}
           totalSections={sections.length}
+          currentLanguage={currentLanguage}
           onNext={goToNextSection}
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
@@ -336,6 +404,7 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
             sections={sections}
             currentSection={safeSectionIndex}
             completedSections={completedSections}
+            currentLanguage={currentLanguage}
             onSectionSelect={handleSectionSelect}
             onClose={closeSidebar}
             slideAnim={slideAnim}
@@ -386,6 +455,9 @@ const styles = StyleSheet.create({
   lessonName: {
     fontSize: 12,
     marginTop: 2,
+  },
+  languageToggleContainer: {
+    marginLeft: 12,
   },
   lessonContent: {
     flex: 1,

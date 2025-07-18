@@ -6,69 +6,179 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TurtleBiology() {
+export default function TurtleBiology({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const adaptations = [
-    {
-      icon: '🏊‍♂️',
-      title: 'Streamlined Shell',
-      description: 'The smooth, heart-shaped carapace reduces water resistance, aiding efficient swimming',
-      color: '#2196F3'
-    },
-    {
-      icon: '🫁',
-      title: 'Diving Lungs',
-      description: 'Large, efficient lungs allow them to hold their breath for hours while resting underwater',
-      color: '#00BCD4'
-    },
-    {
-      icon: '🧂',
-      title: 'Salt Glands',
-      description: 'Specialized glands near the eyes excrete excess salt from seawater, enabling life in saline environments',
-      color: '#607D8B'
-    },
-    {
-      icon: '🧭',
-      title: 'Magnetic Navigation',
-      description: 'Use Earth\'s magnetic fields to navigate thousands of kilometers between feeding and nesting sites',
-      color: '#9C27B0'
-    }
-  ];
+  // 🔥 BILINGUAL CONTENT - Based on your provided content
+  const content = {
+    en: {
+      // Section Headers
+      scientificClassification: "Scientific Classification",
+      physicalCharacteristics: "Physical Characteristics",
+      remarkableAdaptations: "Physiology & Adaptations",
+      greenColoration: "Green Coloration",
+      temperatureRegulation: "Temperature Regulation",
 
-  const taxonomyData = [
-    { rank: 'Kingdom', classification: 'Animalia' },
-    { rank: 'Phylum', classification: 'Chordata' },
-    { rank: 'Class', classification: 'Reptilia' },
-    { rank: 'Order', classification: 'Testudines' },
-    { rank: 'Family', classification: 'Cheloniidae' },
-    { rank: 'Genus', classification: 'Chelonia' },
-    { rank: 'Species', classification: 'Chelonia mydas' }
-  ];
+      // Taxonomy Data
+      taxonomyData: [
+        { rank: 'Kingdom', classification: 'Animalia' },
+        { rank: 'Phylum', classification: 'Chordata' },
+        { rank: 'Class', classification: 'Reptilia' },
+        { rank: 'Order', classification: 'Testudines' },
+        { rank: 'Family', classification: 'Cheloniidae' },
+        { rank: 'Genus', classification: 'Chelonia' },
+        { rank: 'Species', classification: 'Chelonia mydas' }
+      ],
 
-  const physicalFeatures = [
-    {
-      feature: 'Size',
-      details: 'Up to 1 meter in length',
-      icon: '📏'
+      // Physical Features
+      physicalFeatures: [
+        {
+          feature: 'Size',
+          details: 'Up to 1 meter in length',
+          icon: '📏'
+        },
+        {
+          feature: 'Weight',
+          details: 'Up to 160 kg for adults',
+          icon: '⚖️'
+        },
+        {
+          feature: 'Shell',
+          details: 'Smooth, greenish carapace',
+          icon: '🛡️'
+        },
+        {
+          feature: 'Flippers',
+          details: 'Powerful forelimbs adapted for swimming',
+          icon: '🏊'
+        }
+      ],
+
+      // Adaptations
+      adaptations: [
+        {
+          icon: '🏊‍♂️',
+          title: 'Streamlined Shell',
+          description: 'The smooth, heart-shaped carapace reduces water resistance, aiding efficient swimming',
+          color: '#2196F3'
+        },
+        {
+          icon: '🫁',
+          title: 'Lungs for Diving',
+          description: 'Large, efficient lungs allow them to hold their breath for hours while resting underwater',
+          color: '#00BCD4'
+        },
+        {
+          icon: '🧂',
+          title: 'Salt Glands',
+          description: 'Specialized glands near the eyes excrete excess salt from seawater, enabling life in saline environments',
+          color: '#607D8B'
+        },
+        {
+          icon: '🧭',
+          title: 'Magnetic Navigation',
+          description: 'Use Earth\'s magnetic fields to navigate thousands of kilometers between feeding and nesting sites',
+          color: '#9C27B0'
+        },
+        {
+          icon: '🎨',
+          title: 'Powerful Flippers',
+          description: 'Forelimbs are adapted as flippers for long-distance swimming in oceans',
+          color: '#FF9800'
+        }
+      ],
+
+      // Detailed Explanations
+      colorationText: "The Green Sea Turtle gets its name from the greenish hue of their fat, from which they get their name, helps in camouflage among seagrass beds. This coloration comes from their diet of seagrasses and algae, providing protection from predators while they graze.",
+
+      temperatureText: "Ectothermic physiology relies on external temperatures, driving behaviors like basking in the sun. As ectothermic animals, Green Sea Turtles rely on external temperatures to regulate their body heat. This drives behaviors like basking in the sun at the surface or seeking warmer waters during different seasons and life stages."
     },
-    {
-      feature: 'Weight',
-      details: 'Up to 160 kg for adults',
-      icon: '⚖️'
-    },
-    {
-      feature: 'Shell',
-      details: 'Smooth, greenish carapace',
-      icon: '🛡️'
-    },
-    {
-      feature: 'Flippers',
-      details: 'Powerful forelimbs adapted for swimming',
-      icon: '🏊'
+    ms: {
+      // Section Headers
+      scientificClassification: "Klasifikasi Saintifik",
+      physicalCharacteristics: "Ciri Fizikal",
+      remarkableAdaptations: "Fisiologi & Penyesuaian",
+      greenColoration: "Pewarnaan Hijau",
+      temperatureRegulation: "Pengawalan Suhu",
+
+      // Taxonomy Data
+      taxonomyData: [
+        { rank: 'Kingdom', classification: 'Animalia' },
+        { rank: 'Phylum', classification: 'Chordata' },
+        { rank: 'Class', classification: 'Reptilia' },
+        { rank: 'Order', classification: 'Testudines' },
+        { rank: 'Family', classification: 'Cheloniidae' },
+        { rank: 'Genus', classification: 'Chelonia' },
+        { rank: 'Species', classification: 'Chelonia mydas' }
+      ],
+
+      // Physical Features
+      physicalFeatures: [
+        {
+          feature: 'Saiz',
+          details: 'Sehingga 1 meter panjang',
+          icon: '📏'
+        },
+        {
+          feature: 'Berat',
+          details: 'Sehingga 160 kg untuk dewasa',
+          icon: '⚖️'
+        },
+        {
+          feature: 'Cengkerang',
+          details: 'Karapas licin berwarna kehijauan',
+          icon: '🛡️'
+        },
+        {
+          feature: 'Sirip',
+          details: 'Anggota hadapan kuat yang disesuaikan untuk renang',
+          icon: '🏊'
+        }
+      ],
+
+      // Adaptations
+      adaptations: [
+        {
+          icon: '🏊‍♂️',
+          title: 'Cengkerang Berbentuk Aerodinamik',
+          description: 'Karapas yang licin dan berbentuk hati mengurangkan rintangan air, membantu renangan yang cekap',
+          color: '#2196F3'
+        },
+        {
+          icon: '🫁',
+          title: 'Paru-paru untuk Menyelam',
+          description: 'Paru-paru yang besar dan cekap membolehkan penyu menahan nafas selama berjam-jam ketika berehat di bawah air',
+          color: '#00BCD4'
+        },
+        {
+          icon: '🧂',
+          title: 'Kelenjar Garam',
+          description: 'Kelenjar khas berhampiran mata menyingkirkan garam berlebihan daripada air laut, membolehkan kehidupan dalam persekitaran masin',
+          color: '#607D8B'
+        },
+        {
+          icon: '🧭',
+          title: 'Navigasi Magnetik',
+          description: 'Menggunakan medan magnet Bumi untuk mengemudi ribuan kilometer antara tempat makan dan pantai penetasan',
+          color: '#9C27B0'
+        },
+        {
+          icon: '🎨',
+          title: 'Sirip yang Kuat',
+          description: 'Anggota hadapan berubah menjadi sirip yang sesuai untuk renangan jarak jauh di lautan',
+          color: '#FF9800'
+        }
+      ],
+
+      // Detailed Explanations
+      colorationText: "Penyu Agar mendapat namanya daripada warna kehijauan pada lemaknya—asal-usul nama \"Penyu Agar\"—membantu penyamaran di padang rumpai laut. Pewarnaan ini datang daripada diet rumpai laut dan alga mereka, memberikan perlindungan daripada pemangsa semasa mereka makan.",
+
+      temperatureText: "Fisiologi ektotermik yang bergantung kepada suhu luaran, menyebabkan tingkah laku seperti berjemur di bawah matahari. Sebagai haiwan ektotermik, Penyu Agar bergantung kepada suhu luaran untuk mengatur haba badan mereka. Ini mendorong tingkah laku seperti berjemur di bawah matahari di permukaan atau mencari perairan yang lebih hangat semasa musim dan peringkat hidup yang berbeza."
     }
-  ];
+  };
+
+  const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView 
@@ -84,7 +194,12 @@ export default function TurtleBiology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Scientific Classification</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.scientificClassification}
+          </ThemedText>
         </View>
 
         <View style={[
@@ -94,17 +209,23 @@ export default function TurtleBiology() {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {taxonomyData.map((item, index) => (
+          {text.taxonomyData.map((item, index) => (
             <View key={index} style={[
               styles.taxonomyRow,
-              index < taxonomyData.length - 1 && {
+              index < text.taxonomyData.length - 1 && {
                 borderBottomWidth: 1,
                 borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
               }
             ]}>
-              <ThemedText style={styles.taxonomyRank}>{item.rank}</ThemedText>
+              <ThemedText style={[
+                styles.taxonomyRank,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {item.rank}
+              </ThemedText>
               <ThemedText style={[
                 styles.taxonomyValue,
+                { color: isDark ? Colors.dark.text : Colors.light.text },
                 item.rank === 'Species' && styles.speciesName
               ]}>
                 {item.classification}
@@ -122,11 +243,16 @@ export default function TurtleBiology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Physical Characteristics</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.physicalCharacteristics}
+          </ThemedText>
         </View>
 
         <View style={styles.featuresGrid}>
-          {physicalFeatures.map((item, index) => (
+          {text.physicalFeatures.map((item, index) => (
             <View key={index} style={[
               styles.featureCard,
               { 
@@ -135,8 +261,18 @@ export default function TurtleBiology() {
               }
             ]}>
               <ThemedText style={styles.featureIcon}>{item.icon}</ThemedText>
-              <ThemedText style={styles.featureTitle}>{item.feature}</ThemedText>
-              <ThemedText style={styles.featureDetails}>{item.details}</ThemedText>
+              <ThemedText style={[
+                styles.featureTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {item.feature}
+              </ThemedText>
+              <ThemedText style={[
+                styles.featureDetails,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {item.details}
+              </ThemedText>
             </View>
           ))}
         </View>
@@ -150,11 +286,16 @@ export default function TurtleBiology() {
             size={20} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.sectionTitle}>Remarkable Adaptations</ThemedText>
+          <ThemedText style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}>
+            {text.remarkableAdaptations}
+          </ThemedText>
         </View>
 
         <View style={styles.adaptationsGrid}>
-          {adaptations.map((adaptation, index) => (
+          {text.adaptations.map((adaptation, index) => (
             <View key={index} style={[
               styles.adaptationCard,
               { 
@@ -166,8 +307,18 @@ export default function TurtleBiology() {
                 <ThemedText style={styles.adaptationEmoji}>{adaptation.icon}</ThemedText>
               </View>
               <View style={styles.adaptationContent}>
-                <ThemedText style={styles.adaptationTitle}>{adaptation.title}</ThemedText>
-                <ThemedText style={styles.adaptationDesc}>{adaptation.description}</ThemedText>
+                <ThemedText style={[
+                  styles.adaptationTitle,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {adaptation.title}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.adaptationDesc,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {adaptation.description}
+                </ThemedText>
               </View>
             </View>
           ))}
@@ -186,12 +337,18 @@ export default function TurtleBiology() {
         ]}>
           <View style={styles.colorationHeader}>
             <MaterialIcons name="palette" size={20} color="#4CAF50" />
-            <ThemedText style={styles.colorationTitle}>Green Coloration</ThemedText>
+            <ThemedText style={[
+              styles.colorationTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.greenColoration}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.colorationText}>
-            The Green Sea Turtle gets its name from the greenish hue of their fat, which comes from 
-            their diet of seagrasses and algae. This coloration helps them camouflage among seagrass beds, 
-            providing protection from predators while they graze.
+          <ThemedText style={[
+            styles.colorationText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.colorationText}
           </ThemedText>
         </View>
       </View>
@@ -208,12 +365,18 @@ export default function TurtleBiology() {
         ]}>
           <View style={styles.thermoHeader}>
             <MaterialIcons name="thermostat" size={20} color="#FF9800" />
-            <ThemedText style={styles.thermoTitle}>Temperature Regulation</ThemedText>
+            <ThemedText style={[
+              styles.thermoTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.temperatureRegulation}
+            </ThemedText>
           </View>
-          <ThemedText style={styles.thermoText}>
-            As ectothermic animals, Green Sea Turtles rely on external temperatures to regulate their body heat. 
-            This drives behaviors like basking in the sun at the surface or seeking warmer waters during 
-            different seasons and life stages.
+          <ThemedText style={[
+            styles.thermoText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}>
+            {text.temperatureText}
           </ThemedText>
         </View>
       </View>
@@ -307,7 +470,6 @@ const styles = StyleSheet.create({
   featureDetails: {
     fontSize: 14,
     textAlign: 'center',
-    opacity: 0.8,
   },
 
   // Adaptations Grid
@@ -348,7 +510,6 @@ const styles = StyleSheet.create({
   adaptationDesc: {
     fontSize: 14,
     lineHeight: 20,
-    opacity: 0.8,
   },
 
   // Special Cards
