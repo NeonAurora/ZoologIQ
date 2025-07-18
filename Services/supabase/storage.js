@@ -513,3 +513,177 @@ export const uploadFile = async (fileData, fileType) => {
       throw new Error(`Unsupported file type: ${fileType}`);
   }
 };
+
+/**
+ * Upload a certificate to Supabase Storage
+ * @param {string|File} certificateData - The local URI (mobile) or File object/base64 data URI (web)
+ * @param {string} recipientName - Name of certificate recipient for filename
+ * @returns {Promise<string>} The public URL of the uploaded certificate
+ */
+export const uploadCertificate = async (certificateData, recipientName = 'certificate') => {
+  try {
+    console.log('uploadCertificate called with:', certificateData);
+    
+    if (Platform.OS === 'web') {
+      return await uploadCertificateWeb(certificateData, recipientName);
+    } else {
+      return await uploadCertificateMobile(certificateData, recipientName);
+    }
+  } catch (error) {
+    console.error('Error in certificate upload process:', error);
+    return null;
+  }
+};
+
+const uploadCertificateWeb = async (uri, recipientName) => {
+  try {
+    console.log('uploadCertificateWeb called with URI:', uri);
+    
+    if (!uri) {
+      console.error('No URI provided for web certificate upload');
+      return null;
+    }
+    
+    // Check if it's a base64 data URI
+    if (uri.startsWith('data:')) {
+      // Extract the base64 part
+      const base64Data = uri.split(',')[1];
+      const mimeType = uri.match(/data:([^;]+)/)[1];
+      
+      // Convert base64 to blob
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: mimeType });
+      
+      // Get file extension from mime type
+      const fileExtension = mimeType.split('/')[1] || 'png';
+      
+      // Create meaningful filename
+      const sanitizedName = recipientName.replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `${sanitizedName}_${Date.now()}.${fileExtension}`;
+      
+      console.log("Uploading certificate:", fileName, "Type:", mimeType);
+      
+      // Upload to certificates bucket
+      const { data, error } = await supabase.storage
+        .from('certificates')
+        .upload(`images/${fileName}`, blob, {
+          contentType: mimeType,
+          upsert: true
+        });
+      
+      if (error) {
+        console.error('Error uploading certificate:', error);
+        return null;
+      }
+      
+      // Get the public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('certificates')
+        .getPublicUrl(`images/${fileName}`);
+      
+      console.log("Certificate upload successful, URL:", publicUrlData);
+      return publicUrlData.publicUrl;
+    } else {
+      console.error('Expected base64 data URI on web, got:', uri);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error in web certificate upload process:', error);
+    return null;
+  }
+};
+
+const uploadCertificateMobile = async (uri, recipientName) => {
+  try {
+    console.log('uploadCertificateMobile called with URI:', uri);
+    
+    if (!uri) {
+      console.error('No URI provided for mobile certificate upload');
+      return null;
+    }
+    
+    // Extract file extension from the uri
+    const fileExtension = uri.split('.').pop() || 'png';
+    
+    // Create meaningful filename
+    const sanitizedName = recipientName.replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = `${sanitizedName}_${Date.now()}.${fileExtension}`;
+    
+    // Read the file as base64
+    const fileInfo = await FileSystem.getInfoAsync(uri);
+    if (!fileInfo.exists) {
+      console.error("Certificate file doesn't exist");
+      return null;
+    }
+    
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    
+    // Convert to ArrayBuffer
+    const arrayBuffer = decode(base64);
+    
+    console.log("Uploading certificate:", fileName);
+    
+    // Upload to certificates bucket
+    const { data, error } = await supabase.storage
+      .from('certificates')
+      .upload(`images/${fileName}`, arrayBuffer, {
+        contentType: `image/${fileExtension}`,
+        upsert: true
+      });
+    
+    if (error) {
+      console.error('Error uploading certificate:', error);
+      return null;
+    }
+    
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('certificates')
+      .getPublicUrl(`images/${fileName}`);
+    
+    console.log("Certificate upload successful, URL:", publicUrlData);
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Error in mobile certificate upload process:', error);
+    return null;
+  }
+};
+
+/**
+ * Delete a certificate from Supabase Storage
+ * @param {string} url - The public URL of the certificate
+ * @returns {Promise<boolean>} Success status
+ */
+export const deleteCertificate = async (url) => {
+  try {
+    // Extract the path from the URL
+    const path = url.split('certificates/')[1];
+    
+    if (!path) {
+      console.error('Invalid certificate URL format');
+      return false;
+    }
+    
+    const { error } = await supabase.storage
+      .from('certificates')
+      .remove([path]);
+    
+    if (error) {
+      console.error('Error deleting certificate:', error);
+      return false;
+    }
+    
+    console.log('Certificate deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('Error in certificate delete process:', error);
+    return false;
+  }
+};

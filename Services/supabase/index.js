@@ -62,13 +62,15 @@ export {
 } from './utilityService';
 
 // Storage operations (Supabase)
-export {
-  uploadImage,
+export { 
+  uploadImage, 
   deleteImage,
   uploadPdf,
   deletePdf,
   uploadAudio,
   deleteAudio,
+  uploadCertificate,
+  deleteCertificate,
   uploadFile
 } from './storage';
 
