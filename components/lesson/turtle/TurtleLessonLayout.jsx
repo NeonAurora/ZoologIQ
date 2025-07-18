@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAudio } from '@/hooks/useAudio';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
 import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
@@ -23,6 +24,7 @@ import TurtleSidebar from './TurtleSidebar';
 import TurtleNavigation from './TurtleNavigation';
 import { ThemedText } from '@/components/ThemedText';
 import LanguageToggle from '@/components/quiz/LanguageToggle';
+import AudioPlayer from '@/components/audio/AudioPlayer';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -32,10 +34,13 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
   const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
   
-  // 🔥 NEW: Language state management (similar to TigerLessonLayout)
+  // 🔥 MOVE THIS FIRST: Language state management
   const [currentLanguage, setCurrentLanguage] = useState(
     supabaseData?.preferred_language || 'en'
   );
+
+  // 🔥 NOW USE IT: Audio hook can access currentLanguage
+  const { currentAudioUrl, loading: audioLoading } = useAudio('turtle', currentLanguage);
 
   // Update language when user's preference changes
   useEffect(() => {
@@ -106,7 +111,7 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
   const safeSectionIndex = Math.max(0, Math.min(currentSectionIndex, sections.length - 1));
   const currentSection = sections[safeSectionIndex];
 
-  // 🔥 NEW: Language change handler (similar to TigerLessonLayout)
+  // 🔥 NEW: Language change handler
   const handleLanguageChange = (newLanguage) => {
     console.log('🌐 Turtle lesson language changed to:', newLanguage);
     setCurrentLanguage(newLanguage);
@@ -358,13 +363,24 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
             </View>
           </View>
 
-          {/* 🔥 NEW: Language Toggle */}
-          <View style={styles.languageToggleContainer}>
-            <LanguageToggle 
+          {/* 🔥 NEW: Header Actions with Audio Player and Language Toggle */}
+          <View style={styles.headerActions}>
+            {/* Audio Player */}
+            <AudioPlayer
+              audioUrl={currentAudioUrl}
               currentLanguage={currentLanguage}
-              onLanguageChange={handleLanguageChange}
-              size="compact"
+              size="medium"
+              style={styles.audioPlayer}
             />
+            
+            {/* Language Toggle */}
+            <View style={styles.languageToggleContainer}>
+              <LanguageToggle 
+                currentLanguage={currentLanguage}
+                onLanguageChange={handleLanguageChange}
+                size="compact"
+              />
+            </View>
           </View>
         </View>
         
@@ -429,7 +445,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    minHeight: 56,
+    gap: 12, // 🔥 NEW: Added gap for better spacing
   },
   sidebarToggle: {
     padding: 8,
@@ -437,9 +453,20 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   headerContent: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    gap: 12, // 🔥 NEW: Added gap
+  },
+  // 🔥 NEW: Header actions container
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  // 🔥 NEW: Audio player styling
+  audioPlayer: {
+    marginRight: 4,
   },
   lessonEmoji: {
     fontSize: 20,
@@ -457,7 +484,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   languageToggleContainer: {
-    marginLeft: 12,
+    // 🔥 UPDATED: Removed marginLeft since we're using gap in headerActions
   },
   lessonContent: {
     flex: 1,

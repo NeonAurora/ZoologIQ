@@ -1,4 +1,4 @@
-// app/(admin)/pdfUpload.jsx
+// app/(main)/(admin)/fileUpload.jsx (rename from pdfUpload.jsx)
 import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
@@ -14,18 +14,47 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { uploadPdf, deletePdf } from '@/services/supabase/storage';
+import { uploadFile, deletePdf, deleteImage, deleteAudio } from '@/services/supabase/storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 
 // 🔒 HARDCODED ADMIN EMAIL - Change this to your admin email
 const ADMIN_EMAIL = 'arnarnsde@gmail.com';
 
-export default function PdfUploadPage() {
+// File type configurations
+const FILE_TYPES = {
+  pdf: {
+    label: 'PDF Documents',
+    icon: 'picture-as-pdf',
+    color: '#E74C3C',
+    accept: '.pdf',
+    mimeTypes: ['application/pdf'],
+    docPickerType: 'application/pdf'
+  },
+  image: {
+    label: 'Images',
+    icon: 'image',
+    color: '#3498DB',
+    accept: '.jpg,.jpeg,.png,.gif',
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+    docPickerType: 'image/*'
+  },
+  audio: {
+    label: 'Audio Files',
+    icon: 'audiotrack',
+    color: '#9B59B6',
+    accept: '.mp3,.wav,.m4a,.aac',
+    mimeTypes: ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/aac'],
+    docPickerType: 'audio/*'
+  }
+};
+
+export default function FileUploadPage() {
   const { user, supabaseData } = useAuth();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   
+  const [selectedFileType, setSelectedFileType] = useState('audio'); // Default to audio
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState('');
@@ -44,7 +73,13 @@ export default function PdfUploadPage() {
     }
   }, [user, supabaseData]);
 
-  // If not authorized, show access denied screen
+  // Reset file selection when type changes
+  useEffect(() => {
+    setSelectedFile(null);
+    setUploadedUrl('');
+  }, [selectedFileType]);
+
+  // Access denied screen
   if (!isAuthorized) {
     return (
       <ThemedView style={styles.container}>
@@ -71,30 +106,32 @@ export default function PdfUploadPage() {
     );
   }
 
+  const currentFileType = FILE_TYPES[selectedFileType];
+
   const handleFileSelection = async () => {
     try {
       if (Platform.OS === 'web') {
         // Web file picker
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.pdf';
+        input.accept = currentFileType.accept;
         input.onchange = (event) => {
           const file = event.target.files[0];
-          if (file && file.type === 'application/pdf') {
+          if (file && currentFileType.mimeTypes.includes(file.type)) {
             setSelectedFile({
               name: file.name,
               size: file.size,
               file: file
             });
           } else {
-            Alert.alert('Invalid File', 'Please select a PDF file.');
+            Alert.alert('Invalid File', `Please select a ${currentFileType.label.toLowerCase()} file.`);
           }
         };
         input.click();
       } else {
         // Mobile document picker
         const result = await DocumentPicker.getDocumentAsync({
-          type: 'application/pdf',
+          type: currentFileType.docPickerType,
           copyToCacheDirectory: true,
         });
 
@@ -115,24 +152,24 @@ export default function PdfUploadPage() {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      Alert.alert('No File Selected', 'Please select a PDF file first.');
+      Alert.alert('No File Selected', `Please select a ${currentFileType.label.toLowerCase()} file first.`);
       return;
     }
 
     setUploading(true);
     try {
       const fileData = Platform.OS === 'web' ? selectedFile.file : selectedFile.uri;
-      const url = await uploadPdf(fileData);
+      const url = await uploadFile(fileData, selectedFileType);
       
       if (url) {
         setUploadedUrl(url);
-        Alert.alert('Success', 'PDF uploaded successfully!');
+        Alert.alert('Success', `${currentFileType.label} uploaded successfully!`);
       } else {
-        Alert.alert('Upload Failed', 'Failed to upload PDF. Please try again.');
+        Alert.alert('Upload Failed', `Failed to upload ${currentFileType.label.toLowerCase()}. Please try again.`);
       }
     } catch (error) {
       console.error('Upload error:', error);
-      Alert.alert('Error', 'An error occurred while uploading the PDF.');
+      Alert.alert('Error', `An error occurred while uploading the ${currentFileType.label.toLowerCase()}.`);
     } finally {
       setUploading(false);
     }
@@ -146,20 +183,34 @@ export default function PdfUploadPage() {
 
     Alert.alert(
       'Confirm Delete',
-      'Are you sure you want to delete the uploaded PDF?',
+      `Are you sure you want to delete the uploaded ${currentFileType.label.toLowerCase()}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            const success = await deletePdf(uploadedUrl);
+            let success = false;
+            
+            // Call appropriate delete function based on file type
+            switch (selectedFileType) {
+              case 'pdf':
+                success = await deletePdf(uploadedUrl);
+                break;
+              case 'image':
+                success = await deleteImage(uploadedUrl);
+                break;
+              case 'audio':
+                success = await deleteAudio(uploadedUrl);
+                break;
+            }
+            
             if (success) {
               setUploadedUrl('');
               setSelectedFile(null);
-              Alert.alert('Success', 'PDF deleted successfully!');
+              Alert.alert('Success', `${currentFileType.label} deleted successfully!`);
             } else {
-              Alert.alert('Error', 'Failed to delete PDF.');
+              Alert.alert('Error', `Failed to delete ${currentFileType.label.toLowerCase()}.`);
             }
           }
         }
@@ -190,13 +241,61 @@ export default function PdfUploadPage() {
             size={32} 
             color={isDark ? Colors.dark.tint : Colors.light.tint} 
           />
-          <ThemedText style={styles.headerTitle}>PDF Upload Manager</ThemedText>
+          <ThemedText style={styles.headerTitle}>File Upload Manager</ThemedText>
           <ThemedText style={[
             styles.headerSubtitle,
             { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
           ]}>
-            Upload lesson materials for students
+            Upload lesson materials, images, and audio files
           </ThemedText>
+        </ThemedView>
+
+        {/* File Type Selection */}
+        <ThemedView style={[
+          styles.section,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            shadowColor: isDark ? Colors.dark.text : Colors.light.text,
+          }
+        ]}>
+          <ThemedText style={styles.sectionTitle}>Select File Type</ThemedText>
+          
+          <ThemedView style={styles.fileTypeContainer}>
+            {Object.entries(FILE_TYPES).map(([key, type]) => (
+              <TouchableOpacity
+                key={key}
+                style={[
+                  styles.fileTypeButton,
+                  {
+                    backgroundColor: selectedFileType === key
+                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                      : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
+                    borderColor: selectedFileType === key
+                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                      : (isDark ? Colors.dark.border : Colors.light.border)
+                  }
+                ]}
+                onPress={() => setSelectedFileType(key)}
+                activeOpacity={0.7}
+              >
+                <MaterialIcons 
+                  name={type.icon} 
+                  size={20} 
+                  color={selectedFileType === key ? '#fff' : type.color} 
+                />
+                <ThemedText style={[
+                  styles.fileTypeText,
+                  { 
+                    color: selectedFileType === key 
+                      ? '#fff' 
+                      : (isDark ? Colors.dark.text : Colors.light.text)
+                  }
+                ]}>
+                  {type.label}
+                </ThemedText>
+              </TouchableOpacity>
+            ))}
+          </ThemedView>
         </ThemedView>
 
         {/* File Selection Section */}
@@ -207,7 +306,9 @@ export default function PdfUploadPage() {
             shadowColor: isDark ? Colors.dark.text : Colors.light.text,
           }
         ]}>
-          <ThemedText style={styles.sectionTitle}>Select PDF File</ThemedText>
+          <ThemedText style={styles.sectionTitle}>
+            Select {currentFileType.label}
+          </ThemedText>
           
           <TouchableOpacity 
             style={[
@@ -221,12 +322,12 @@ export default function PdfUploadPage() {
             activeOpacity={0.7}
           >
             <MaterialIcons 
-              name="file-upload" 
+              name={currentFileType.icon} 
               size={24} 
-              color={isDark ? Colors.dark.tint : Colors.light.tint} 
+              color={currentFileType.color} 
             />
             <ThemedText style={styles.fileButtonText}>
-              {selectedFile ? 'Change PDF File' : 'Select PDF File'}
+              {selectedFile ? `Change ${currentFileType.label}` : `Select ${currentFileType.label}`}
             </ThemedText>
           </TouchableOpacity>
 
@@ -238,7 +339,11 @@ export default function PdfUploadPage() {
                 borderColor: isDark ? Colors.dark.border : Colors.light.border
               }
             ]}>
-              <MaterialIcons name="picture-as-pdf" size={20} color="#E74C3C" />
+              <MaterialIcons 
+                name={currentFileType.icon} 
+                size={20} 
+                color={currentFileType.color} 
+              />
               <ThemedView style={styles.fileDetails}>
                 <ThemedText style={styles.fileName}>{selectedFile.name}</ThemedText>
                 <ThemedText style={[
@@ -278,7 +383,7 @@ export default function PdfUploadPage() {
                     : (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
                 }
               ]}>
-                Upload PDF
+                Upload {currentFileType.label}
               </ThemedText>
             )}
           </TouchableOpacity>
@@ -311,28 +416,39 @@ export default function PdfUploadPage() {
                 editable={false}
                 multiline
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[
                   styles.copyButton,
                   { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
                 ]}
                 onPress={copyToClipboard}
+                activeOpacity={0.7}
               >
-                <MaterialIcons name="content-copy" size={20} color="#fff" />
+                <MaterialIcons name="content-copy" size={16} color="#fff" />
               </TouchableOpacity>
             </ThemedView>
-
-            <TouchableOpacity 
+            
+            <TouchableOpacity
               style={[
                 styles.deleteButton,
-                { borderColor: '#E74C3C' }
+                { 
+                  borderColor: isDark ? Colors.dark.error : Colors.light.error,
+                  backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface
+                }
               ]}
               onPress={handleDelete}
               activeOpacity={0.7}
             >
-              <MaterialIcons name="delete" size={20} color="#E74C3C" />
-              <ThemedText style={[styles.deleteButtonText, { color: '#E74C3C' }]}>
-                Delete PDF
+              <MaterialIcons 
+                name="delete" 
+                size={16} 
+                color={isDark ? Colors.dark.error : Colors.light.error} 
+              />
+              <ThemedText style={[
+                styles.deleteButtonText,
+                { color: isDark ? Colors.dark.error : Colors.light.error }
+              ]}>
+                Delete File
               </ThemedText>
             </TouchableOpacity>
           </ThemedView>
@@ -347,15 +463,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
-    paddingBottom: 32,
-    gap: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    paddingBottom: 40,
+    gap: 24,
   },
   centeredContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    paddingHorizontal: 40,
     gap: 16,
   },
   errorTitle: {
@@ -400,6 +517,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
+  },
+  fileTypeContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+  fileTypeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  fileTypeText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   fileButton: {
     flexDirection: 'row',

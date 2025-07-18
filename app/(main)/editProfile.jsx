@@ -15,7 +15,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { updateUserData } from '@/services/supabase';
-import { uploadImage } from '@/services/supabase/storage';
+import { uploadImage } from '@/services/supabase';
 import * as ExpoImagePicker from 'expo-image-picker';
 import ImagePicker from '@/components/createQuiz/ImagePicker';
 

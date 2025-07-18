@@ -9,9 +9,10 @@ import {
   TouchableWithoutFeedback
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAudio } from '@/hooks/useAudio';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
+import { startLesson, markSectionCompleted } from '@/services/supabase';
 import TapirIntroduction from './sections/TapirIntroduction';
 import TapirPhysiology from './sections/TapirPhysiology';
 import TapirEcology from './sections/TapirEcology';
@@ -23,6 +24,7 @@ import TapirNavigation from './TapirNavigation';
 import { ThemedText } from '@/components/ThemedText';
 import LanguageToggle from '@/components/quiz/LanguageToggle';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AudioPlayer from '@/components/audio/AudioPlayer';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -30,11 +32,12 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
   const { colorScheme } = useColorScheme();
   const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
-  
-  // 🔥 NEW: Language state management
+   // 🔥 NEW: Language state management
   const [currentLanguage, setCurrentLanguage] = useState(
     supabaseData?.preferred_language || 'en'
   );
+
+  const { currentAudioUrl, loading: audioLoading } = useAudio('tapir', currentLanguage);
 
   // Update language when user's preference changes
   useEffect(() => {
@@ -296,6 +299,17 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
     closeSidebar();
   };
 
+  const getAudioUrl = () => {
+    // You'll need to fetch this from your category data
+    // For now, return hardcoded URLs or fetch from your database
+    const audioUrls = {
+      en: 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752830971046.mp3',
+      ms: 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832401154.mp3'
+    };
+    
+    return audioUrls[currentLanguage] || audioUrls.en;
+  };
+
   if (!currentSection || !currentSection.component) {
     return (
       <View style={[
@@ -341,7 +355,7 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
           </TouchableOpacity>
           
           <View style={styles.headerContent}>
-            <ThemedText style={styles.lessonEmoji}>🦌</ThemedText>
+            <ThemedText style={styles.lessonEmoji}>🐅</ThemedText>
             <View style={styles.headerTitleContainer}>
               <ThemedText style={[
                 styles.headerTitle,
@@ -358,13 +372,23 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
             </View>
           </View>
 
-          {/* 🔥 NEW: Language Toggle */}
-          <View style={styles.languageToggleContainer}>
-            <LanguageToggle 
+          <View style={styles.headerActions}>
+            {/* 🔥 NEW: Audio Player */}
+            <AudioPlayer
+              audioUrl={currentAudioUrl}
               currentLanguage={currentLanguage}
-              onLanguageChange={handleLanguageChange}
-              size="compact"
+              size="medium"
+              style={styles.audioPlayer}
             />
+            
+            {/* Language Toggle */}
+            <View style={styles.languageToggleContainer}>
+              <LanguageToggle 
+                currentLanguage={currentLanguage}
+                onLanguageChange={handleLanguageChange}
+                size="compact"
+              />
+            </View>
           </View>
         </View>
         
@@ -429,7 +453,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    minHeight: 56,
+    gap: 12,
   },
   sidebarToggle: {
     padding: 8,
@@ -437,9 +461,18 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   headerContent: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    gap: 12,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  audioPlayer: {
+    marginRight: 4,
   },
   lessonEmoji: {
     fontSize: 20,
@@ -455,9 +488,6 @@ const styles = StyleSheet.create({
   lessonName: {
     fontSize: 12,
     marginTop: 2,
-  },
-  languageToggleContainer: {
-    marginLeft: 12,
   },
   lessonContent: {
     flex: 1,

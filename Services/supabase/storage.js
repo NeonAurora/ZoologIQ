@@ -324,3 +324,192 @@ export const deletePdf = async (url) => {
     return false;
   }
 };
+
+/**
+ * Upload an audio file to Supabase Storage
+ * @param {string|File} audioData - The local URI (mobile) or File object (web)
+ * @returns {Promise<string>} The public URL of the uploaded audio
+ */
+export const uploadAudio = async (audioData) => {
+  try {
+    console.log('uploadAudio called with:', audioData);
+    
+    if (Platform.OS === 'web') {
+      return await uploadAudioWeb(audioData);
+    } else {
+      return await uploadAudioMobile(audioData);
+    }
+  } catch (error) {
+    console.error('Error in audio upload process:', error);
+    return null;
+  }
+};
+
+/**
+ * Web audio upload handler
+ * Supports: .mp3, .wav, .m4a, .aac formats
+ */
+const uploadAudioWeb = async (file) => {
+  try {
+    console.log('uploadAudioWeb called with file:', file);
+    
+    if (!file) {
+      console.error('No file provided for web audio upload');
+      return null;
+    }
+    
+    // Validate audio file types
+    const allowedTypes = [
+      'audio/mpeg', 
+      'audio/wav', 
+      'audio/mp4', 
+      'audio/aac',
+      'audio/mp3'
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      console.error('Invalid file type. Only audio files are allowed.');
+      return null;
+    }
+    
+    // Generate unique filename with proper extension
+    const fileExtension = file.name.split('.').pop() || 'mp3';
+    const fileName = `${Date.now()}.${fileExtension}`;
+    
+    console.log("Uploading audio file:", fileName);
+    
+    // Upload to lesson-materials bucket under audio folder
+    const { data, error } = await supabase.storage
+      .from('lesson-materials')
+      .upload(`audio/${fileName}`, file, {
+        contentType: file.type,
+        upsert: true
+      });
+    
+    if (error) {
+      console.error('Error uploading audio:', error);
+      return null;
+    }
+    
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('lesson-materials')
+      .getPublicUrl(`audio/${fileName}`);
+    
+    console.log("Audio upload successful, URL:", publicUrlData);
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Error in web audio upload process:', error);
+    return null;
+  }
+};
+
+/**
+ * Mobile audio upload handler
+ * Handles local file URIs from document picker
+ */
+const uploadAudioMobile = async (uri) => {
+  try {
+    console.log('uploadAudioMobile called with URI:', uri);
+    
+    if (!uri) {
+      console.error('No URI provided for mobile audio upload');
+      return null;
+    }
+    
+    // Extract file extension from URI
+    const fileExtension = uri.split('.').pop() || 'mp3';
+    const fileName = `${Date.now()}.${fileExtension}`;
+    
+    // Read the file as base64
+    const fileInfo = await FileSystem.getInfoAsync(uri);
+    if (!fileInfo.exists) {
+      console.error("Audio file doesn't exist");
+      return null;
+    }
+    
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    
+    // Convert to ArrayBuffer for upload
+    const arrayBuffer = decode(base64);
+    
+    console.log("Uploading audio file:", fileName);
+    
+    // Upload to Supabase storage
+    const { data, error } = await supabase.storage
+      .from('lesson-materials')
+      .upload(`audio/${fileName}`, arrayBuffer, {
+        contentType: `audio/${fileExtension}`,
+        upsert: true
+      });
+    
+    if (error) {
+      console.error('Error uploading audio:', error);
+      return null;
+    }
+    
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('lesson-materials')
+      .getPublicUrl(`audio/${fileName}`);
+    
+    console.log("Audio upload successful, URL:", publicUrlData);
+    return publicUrlData.publicUrl;
+  } catch (error) {
+    console.error('Error in mobile audio upload process:', error);
+    return null;
+  }
+};
+
+/**
+ * Delete an audio file from Supabase Storage
+ * @param {string} url - The public URL of the audio file
+ * @returns {Promise<boolean>} Success status
+ */
+export const deleteAudio = async (url) => {
+  try {
+    // Extract the path from the URL
+    const path = url.split('lesson-materials/')[1];
+    
+    if (!path) {
+      console.error('Invalid audio URL format');
+      return false;
+    }
+    
+    const { error } = await supabase.storage
+      .from('lesson-materials')
+      .remove([path]);
+    
+    if (error) {
+      console.error('Error deleting audio:', error);
+      return false;
+    }
+    
+    console.log('Audio deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('Error in audio delete process:', error);
+    return false;
+  }
+};
+
+/**
+ * Generic file upload function that handles images, PDFs, and audio
+ * @param {string|File} fileData - The file to upload
+ * @param {string} fileType - 'image', 'pdf', or 'audio'
+ * @returns {Promise<string>} The public URL of the uploaded file
+ */
+export const uploadFile = async (fileData, fileType) => {
+  switch (fileType) {
+    case 'image':
+      return await uploadImage(fileData);
+    case 'pdf':
+      return await uploadPdf(fileData);
+    case 'audio':
+      return await uploadAudio(fileData);
+    default:
+      throw new Error(`Unsupported file type: ${fileType}`);
+  }
+};

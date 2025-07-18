@@ -64,8 +64,19 @@ export {
 // Storage operations (Supabase)
 export {
   uploadImage,
-  deleteImage
+  deleteImage,
+  uploadPdf,
+  deletePdf,
+  uploadAudio,
+  deleteAudio,
+  uploadFile
 } from './storage';
+
+export {
+  updateCategoryAudio,
+  getCategoryAudio,
+  removeCategoryAudio
+} from './audioService';
 
 // Config
 export { supabase } from './config';

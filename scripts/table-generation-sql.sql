@@ -335,3 +335,12 @@ group by
   c.id, c.name, c.slug, q.id, q.title, q.difficulty, q.is_published, q.created_at, u.name
 order by
   c.display_order, q.created_at desc;
+
+-- Add audio URL columns to quiz_categories table
+ALTER TABLE quiz_categories 
+ADD COLUMN lesson_audio_en TEXT,
+ADD COLUMN lesson_audio_ms TEXT;
+
+-- Add a comment for clarity
+COMMENT ON COLUMN quiz_categories.lesson_audio_en IS 'URL to English lesson audio file from Supabase storage';
+COMMENT ON COLUMN quiz_categories.lesson_audio_ms IS 'URL to Malay lesson audio file from Supabase storage';
