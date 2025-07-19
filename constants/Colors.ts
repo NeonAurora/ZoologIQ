@@ -2,8 +2,8 @@
  * Enhanced color system with more comprehensive theme support
  * Supports both light and dark modes with semantic color names
  */
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#0099e6';
+const tintColorLight = '#4CAF50';
+const tintColorDark = '#367c39';
 
 // Test different grays by changing this number (1-10):
 const grayTestNumber = 4; // You liked level 4, but you can change this to test others
