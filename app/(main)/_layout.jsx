@@ -328,6 +328,14 @@ export default function RootLayout() {
               drawerItemStyle: { display: 'none' } 
             }} 
           />
+          <Drawer.Screen 
+            name="onboardingInstructions" 
+            options={{ 
+              title: "Getting Started",
+              drawerItemStyle: { display: 'none' },
+              headerShown: false  // Hide header for onboarding
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>

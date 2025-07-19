@@ -151,7 +151,9 @@ export default function EditProfileScreen() {
     }));
   };
 
-  const handleSave = async () => {
+  // In app/(main)/editProfile.jsx - Update the handleSave function
+
+    const handleSave = async () => {
     if (!formValid || !user?.sub) return;
 
     setLoading(true);
@@ -159,6 +161,7 @@ export default function EditProfileScreen() {
     try {
       let finalImageUrl = formData.picture;
 
+      // Handle image upload if there's a new image
       if (formData.picture && !formData.picture.startsWith('http')) {
         console.log('📤 Uploading profile image...');
         setImageUploading(true);
@@ -194,16 +197,29 @@ export default function EditProfileScreen() {
         setImageUploading(false);
       }
 
+      // Prepare update data
       const updateData = {
-        ...formData,
-        age: parseInt(formData.age),
+        name: formData.name,
+        email: formData.email,
+        age: parseInt(formData.age) || null,
+        gender: formData.gender,
+        occupation: formData.occupation,
+        education_status: formData.education_status,
+        highest_education: formData.highest_education,
+        city: formData.city,
+        district: formData.district,
+        state_province: formData.state_province,
+        preferred_language: formData.preferred_language, // 🔥 Include language preference
         picture: finalImageUrl,
-        preferred_language: formData.preferred_language, // 🔥 NEW: Include language preference
-        onboarding_completed: true,
         updated_at: new Date().toISOString()
       };
 
-      console.log('🔄 Updating user profile with language preference...');
+      // Add onboarding completion if this is the onboarding flow
+      if (isOnboarding) {
+        updateData.onboarding_completed = true;
+      }
+
+      console.log('🔄 Updating user profile with data:', updateData);
 
       const success = await updateUserData(user.sub, updateData);
 
@@ -213,9 +229,12 @@ export default function EditProfileScreen() {
         
         if (isOnboarding) {
           Alert.alert(
-            'Welcome!', 
-            'Your profile has been set up successfully. Welcome to ZoologIQ!',
-            [{ text: 'Continue', onPress: () => router.replace('/') }]
+            'Profile Saved', 
+            'Your profile has been set up successfully!',
+            [{ 
+              text: 'Continue', 
+              onPress: () => router.replace('/onboardingInstructions') 
+            }]
           );
         } else {
           Alert.alert(

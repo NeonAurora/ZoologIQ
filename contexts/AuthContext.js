@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { login, getUserInfo, logout } from "@/services/auth0";
-import { getUserData, saveUserData } from "@/services/supabase";
+import { getUserData, saveUserData, updateUserData } from "@/services/supabase";
 
 export const AuthContext = createContext();
 
@@ -36,6 +36,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [supabaseData, setSupabaseData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [onboardingStatus, setOnboardingStatus] = useState(null);
 
   // 🔥 SIMPLIFIED: Only check if user exists, don't auto-update
   const checkUserExists = async (authUser) => {
@@ -94,6 +95,12 @@ export function AuthProvider({ children }) {
     loadToken();
   }, []);
 
+  useEffect(() => {
+    if (supabaseData) {
+      setOnboardingStatus(supabaseData.onboarding_completed);
+    }
+  }, [supabaseData]);
+
   const signIn = async () => {
     setLoading(true);
     try {
@@ -138,6 +145,25 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateUserProfile = async (updateData) => {
+  if (!user?.sub) return false;
+  
+  try {
+    console.log('🔄 Updating user profile:', updateData);
+    const success = await updateUserData(user.sub, updateData);
+    
+    if (success) {
+      // Refresh the data after update
+      await refreshUserData();
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    return false;
+  }
+};
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -145,7 +171,8 @@ export function AuthProvider({ children }) {
       loading, 
       signIn, 
       signOut,
-      refreshUserData // 🔥 NEW: Expose refresh method
+      refreshUserData, // 🔥 NEW: Expose refresh method
+      updateUserProfile
     }}>
       {children}
     </AuthContext.Provider>
