@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
+import { getPreAssessmentStatus } from '@/services/supabase';
 
 export function DrawerContent(props) {
   const { user, supabaseData, signOut, loading } = useAuth();
   const router = useRouter();
+  const [preAssessmentStatus, setPreAssessmentStatus] = useState(null);
   
   // Theme detection
   const { isDark } = useTheme();
@@ -44,6 +46,36 @@ export function DrawerContent(props) {
     router.push(route);
     props.navigation.closeDrawer();
   };
+  
+  const handleLessonAccess = (topic, route, title) => {
+    if (!preAssessmentStatus || !preAssessmentStatus[topic]) {
+      Alert.alert(
+        'Pre-Assessment Required',
+        `Complete the ${title} pre-assessment first to unlock the lesson content.`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Take Pre-Assessment', 
+            onPress: () => {
+              router.push(`/quizPlay?quizId=${getQuizIdForTopic(topic)}&type=pre-lesson&topic=${topic}`);
+              props.navigation.closeDrawer();
+            }
+          }
+        ]
+      );
+    } else {
+      navigateTo(route, title);
+    }
+  };
+  
+  const getQuizIdForTopic = (topic) => {
+    const quizIds = {
+      tiger: 'a781f992-0c9e-4928-a438-c574e65f165a',
+      tapir: '1f021dc7-3103-4768-97ac-1d9b654b07d1',
+      turtle: '49da865c-5cb7-4f24-9489-711f634d09a7'
+    };
+    return quizIds[topic];
+  };
 
   // Get user display data (prioritize supabaseData, fallback to Auth0 user)
   const userData = supabaseData || user;
@@ -51,6 +83,23 @@ export function DrawerContent(props) {
   const userEmail = userData?.email || user?.email;
   const userPicture = userData?.picture || user?.picture;
   const isAdmin = userData?.role === 'admin';
+  
+  // Load pre-assessment status
+  useEffect(() => {
+    const loadPreAssessmentStatus = async () => {
+      if (user?.sub) {
+        try {
+          const status = await getPreAssessmentStatus(user.sub);
+          setPreAssessmentStatus(status || { tiger: false, tapir: false, turtle: false });
+        } catch (error) {
+          console.error('Error loading pre-assessment status:', error);
+          setPreAssessmentStatus({ tiger: false, tapir: false, turtle: false });
+        }
+      }
+    };
+    
+    loadPreAssessmentStatus();
+  }, [user?.sub, supabaseData]);
 
   // Define dynamic colors based on theme
   const iconColor = isDark ? '#ffffff' : '#000000';
@@ -127,6 +176,44 @@ export function DrawerContent(props) {
                 onPress={() => navigateTo('/profile', 'Profile')}
                 titleStyle={styles.listItemTitle}
                 descriptionStyle={styles.listItemDescription}
+                style={styles.listItem}
+              />
+              
+              <Divider style={styles.sectionDivider} />
+              <List.Subheader style={styles.subheader}>
+                🦎 Learning Topics
+              </List.Subheader>
+              
+              {/* Tiger Lesson */}
+              <List.Item
+                title={`🐅 Malayan Tiger ${preAssessmentStatus?.tiger ? '' : '🔒'}`}
+                description={preAssessmentStatus?.tiger ? 'Access lesson content' : 'Complete pre-assessment to unlock'}
+                left={props => <List.Icon {...props} icon={preAssessmentStatus?.tiger ? 'book-open' : 'lock'} color={preAssessmentStatus?.tiger ? iconColor : '#999999'} />}
+                onPress={() => handleLessonAccess('tiger', '/tigerLesson', 'Malayan Tiger')}
+                titleStyle={[styles.listItemTitle, !preAssessmentStatus?.tiger && styles.lockedItemTitle]}
+                descriptionStyle={[styles.listItemDescription, !preAssessmentStatus?.tiger && styles.lockedItemDescription]}
+                style={styles.listItem}
+              />
+              
+              {/* Tapir Lesson */}
+              <List.Item
+                title={`🦏 Malayan Tapir ${preAssessmentStatus?.tapir ? '' : '🔒'}`}
+                description={preAssessmentStatus?.tapir ? 'Access lesson content' : 'Complete pre-assessment to unlock'}
+                left={props => <List.Icon {...props} icon={preAssessmentStatus?.tapir ? 'book-open' : 'lock'} color={preAssessmentStatus?.tapir ? iconColor : '#999999'} />}
+                onPress={() => handleLessonAccess('tapir', '/tapirLesson', 'Malayan Tapir')}
+                titleStyle={[styles.listItemTitle, !preAssessmentStatus?.tapir && styles.lockedItemTitle]}
+                descriptionStyle={[styles.listItemDescription, !preAssessmentStatus?.tapir && styles.lockedItemDescription]}
+                style={styles.listItem}
+              />
+              
+              {/* Turtle Lesson */}
+              <List.Item
+                title={`🐢 Green Sea Turtle ${preAssessmentStatus?.turtle ? '' : '🔒'}`}
+                description={preAssessmentStatus?.turtle ? 'Access lesson content' : 'Complete pre-assessment to unlock'}
+                left={props => <List.Icon {...props} icon={preAssessmentStatus?.turtle ? 'book-open' : 'lock'} color={preAssessmentStatus?.turtle ? iconColor : '#999999'} />}
+                onPress={() => handleLessonAccess('turtle', '/turtleLesson', 'Green Sea Turtle')}
+                titleStyle={[styles.listItemTitle, !preAssessmentStatus?.turtle && styles.lockedItemTitle]}
+                descriptionStyle={[styles.listItemDescription, !preAssessmentStatus?.turtle && styles.lockedItemDescription]}
                 style={styles.listItem}
               />
               
@@ -327,6 +414,14 @@ const createStyles = (isDark) => {
     versionText: {
       opacity: 0.5,
       color: theme.textSecondary,
+    },
+    lockedItemTitle: {
+      opacity: 0.6,
+      color: '#999999',
+    },
+    lockedItemDescription: {
+      opacity: 0.5,
+      color: '#999999',
     },
   });
 };

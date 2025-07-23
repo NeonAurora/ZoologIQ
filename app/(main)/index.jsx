@@ -6,7 +6,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import LearningTopicCard from '@/components/learning/LearningTopicCard';
 import { ActivityIndicator } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
@@ -42,7 +41,7 @@ export default function HomePage() {
       title: isEnglish ? "Malayan Tiger" : "Harimau Malaya",
       icon: "pets",
       color: "#FF6B35",
-      quizId: "a781f992-0c9e-4928-a438-c574e65f165a"
+      quizId: "5b55e3c3-7d4a-4895-a320-57469103b359"
     },
     {
       topic: "tapir",

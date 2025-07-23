@@ -99,3 +99,136 @@ export const subscribeToUserData = (userId, callback) => {
   // Return unsubscribe function (compatible with Firebase format)
   return () => supabase.removeChannel(subscription);
 };
+
+// ==================================
+// PRE-ASSESSMENT OPERATIONS
+// ==================================
+
+/**
+ * Mark pre-assessment as completed for a specific topic
+ * @param {string} userId - Auth0 user ID
+ * @param {string} topic - Topic name (tiger, tapir, turtle)
+ * @param {boolean} completed - Completion status (default: true)
+ * @returns {Promise<boolean>} Success status
+ */
+export const updatePreAssessmentStatus = async (userId, topic, completed = true) => {
+  try {
+    console.log(`🎯 Marking pre-assessment ${completed ? 'completed' : 'incomplete'} for topic: ${topic}`);
+    
+    // First get current pre-assessment data
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('pre_assessment_completed')
+      .eq('auth0_user_id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching user pre-assessments:', fetchError);
+      return false;
+    }
+
+    // Update the specific topic
+    const currentData = user.pre_assessment_completed || {};
+    const updatedData = {
+      ...currentData,
+      [topic]: completed
+    };
+
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ 
+        pre_assessment_completed: updatedData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('auth0_user_id', userId);
+
+    if (updateError) {
+      console.error('Error updating pre-assessment status:', updateError);
+      return false;
+    }
+
+    console.log(`✅ Pre-assessment ${completed ? 'completed' : 'reset'} for topic: ${topic}`);
+    return true;
+  } catch (error) {
+    console.error('Error in updatePreAssessmentStatus:', error);
+    return false;
+  }
+};
+
+/**
+ * Get all pre-assessment completion status for a user
+ * @param {string} userId - Auth0 user ID
+ * @returns {Promise<object>} Object with completion status for each topic
+ */
+export const getPreAssessmentStatus = async (userId) => {
+  try {
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('pre_assessment_completed')
+      .eq('auth0_user_id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error getting pre-assessment status:', error);
+      return { tiger: false, tapir: false, turtle: false };
+    }
+
+    const defaultStatus = { tiger: false, tapir: false, turtle: false };
+    return { ...defaultStatus, ...(user.pre_assessment_completed || {}) };
+  } catch (error) {
+    console.error('Error in getPreAssessmentStatus:', error);
+    return { tiger: false, tapir: false, turtle: false };
+  }
+};
+
+/**
+ * Check if user has completed pre-assessment for a specific topic
+ * @param {string} userId - Auth0 user ID
+ * @param {string} topic - Topic name (tiger, tapir, turtle)
+ * @returns {Promise<boolean>} Completion status
+ */
+export const hasCompletedPreAssessment = async (userId, topic) => {
+  try {
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('pre_assessment_completed')
+      .eq('auth0_user_id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error checking pre-assessment completion:', error);
+      return false;
+    }
+
+    return user.pre_assessment_completed?.[topic] === true;
+  } catch (error) {
+    console.error('Error in hasCompletedPreAssessment:', error);
+    return false;
+  }
+};
+
+/**
+ * Get list of completed topics for a user
+ * @param {string} userId - Auth0 user ID
+ * @returns {Promise<string[]>} Array of completed topic names
+ */
+export const getCompletedTopics = async (userId) => {
+  try {
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('pre_assessment_completed')
+      .eq('auth0_user_id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error getting completed topics:', error);
+      return [];
+    }
+
+    const completedData = user.pre_assessment_completed || {};
+    return Object.keys(completedData).filter(topic => completedData[topic] === true);
+  } catch (error) {
+    console.error('Error in getCompletedTopics:', error);
+    return [];
+  }
+};

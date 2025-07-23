@@ -12,7 +12,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAudio } from '@/hooks/useAudio';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
 import TurtleIntroduction from './sections/TurtleIntroduction';
 import TurtleBiology from './sections/TurtleBiology';
 import TurtleBehavior from './sections/TurtleBehavior';
@@ -20,6 +19,7 @@ import TurtleReproduction from './sections/TurtleReproduction';
 import TurtleBiodiversity from './sections/TurtleBiodiversity';
 import TurtleThreats from './sections/TurtleThreats';
 import TurtleConservation from './sections/TurtleConservation';
+import ReferencesSection from '../ReferencesSection';
 import TurtleSidebar from './TurtleSidebar';
 import TurtleNavigation from './TurtleNavigation';
 import { ThemedText } from '@/components/ThemedText';
@@ -29,7 +29,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export default function TurtleLessonLayout({ quizId, sessionId }) {
+export default function TurtleLessonLayout() {
   const { colorScheme } = useColorScheme();
   const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
@@ -62,6 +62,7 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
         { id: 'biodiversity', title: 'Biodiversity & Ecology' },
         { id: 'threats', title: 'Threats & Challenges' },
         { id: 'conservation', title: 'Conservation & Success Stories' },
+        { id: 'references', title: 'References' },
       ]
     },
     ms: {
@@ -75,13 +76,14 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
         { id: 'biodiversity', title: 'Biodiversiti & Ekologi' },
         { id: 'threats', title: 'Ancaman & Cabaran' },
         { id: 'conservation', title: 'Pemuliharaan & Kisah Kejayaan' },
+        { id: 'references', title: 'References' },
       ]
     }
   };
 
   const text = content[currentLanguage] || content.en;
 
-  // 🔥 UPDATED: Use bilingual section titles with currentLanguage
+  // 🔥 UPDATED: Use bilingual section titles with references
   const sections = text.sections.map((section, index) => ({
     ...section,
     component: [
@@ -92,6 +94,7 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
       TurtleBiodiversity,
       TurtleThreats,
       TurtleConservation,
+      (props) => <ReferencesSection {...props} topic="turtle" />
     ][index]
   }));
 
@@ -400,8 +403,6 @@ export default function TurtleLessonLayout({ quizId, sessionId }) {
           onNext={goToNextSection}
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
-          quizId={quizId}
-          sessionId={sessionId}
           isNavigating={isNavigating}
         />
       </View>

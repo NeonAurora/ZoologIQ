@@ -7,7 +7,6 @@ import { Alert } from 'react-native';
 import TigerLessonLayout from '@/components/lesson/tiger/TigerLessonLayout';
 
 export default function TigerLessonPage() {
-  const { quizId, sessionId } = useLocalSearchParams(); // 🔥 ADD sessionId
   const { user } = useAuth();
   const router = useRouter();
 
@@ -26,10 +25,7 @@ export default function TigerLessonPage() {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <TigerLessonLayout 
-        quizId={quizId} 
-        sessionId={sessionId} // 🔥 PASS sessionId
-      />
+      <TigerLessonLayout />
     </ThemedView>
   );
 }

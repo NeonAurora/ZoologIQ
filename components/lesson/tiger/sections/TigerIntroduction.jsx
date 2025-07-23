@@ -16,7 +16,7 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
       // Hero Section
       heroTitle: "Malaysia's Critically Endangered National Symbol",
       heroSubtitle: "The Malayan Tiger (Panthera tigris jacksoni)",
-      heroDescription: "Malaysia's critically endangered national symbol, with fewer than 150 remaining in the wild. These apex predators maintain healthy forests by controlling prey populations, while their habitats provide clean water and store carbon. Threatened by habitat loss, poaching, and human conflict, their survival depends on immediate conservation action.",
+      heroDescription: "Malaysia's critically endangered national symbol, with fewer than 150 remaining in the wild. These apex predators maintain healthy forests by controlling prey populations, while their habitats provide clean water and store carbon. Threatened by habitat loss, poaching, and human conflict, their survival depends on immediate conservation action. Everyone in Malaysia can help protect these iconic stripes for future generations.",
       criticalStatus: "**Critical Status:** Fewer than 150 individuals remain in the wild, making this one of the world's most endangered tiger subspecies.",
       
       // Section Headers
@@ -70,6 +70,26 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
           description: 'Regulates prey populations, preventing overgrazing and maintaining forest balance'
         },
         {
+          icon: 'eco',
+          title: 'Ecosystem Engineer',
+          description: 'Protecting tiger habitats safeguards countless other species'
+        },
+        {
+          icon: 'eco',
+          title: 'Ecosystem Engineer',
+          description: 'Indirectly aids forest regeneration by influencing herbivore behavior, which shapes plant distribution'
+        },
+        {
+          icon: 'eco',
+          title: 'Ecosystem Engineer',
+          description: 'It is deeply rooted in Indigenous folklore '
+        },
+        {
+          icon: 'eco',
+          title: 'Ecosystem Engineer',
+          description: 'Healthy tiger habitats support agriculture and clean water sources'
+        },
+        {
           icon: 'flag',
           title: 'National Heritage',
           description: 'Featured on Malaysia\'s coat of arms and currency, representing strength and heritage'
@@ -116,7 +136,7 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
       // Hero Section
       heroTitle: "Simbol Kebangsaan Malaysia yang Kritikal Terancam",
       heroSubtitle: "Harimau Malaya (Panthera tigris jacksoni)",
-      heroDescription: "Simbol kebangsaan Malaysia yang kini berada dalam keadaan kritikal terancam, dengan kurang daripada 150 ekor yang masih tinggal di hutan. Predator puncak ini mengekalkan kesihatan hutan dengan mengawal populasi mangsa, sementara habitat mereka menyediakan air bersih dan menyimpan karbon. Terancam oleh kehilangan habitat, pemburuan haram, dan konflik dengan manusia, kelangsungan hidup mereka bergantung pada tindakan pemuliharaan segera.",
+      heroDescription: "Harimau Malaya (Panthera tigris jacksoni) adalah simbol kebangsaan Malaysia yang kini berada dalam keadaan kritikal terancam, dengan kurang daripada 150 ekor yang masih tinggal di hutan. Predator puncak ini mengekalkan kesihatan hutan dengan mengawal populasi mangsa, sementara habitat mereka menyediakan air bersih dan menyimpan karbon. Terancam oleh kehilangan habitat, pemburuan haram, dan konflik dengan manusia, kelangsungan hidup mereka bergantung pada tindakan pemuliharaan segera. Setiap rakyat Malaysia boleh membantu melindungi belang ikonik ini untuk generasi akan datang.",
       criticalStatus: "**Status Kritikal:** Kurang daripada 150 individu masih tinggal di alam liar, menjadikan ini salah satu subspesies harimau paling terancam di dunia.",
       
       // Section Headers

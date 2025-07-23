@@ -8,7 +8,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Colors } from '@/constants/Colors';
-import { completePreQuiz, completePostQuiz, startStudyPhase, saveQuizResult } from '@/services/supabase';
+import { saveQuizResult, getPreTestScore, savePostTestResult, updatePreAssessmentStatus, getCategoryIdBySlug } from '@/services/supabase';
 
 // Import our new components
 import QuizHeader from '@/components/quiz/QuizHeader';
@@ -16,7 +16,7 @@ import QuizContent from '@/components/quiz/QuizContent';
 import QuizResults from '@/components/quiz/QuizResults';
 
 export default function QuizPlayPage() {
-  const { quizId, sessionId, type, fresh } = useLocalSearchParams();
+  const { quizId, topic, type, fresh } = useLocalSearchParams();
   const router = useRouter();
   const { user, supabaseData } = useAuth();
   const { quiz, loading, error } = useQuiz(quizId);
@@ -33,6 +33,8 @@ export default function QuizPlayPage() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizStartTime] = useState(new Date());
   const [isSavingResult, setIsSavingResult] = useState(false);
+  const [preTestScore, setPreTestScore] = useState(null);
+  const [improvementData, setImprovementData] = useState(null);
   
   // 🔥 NEW: Language state (starts with user's preferred language)
   const [currentLanguage, setCurrentLanguage] = useState(
@@ -169,7 +171,7 @@ export default function QuizPlayPage() {
 
   // Get quiz type information with bilingual support
   const getQuizTypeInfo = () => {
-    if (sessionId && type === 'pre-lesson') {
+    if (type === 'pre-lesson') {
       return {
         title: text.preAssessment.title,
         subtitle: text.preAssessment.subtitle,
@@ -177,7 +179,7 @@ export default function QuizPlayPage() {
         color: isDark ? '#FF9800' : '#FF6B35',
         description: text.preAssessment.description
       };
-    } else if (sessionId && type === 'post-lesson') {
+    } else if (type === 'post-lesson') {
       return {
         title: text.postAssessment.title,
         subtitle: text.postAssessment.subtitle,
@@ -310,9 +312,7 @@ export default function QuizPlayPage() {
       
       const stats = calculateQuizStats(finalAnswers);
       
-      const getSessionType = (type, hasSession) => {
-        if (!hasSession) return 'regular';
-        
+      const getSessionType = (type) => {
         switch (type) {
           case 'pre-lesson':
             return 'pre_study';
@@ -322,6 +322,12 @@ export default function QuizPlayPage() {
             return 'regular';
         }
       };
+      
+      // Get category ID if not available in quiz object
+      let categoryId = quiz.category_id;
+      if (!categoryId && topic) {
+        categoryId = await getCategoryIdBySlug(topic);
+      }
       
       const resultData = {
         user_id: user.sub,
@@ -333,8 +339,10 @@ export default function QuizPlayPage() {
         max_score: stats.max_possible_score,
         answers: stats.detailed_answers,
         time_taken_seconds: timeTakenSeconds,
-        session_type: getSessionType(type, !!sessionId),
-        completed_at: quizEndTime.toISOString()
+        session_type: getSessionType(type),
+        category_id: categoryId,
+        completed_at: quizEndTime.toISOString(),
+        started_at: quizStartTime.toISOString()
       };
       
       console.log('💾 Saving quiz result:', {
@@ -344,19 +352,35 @@ export default function QuizPlayPage() {
         hasSession: !!sessionId
       });
       
-      const savedResult = await saveQuizResult(resultData);
+      let savedResult;
       
-      if (savedResult && sessionId && mountedRef.current) {
-        console.log('🔄 Updating learning session based on quiz type:', type);
-        
-        if (type === 'pre-lesson') {
-          console.log('📝 Completing pre-quiz phase');
-          await completePreQuiz(sessionId, savedResult.id);
-          await startStudyPhase(sessionId);
-        } else if (type === 'post-lesson') {
-          console.log('🎯 Completing post-quiz phase');
-          await completePostQuiz(sessionId, savedResult.id);
+      if (type === 'pre-lesson') {
+        // Save as regular quiz result and mark pre-assessment complete
+        savedResult = await saveQuizResult(resultData);
+        if (savedResult && topic) {
+          await updatePreAssessmentStatus(user.sub, topic, true);
+          console.log('✅ Pre-assessment completed for topic:', topic);
         }
+      } else if (type === 'post-lesson') {
+        // For post-tests, save with improvement calculation
+        savedResult = await savePostTestResult(resultData);
+        
+        // Get pre-test score for comparison
+        if (quiz.category_id) {
+          const preScore = await getPreTestScore(user.sub, quiz.category_id);
+          if (preScore) {
+            setPreTestScore(preScore.score);
+            const improvement = stats.total_score - preScore.score;
+            setImprovementData({
+              preScore: preScore.score,
+              postScore: stats.total_score,
+              improvement: improvement,
+              improvementPercentage: preScore.score > 0 ? ((improvement / preScore.score) * 100) : 0
+            });
+          }
+        }
+      } else {
+        savedResult = await saveQuizResult(resultData);
       }
       
       if (savedResult) {
@@ -374,16 +398,12 @@ export default function QuizPlayPage() {
   };
   
   const handleReturnToQuizzes = () => {
-    if (sessionId && type === 'pre-lesson') {
-      const topic = getTopic();
-      console.log('📚 Navigating to lesson:', topic);
-      router.replace(`/${topic}Lesson?sessionId=${sessionId}&quizId=${quizId}`);
-    } else if (sessionId && type === 'post-lesson') {
-      console.log('📊 Navigating to learning results');
-      router.replace(`/learningResults?sessionId=${sessionId}`);
+    if (type === 'pre-lesson' && topic) {
+      console.log('📚 Navigating to lesson after pre-test:', topic);
+      router.replace(`/${topic}Lesson`);
     } else {
-      console.log('🏠 Returning to quizzes');
-      router.replace('/quizzes');
+      console.log('🏠 Returning to home');
+      router.replace('/');
     }
   };
 
@@ -432,7 +452,23 @@ export default function QuizPlayPage() {
     );
   }
   
-  // Results state
+  // For pre-tests, navigate directly to lesson without showing results
+  if (quizCompleted && type === 'pre-lesson' && !isSavingResult) {
+    setTimeout(() => {
+      handleReturnToQuizzes();
+    }, 1000);
+    
+    return (
+      <ThemedView style={styles.container}>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={isDark ? Colors.dark.tint : Colors.light.tint} />
+          <ThemedText style={styles.loadingText}>Unlocking lesson content...</ThemedText>
+        </View>
+      </ThemedView>
+    );
+  }
+  
+  // Results state for post-tests and regular quizzes
   if (quizCompleted) {
     const finalStats = calculateQuizStats(answers);
     
@@ -451,9 +487,10 @@ export default function QuizPlayPage() {
           finalStats={finalStats}
           currentLanguage={currentLanguage}
           quizTypeInfo={quizTypeInfo}
-          sessionId={sessionId}
+          preTestScore={preTestScore}
+          improvementData={improvementData}
           isSavingResult={isSavingResult}
-          onRetakeQuiz={handleRetakeQuiz}
+          onRetakeQuiz={type === 'post-lesson' ? handleRetakeQuiz : null}
           onReturnToQuizzes={handleReturnToQuizzes}
         />
       </ThemedView>

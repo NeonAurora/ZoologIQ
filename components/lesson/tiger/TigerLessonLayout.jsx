@@ -12,11 +12,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAudio } from '@/hooks/useAudio';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { startLesson, markSectionCompleted } from '@/services/supabase/learningSessionService';
 import TigerIntroduction from './sections/TigerIntroduction';
 import TigerBiology from './sections/TigerBiology';
 import TigerEcology from './sections/TigerEcology';
 import TigerConservation from './sections/TigerConservation';
+import ReferencesSection from '../ReferencesSection';
 import TigerSidebar from './TigerSidebar';
 import TigerNavigation from './TigerNavigation';
 import { ThemedText } from '@/components/ThemedText';
@@ -26,7 +26,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export default function TigerLessonLayout({ quizId, sessionId }) {
+export default function TigerLessonLayout() {
   const { colorScheme } = useColorScheme();
   const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
@@ -56,6 +56,7 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
         { id: 'biology', title: 'Biology & Classification' },
         { id: 'ecology', title: 'Ecology & Behavior' },
         { id: 'conservation', title: 'Conservation' },
+        { id: 'references', title: 'References' },
       ]
     },
     ms: {
@@ -66,19 +67,21 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
         { id: 'biology', title: 'Biologi & Klasifikasi' },
         { id: 'ecology', title: 'Ekologi & Tingkah Laku' },
         { id: 'conservation', title: 'Pemuliharaan' },
+        { id: 'references', title: 'References' },
       ]
     }
   };
 
   const text = content[currentLanguage] || content.en;
 
-  // 🔥 UPDATED: Sections with bilingual titles
+  // 🔥 UPDATED: Sections with bilingual titles and references
   const sections = text.sections.map((section, index) => {
     const components = [
       TigerIntroduction,
       TigerBiology,
       TigerEcology,
-      TigerConservation
+      TigerConservation,
+      (props) => <ReferencesSection {...props} topic="tiger" />
     ];
     
     return {
@@ -88,7 +91,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
   });
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [hasStartedLesson, setHasStartedLesson] = useState(false);
   const [completedSections, setCompletedSections] = useState(new Set());
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -151,22 +153,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     }
   };
 
-  // Track lesson start
-  useEffect(() => {
-    if (sessionId && !hasStartedLesson) {
-      const trackLessonStart = async () => {
-        try {
-          await startLesson(sessionId);
-          setHasStartedLesson(true);
-          console.log('Lesson content viewing started for session:', sessionId);
-        } catch (error) {
-          console.error('Error tracking lesson start:', error);
-        }
-      };
-      
-      trackLessonStart();
-    }
-  }, [sessionId, hasStartedLesson]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -211,19 +197,8 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
     }
   };
 
-  const markCurrentSectionCompleted = async () => {
-    if (sessionId && hasStartedLesson && !completedSections.has(safeSectionIndex)) {
-      try {
-        const section = sections[safeSectionIndex];
-        await markSectionCompleted(sessionId, safeSectionIndex, section.title);
-        setCompletedSections(prev => new Set([...prev, safeSectionIndex]));
-      } catch (error) {
-        console.error('Error marking section as completed:', error);
-      }
-    }
-  };
 
-  const goToNextSection = async () => {
+  const goToNextSection = () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
       return;
@@ -231,22 +206,15 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
 
     setIsNavigating(true);
     
-    try {
-      markCurrentSectionCompleted();
-      
-      const nextIndex = safeSectionIndex + 1;
-      if (nextIndex < sections.length) {
-        safeSetCurrentSectionIndex(nextIndex);
-      } else {
-        setIsNavigating(false);
-      }
-    } catch (error) {
-      console.error('Error in goToNextSection:', error);
+    const nextIndex = safeSectionIndex + 1;
+    if (nextIndex < sections.length) {
+      safeSetCurrentSectionIndex(nextIndex);
+    } else {
       setIsNavigating(false);
     }
   };
 
-  const goToPreviousSection = async () => {
+  const goToPreviousSection = () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
       return;
@@ -254,41 +222,30 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
 
     setIsNavigating(true);
     
-    try {
-      markCurrentSectionCompleted();
-      
-      const prevIndex = safeSectionIndex - 1;
-      if (prevIndex >= 0) {
-        safeSetCurrentSectionIndex(prevIndex);
-      } else {
-        setIsNavigating(false);
-      }
-    } catch (error) {
-      console.error('Error in goToPreviousSection:', error);
+    const prevIndex = safeSectionIndex - 1;
+    if (prevIndex >= 0) {
+      safeSetCurrentSectionIndex(prevIndex);
+    } else {
       setIsNavigating(false);
     }
   };
 
-  const handleLessonComplete = async () => {
+  const handleLessonComplete = () => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring lesson complete');
       return;
     }
-
-    if (sessionId) {
-      await markCurrentSectionCompleted();
-      console.log('All lesson sections completed');
-    }
+    
+    console.log('Tiger lesson completed');
   };
 
-  const handleSectionSelect = async (index) => {
+  const handleSectionSelect = (index) => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring sidebar click');
       return;
     }
     
     setIsNavigating(true);
-    markCurrentSectionCompleted();
     safeSetCurrentSectionIndex(index);
     closeSidebar();
   };
@@ -392,8 +349,6 @@ export default function TigerLessonLayout({ quizId, sessionId }) {
           onNext={goToNextSection}
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
-          quizId={quizId}
-          sessionId={sessionId}
           isNavigating={isNavigating}
         />
       </View>

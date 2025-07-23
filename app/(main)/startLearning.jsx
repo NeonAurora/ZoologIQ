@@ -1,10 +1,10 @@
 // app/(main)/startLearning.jsx
 import React from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import LearningSessionStarter from '@/components/learning/LearningSessionStarter';
+import PreAssessmentChecker from '@/components/learning/PreAssessmentChecker';
 
 export default function StartLearningPage() {
   const { topic, quizId } = useLocalSearchParams();
   
-  return <LearningSessionStarter topic={topic} quizId={quizId} />;
+  return <PreAssessmentChecker topic={topic} quizId={quizId} />;
 }

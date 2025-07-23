@@ -89,7 +89,7 @@ export default function TigerBiology({ currentLanguage = 'en' }) {
       ],
 
       // Physiology Facts
-      physiologyFacts: [
+      physiologyFactsData: [
         'No two tigers have the same stripe pattern—just like human fingerprints',
         'Their jaw strength (1,000 psi) can crush bones with ease',
         'Night vision is 6x better than humans thanks to reflective eye layer',
@@ -186,7 +186,7 @@ export default function TigerBiology({ currentLanguage = 'en' }) {
       ],
 
       // Physiology Facts
-      physiologyFacts: [
+      physiologyFactsData: [
         'Tiada dua harimau yang mempunyai corak belang sama—seperti cap jari manusia',
         'Kekuatan rahang mereka (1,000 psi) mampu mematahkan tulang dengan mudah',
         'Penglihatan malam 6x lebih baik daripada manusia kerana lapisan mata pemantul',
@@ -390,7 +390,7 @@ export default function TigerBiology({ currentLanguage = 'en' }) {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {text.physiologyFacts.map((fact, index) => (
+          {text.physiologyFactsData.map((fact, index) => (
             <View key={index} style={styles.factItem}>
               <View style={[
                 styles.factBullet,

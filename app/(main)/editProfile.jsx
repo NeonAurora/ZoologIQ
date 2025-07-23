@@ -32,7 +32,6 @@ export default function EditProfileScreen() {
     name: '',
     email: '',
     preferred_language: 'en', // 🔥 NEW: Language preference
-    education_status: '',
     highest_education: '',
     city: '',
     district: '',
@@ -53,7 +52,6 @@ export default function EditProfileScreen() {
         name: supabaseData.name || '',
         email: supabaseData.email || '',
         preferred_language: supabaseData.preferred_language || 'en', // 🔥 NEW: Set language preference
-        education_status: supabaseData.education_status || '',
         highest_education: supabaseData.highest_education || '',
         city: supabaseData.city || '',
         district: supabaseData.district || '',
@@ -68,7 +66,7 @@ export default function EditProfileScreen() {
 
   useEffect(() => {
     const requiredFields = [
-      'name', 'email', 'education_status', 'highest_education',
+      'name', 'email', 'highest_education',
       'city', 'district', 'state_province', 'occupation', 'age', 'gender'
     ];
     
@@ -204,7 +202,6 @@ export default function EditProfileScreen() {
         age: parseInt(formData.age) || null,
         gender: formData.gender,
         occupation: formData.occupation,
-        education_status: formData.education_status,
         highest_education: formData.highest_education,
         city: formData.city,
         district: formData.district,
@@ -483,14 +480,6 @@ export default function EditProfileScreen() {
         </FormSection>
 
         <FormSection title="Education" isDark={isDark}>
-          <FormField
-            label="Education Status"
-            value={formData.education_status}
-            onChangeText={(value) => handleInputChange('education_status', value)}
-            placeholder="e.g., Student, Graduated, Working Professional"
-            isDark={isDark}
-            required
-          />
           <FormField
             label="Highest Education"
             value={formData.highest_education}

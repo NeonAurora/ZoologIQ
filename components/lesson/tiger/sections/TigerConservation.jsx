@@ -66,8 +66,17 @@ export default function TigerConservation({ currentLanguage = 'en' }) {
           icon: 'grass',
           title: 'Prey Depletion',
           description: 'Overhunting of deer and wild boar reduces tigers\' food supply'
-        }
+        },
+        {
+          icon: 'home',
+          title: 'Human-Wildlife Conflict',
+          description: 'Rising temperatures may reduce suitable habitats'
+        },
       ],
+
+      // Add the following lines in this page:
+      // Report tiger sightings to authorities (e.g., Perak Wildlife Department) to prevent accidental conflicts
+      // Demand corporate accountability by pressuring companies to adopt wildlife-friendly policies 
 
       // Action Categories
       actionCategories: [
@@ -122,6 +131,14 @@ export default function TigerConservation({ currentLanguage = 'en' }) {
           ]
         }
       ],
+
+      // Add following strategies in case they don't exist:
+      // Predator-proof enclosures for livestock
+      // Ecotourism initiatives create jobs as an alternative to forest exploitation
+      // Non-timber forest products (e.g., wild honey) reduce logging dependence
+      // Community patrol units (e.g., PATROL Perak) monitor tigers and deter poachers (MYCAT, 2023)
+      // Strict enforcement of anti-poaching laws
+      // Land-use planning that prioritises tiger habitats 
 
       // Coexistence Strategies
       coexistenceStrategies: [

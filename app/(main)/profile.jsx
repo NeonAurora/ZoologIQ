@@ -33,7 +33,6 @@ export default function ProfileScreen() {
       preferredLanguage: 'Preferred Language',
       english: 'English',
       malay: 'Malay',
-      status: 'Status',
       highestLevel: 'Highest Level',
       cityVillage: 'City/Village',
       district: 'District',
@@ -55,7 +54,6 @@ export default function ProfileScreen() {
       preferredLanguage: 'Bahasa Pilihan',
       english: 'Bahasa Inggeris',
       malay: 'Bahasa Melayu',
-      status: 'Status',
       highestLevel: 'Tahap Tertinggi',
       cityVillage: 'Bandar/Kampung',
       district: 'Daerah',
@@ -194,7 +192,6 @@ export default function ProfileScreen() {
         <InfoSection 
           title={text.education}
           data={[
-            { label: text.status, value: supabaseData.education_status || text.notSpecified },
             { label: text.highestLevel, value: supabaseData.highest_education || text.notSpecified },
           ]}
           isDark={isDark}

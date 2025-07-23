@@ -1,95 +1,50 @@
 // components/lesson/turtle/TurtleNavigation.jsx
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@/contexts/AuthContext';
-import { completeLesson } from '@/services/supabase/learningSessionService';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TurtleNavigation({ 
   currentIndex, 
   totalSections, 
+  currentLanguage = 'en',
   onNext, 
   onPrevious,
-  quizId,
-  sessionId,
+  onComplete,
   isNavigating = false
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const router = useRouter();
   
-  // 🔥 NEW: Language detection
-  const { supabaseData } = useAuth();
-  const preferredLanguage = supabaseData?.preferred_language || 'en';
-
-  // 🔥 NEW: Bilingual content
   const content = {
     en: {
-      of: 'of',
-      error: 'Error',
-      lessonCompleteError: 'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
-      cancel: 'Cancel',
-      continue: 'Continue'
+      of: 'of'
     },
     ms: {
-      of: 'daripada',
-      error: 'Ralat',
-      lessonCompleteError: 'Terdapat masalah semasa melengkapkan pelajaran. Adakah anda ingin meneruskan ke kuiz?',
-      cancel: 'Batal',
-      continue: 'Teruskan'
+      of: 'daripada'
     }
   };
 
-  const text = content[preferredLanguage] || content.en;
+  const text = content[currentLanguage] || content.en;
   
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === totalSections - 1;
   
-  const handleFinish = async () => {
+  const handleFinish = () => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring finish click');
       return;
     }
 
-    try {
-      if (sessionId) {
-        console.log('Completing lesson for session:', sessionId);
-        await completeLesson(sessionId);
-        
-        const timestamp = Date.now();
-        router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
-      } else {
-        if (quizId) {
-          router.push(`/quizPlay?quizId=${quizId}&type=post-lesson`);
-        } else {
-          router.push('/quizzes');
-        }
-      }
-    } catch (error) {
-      console.error('Error completing lesson:', error);
-      Alert.alert(
-        text.error, 
-        text.lessonCompleteError,
-        [
-          { text: text.cancel, style: 'cancel' },
-          { 
-            text: text.continue, 
-            onPress: () => {
-              const timestamp = Date.now();
-              if (sessionId && quizId) {
-                router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
-              } else {
-                router.push('/quizzes');
-              }
-            }
-          }
-        ]
-      );
+    console.log('Turtle lesson completed');
+    if (onComplete) {
+      onComplete();
     }
+    router.replace('/');
   };
 
   // Progress dots

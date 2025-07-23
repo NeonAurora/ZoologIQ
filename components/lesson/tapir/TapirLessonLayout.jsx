@@ -12,13 +12,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAudio } from '@/hooks/useAudio';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-import { startLesson, markSectionCompleted } from '@/services/supabase';
 import TapirIntroduction from './sections/TapirIntroduction';
 import TapirPhysiology from './sections/TapirPhysiology';
 import TapirEcology from './sections/TapirEcology';
 import TapirConservation from './sections/TapirConservation';
 import TapirPopulation from './sections/TapirPopulation';
 import TapirFunFacts from './sections/TapirFunFacts';
+import ReferencesSection from '../ReferencesSection';
 import TapirSidebar from './TapirSidebar';
 import TapirNavigation from './TapirNavigation';
 import { ThemedText } from '@/components/ThemedText';
@@ -28,7 +28,7 @@ import AudioPlayer from '@/components/audio/AudioPlayer';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export default function TapirLessonLayout({ quizId, sessionId }) {
+export default function TapirLessonLayout() {
   const { colorScheme } = useColorScheme();
   const { supabaseData } = useAuth();
   const isDark = colorScheme === 'dark';
@@ -58,6 +58,7 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
         { id: 'conservation', title: 'Conservation & Threats' },
         { id: 'population', title: 'Population & Global Status' },
         { id: 'funfacts', title: 'Fun Facts & Cultural Significance' },
+        { id: 'references', title: 'References' },
       ]
     },
     ms: {
@@ -70,13 +71,14 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
         { id: 'conservation', title: 'Pemuliharaan & Ancaman' },
         { id: 'population', title: 'Populasi & Status Global' },
         { id: 'funfacts', title: 'Fakta Menarik & Kepentingan Budaya' },
+        { id: 'references', title: 'References' },
       ]
     }
   };
 
   const text = content[currentLanguage] || content.en;
 
-  // 🔥 UPDATED: Sections with bilingual titles
+  // 🔥 UPDATED: Sections with bilingual titles and references
   const sections = text.sections.map((section, index) => {
     const components = [
       TapirIntroduction,
@@ -84,7 +86,8 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
       TapirEcology,
       TapirConservation,
       TapirPopulation,
-      TapirFunFacts
+      TapirFunFacts,
+      (props) => <ReferencesSection {...props} topic="tapir" />
     ];
     
     return {
@@ -408,8 +411,6 @@ export default function TapirLessonLayout({ quizId, sessionId }) {
           onNext={goToNextSection}
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
-          quizId={quizId}
-          sessionId={sessionId}
           isNavigating={isNavigating}
         />
       </View>

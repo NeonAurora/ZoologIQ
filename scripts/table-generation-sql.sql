@@ -344,3 +344,14 @@ ADD COLUMN lesson_audio_ms TEXT;
 -- Add a comment for clarity
 COMMENT ON COLUMN quiz_categories.lesson_audio_en IS 'URL to English lesson audio file from Supabase storage';
 COMMENT ON COLUMN quiz_categories.lesson_audio_ms IS 'URL to Malay lesson audio file from Supabase storage';
+
+-- Remove the education_status column from users table
+ALTER TABLE public.users DROP COLUMN IF EXISTS education_status;
+-- Add column to track completed pre-assessments per topic
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS pre_assessment_completed JSONB DEFAULT '{}';
+
+-- Add index for efficient querying
+CREATE INDEX IF NOT EXISTS idx_users_pre_assessments ON public.users USING GIN (pre_assessment_completed);
+
+-- Add comment for clarity
+COMMENT ON COLUMN public.users.pre_assessment_completed IS 'JSON object tracking completed pre-assessments: {"tiger": true, "tapir": true, "turtle": false}';

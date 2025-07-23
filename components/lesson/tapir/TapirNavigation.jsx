@@ -1,50 +1,31 @@
 // components/lesson/tapir/TapirNavigation.jsx
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { completeLesson } from '@/services/supabase/learningSessionService';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TapirNavigation({ 
   currentIndex, 
   totalSections, 
-  currentLanguage = 'en', // 🔥 NEW: Language prop
+  currentLanguage = 'en',
   onNext, 
   onPrevious,
-  quizId,
-  sessionId,
+  onComplete,
   isNavigating = false
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const router = useRouter();
   
-  // 🔥 NEW: Bilingual content
   const content = {
     en: {
-      of: 'of',
-      previous: 'Previous',
-      next: 'Next', 
-      finish: 'Finish',
-      takeQuiz: 'Take Quiz',
-      error: 'Error',
-      errorMessage: 'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
-      cancel: 'Cancel',
-      continue: 'Continue'
+      of: 'of'
     },
     ms: {
-      of: 'daripada',
-      previous: 'Sebelumnya',
-      next: 'Seterusnya',
-      finish: 'Selesai',
-      takeQuiz: 'Ambil Kuiz',
-      error: 'Ralat',
-      errorMessage: 'Terdapat masalah untuk menyelesaikan pelajaran. Adakah anda ingin meneruskan ke kuiz?',
-      cancel: 'Batal',
-      continue: 'Teruskan'
+      of: 'daripada'
     }
   };
 
@@ -53,49 +34,17 @@ export default function TapirNavigation({
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === totalSections - 1;
   
-  const handleFinish = async () => {
+  const handleFinish = () => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring finish click');
       return;
     }
 
-    try {
-      if (sessionId) {
-        console.log('Completing lesson for session:', sessionId);
-        await completeLesson(sessionId);
-        
-        const timestamp = Date.now();
-        router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
-      } else {
-        if (quizId) {
-          router.push(`/quizPlay?quizId=${quizId}&type=post-lesson`);
-        } else {
-          router.push('/quizzes');
-        }
-      }
-    } catch (error) {
-      console.error('Error completing lesson:', error);
-      
-      // 🔥 UPDATED: Bilingual alert
-      Alert.alert(
-        text.error,
-        text.errorMessage,
-        [
-          { text: text.cancel, style: 'cancel' },
-          { 
-            text: text.continue, 
-            onPress: () => {
-              const timestamp = Date.now();
-              if (sessionId && quizId) {
-                router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
-              } else {
-                router.push('/quizzes');
-              }
-            }
-          }
-        ]
-      );
+    console.log('Tapir lesson completed');
+    if (onComplete) {
+      onComplete();
     }
+    router.replace('/');
   };
 
   // Progress dots
@@ -140,7 +89,6 @@ export default function TapirNavigation({
         onPress={onPrevious}
         disabled={isFirst || isNavigating}
         activeOpacity={0.7}
-        accessibilityLabel={text.previous} // 🔥 NEW: Accessibility
       >
         <MaterialIcons 
           name="chevron-left" 
@@ -157,7 +105,6 @@ export default function TapirNavigation({
         <View style={styles.dotsContainer}>
           {renderProgressDots()}
         </View>
-        {/* 🔥 UPDATED: Bilingual progress text */}
         <ThemedText style={[
           styles.progressText,
           { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
@@ -180,7 +127,6 @@ export default function TapirNavigation({
         onPress={isLast ? handleFinish : onNext}
         disabled={isNavigating}
         activeOpacity={0.7}
-        accessibilityLabel={isLast ? text.takeQuiz : text.next} // 🔥 NEW: Accessibility
       >
         {isNavigating ? (
           <MaterialIcons name="hourglass-empty" size={16} color="#999999" />

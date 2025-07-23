@@ -1,3 +1,4 @@
+// Services/supabase/index.js
 // Centralized exports for all Supabase services
 
 // User operations
@@ -5,7 +6,12 @@ export {
   saveUserData,
   getUserData,
   updateUserData,
-  subscribeToUserData
+  subscribeToUserData,
+  // Pre-assessment operations
+  updatePreAssessmentStatus,
+  getPreAssessmentStatus,
+  hasCompletedPreAssessment,
+  getCompletedTopics,
 } from './userService';
 
 // Quiz operations
@@ -19,32 +25,15 @@ export {
 // Quiz results
 export {
   saveQuizResult,
-  getUserQuizResults
+  getUserQuizResults,
+  // Pre/Post test operations
+  getPreTestScore,
+  savePostTestResult,
+  getQuizResultsByType,
+  getAllPostTestAttempts,
+  getBestPostTestScore,
+  getImprovementData
 } from './quizResultService';
-
-// Learning sessions
-export {
-  createLearningSession,
-  getActiveLearningSession,
-  getLearningSession,
-  completePreQuiz,
-  startLesson,
-  completeLesson,
-  completePostQuiz,
-  getUserLearningSessions,
-  getCompletedLearningSessions,
-  checkSessionAvailability,
-  getNextAction,
-  getLearningAnalytics,
-  resetLearningSession,
-  startStudyPhase,
-  markSectionCompleted,
-  getSessionProgress,
-  getUserCompletedSessions,
-  finalizeSessionCompletion,
-  abandonSession,
-  cleanupIncompleteSessionsForCategory
-} from './learningSessionService';
 
 // Categories
 export {
@@ -57,8 +46,12 @@ export {
 export {
   getQuizStats,
   getUserCategoryProgress,
-  createStudySession,
-  updateStudySession
+  // New progress and access utilities
+  getUserOverallProgress,
+  getTopicAccessStatus,
+  getTopicQuizSummary,
+  checkFeatureAccess,
+  getCategoryIdBySlug
 } from './utilityService';
 
 // Storage operations (Supabase)

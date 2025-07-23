@@ -7,7 +7,6 @@ import { Alert } from 'react-native';
 import TapirLessonLayout from '@/components/lesson/tapir/TapirLessonLayout';
 
 export default function TapirLessonPage() {
-  const { quizId, sessionId } = useLocalSearchParams();
   const { user } = useAuth();
   const router = useRouter();
 
@@ -26,10 +25,7 @@ export default function TapirLessonPage() {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <TapirLessonLayout 
-        quizId={quizId} 
-        sessionId={sessionId}
-      />
+      <TapirLessonLayout />
     </ThemedView>
   );
 }

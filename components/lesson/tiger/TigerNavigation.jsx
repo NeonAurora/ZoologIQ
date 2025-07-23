@@ -5,17 +5,15 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { completeLesson } from '@/services/supabase/learningSessionService';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TigerNavigation({ 
   currentIndex, 
   totalSections,
-  currentLanguage = 'en', // 🔥 NEW: Language prop
+  currentLanguage = 'en',
   onNext, 
   onPrevious,
-  quizId,
-  sessionId,
+  onComplete,
   isNavigating = false
 }) {
   const { colorScheme } = useColorScheme();
@@ -28,64 +26,26 @@ export default function TigerNavigation({
   // 🔥 NEW: Bilingual content
   const content = {
     en: {
-      of: 'of',
-      error: 'Error',
-      errorCompletingLesson: 'There was an issue completing the lesson. Would you like to continue to the quiz anyway?',
-      cancel: 'Cancel',
-      continue: 'Continue'
+      of: 'of'
     },
     ms: {
-      of: 'daripada',
-      error: 'Ralat',
-      errorCompletingLesson: 'Terdapat masalah dalam menyelesaikan pelajaran. Adakah anda ingin meneruskan ke kuiz?',
-      cancel: 'Batal',
-      continue: 'Teruskan'
+      of: 'daripada'
     }
   };
 
   const text = content[currentLanguage] || content.en;
   
-  const handleFinish = async () => {
+  const handleFinish = () => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring finish click');
       return;
     }
 
-    try {
-      if (sessionId) {
-        console.log('Completing lesson for session:', sessionId);
-        await completeLesson(sessionId);
-        
-        const timestamp = Date.now();
-        router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
-      } else {
-        if (quizId) {
-          router.push(`/quizPlay?quizId=${quizId}&type=post-lesson`);
-        } else {
-          router.push('/quizzes');
-        }
-      }
-    } catch (error) {
-      console.error('Error completing lesson:', error);
-      Alert.alert(
-        text.error,
-        text.errorCompletingLesson,
-        [
-          { text: text.cancel, style: 'cancel' },
-          { 
-            text: text.continue, 
-            onPress: () => {
-              const timestamp = Date.now();
-              if (sessionId && quizId) {
-                router.replace(`/quizPlay?sessionId=${sessionId}&type=post-lesson&quizId=${quizId}&t=${timestamp}`);
-              } else {
-                router.push('/quizzes');
-              }
-            }
-          }
-        ]
-      );
+    console.log('Tiger lesson completed');
+    if (onComplete) {
+      onComplete();
     }
+    router.replace('/');
   };
 
   // Progress dots

@@ -1,0 +1,158 @@
+We are transforming an educational quiz application from a complex session-based learning system to a simpler pre-assessment unlock system.
+Current System (Being Removed):
+
+Complex study sessions with multiple states
+Users could restart sessions multiple times
+Session-based progress tracking
+Current education status in user profiles
+
+New System (Target):
+
+One pre-test per topic (tiger, tapir, turtle) per user account
+Pre-test completion unlocks lesson content and post-tests for that specific topic
+Unlimited post-tests (always compared against original pre-test score)
+Independent lesson access (users can read lessons anytime after pre-test)
+Static references section at end of each lesson (English only, regardless of language toggle)
+Removed current education status from user profiles (keep only highest education)
+
+ IMPLEMENTATION PATH
+Phase 1: Database & Services ✅ COMPLETED
+
+Database schema modifications
+Service function updates/creation
+Remove session-based logic
+
+Phase 2: UI Components 🔄 IN PROGRESS
+
+Update quiz flow components
+Modify drawer navigation with access control
+Remove education status from profile components
+Add references sections to lessons
+
+Phase 3: Integration & Testing ⏳ PENDING
+
+Test complete user flow
+Ensure proper access controls
+Verify data migration
+
+
+📊 CURRENT PROGRESS STATUS
+✅ COMPLETED:
+Database Changes:
+
+❌ Removed education_status column from users table
+✅ Added pre_assessment_completed JSONB column to track: {"tiger": true, "tapir": false, "turtle": false}
+✅ Updated quiz_results session_type constraints: 'pre-lesson', 'post-lesson', 'regular'
+
+Service Functions - Complete Overhaul:
+📁 userService.js - UPDATED:
+
+✅ Added pre-assessment tracking functions:
+
+updatePreAssessmentStatus(userId, topic, completed)
+getPreAssessmentStatus(userId) → returns {tiger: false, tapir: true, turtle: false}
+hasCompletedPreAssessment(userId, topic) → boolean
+getCompletedTopics(userId) → array of completed topics
+
+📁 quizResultService.js - UPDATED:
+
+✅ Enhanced saveQuizResult() to auto-mark pre-assessment complete when session_type === 'pre-lesson'
+✅ Added post-test functions:
+
+getPreTestScore(userId, categoryId) → get original pre-test for comparison
+savePostTestResult(resultData) → saves with improvement calculation
+getAllPostTestAttempts(userId, categoryId) → all post-test history
+getBestPostTestScore(userId, categoryId) → highest post-test score
+getImprovementData(userId, categoryId) → comprehensive improvement analysis
+
+📁 utilityService.js - UPDATED:
+
+❌ Removed session functions: createStudySession, updateStudySession
+✅ Added new utilities:
+
+getUserOverallProgress(userId) → complete progress dashboard
+getTopicAccessStatus(userId) → navigation access control
+getTopicQuizSummary(userId, categoryId) → detailed topic analysis
+checkFeatureAccess(userId, feature, topic) → centralized access control
+getCategoryIdBySlug(topicSlug) → helper function
+
+📁 learningSessionService.js - REMOVED:
+
+❌ Entire file deleted (90% session-based logic no longer needed)
+
+📁 index.js - UPDATED:
+
+✅ Updated exports to include all new functions
+❌ Removed all session-based exports
+✅ Organized exports by functionality
+
+⏳ PENDING (Next Steps):
+UI Component Updates Needed:
+🔧 Profile Components:
+
+Remove education_status field from profile display
+Remove education_status from edit profile form
+Update form validation and submission logic
+
+🔧 Quiz Flow Components:
+
+Update quizPlay.jsx to use new pre/post test logic
+Pre-test completion should navigate directly to lesson (no results shown)
+Post-test results should compare against original pre-test score
+Implement one-time pre-test restriction
+
+ Navigation Components:
+
+Update DrawerContent.jsx with lesson access control
+Show/hide lesson links based on pre-assessment completion
+Add lock icons for unavailable lessons
+Display access requirements in alerts
+
+🔧 Lesson Components:
+
+Add references section to all lesson layouts (TigerLessonLayout, TapirLessonLayout, TurtleLessonLayout)
+Create ReferencesSection.jsx component
+Ensure references display in English only regardless of language toggle
+
+ Learning Session Components:
+
+Replace LearningSessionStarter.jsx with simpler pre-assessment checker
+Remove session state management
+Implement direct lesson/post-test access after pre-test completion
+
+🎯 KEY BUSINESS RULES
+
+One Pre-Test Rule: Each user can only take ONE pre-test per topic, ever
+Unlock System: Pre-test completion unlocks both lessons and post-tests for that topic
+Unlimited Post-Tests: Users can take post-tests as many times as they want
+Comparison Logic: All post-test results compare against the original pre-test score
+Independent Access: Lessons can be accessed anytime after pre-test (not tied to post-tests)
+References Language: References section is always in English, language toggle has no effect
+Access Control: Navigation must enforce pre-test requirements
+
+📱 APPLICATION ARCHITECTURE
+Current Database Schema:
+
+users table:
+- pre_assessment_completed JSONB  -- {"tiger": true, "tapir": false, "turtle": false}
+- (education_status REMOVED)
+
+quiz_results table:
+- session_type: 'pre-lesson' | 'post-lesson' | 'regular'
+
+Service Layer Structure:
+
+userService.js       → User data + pre-assessment tracking
+quizResultService.js → Quiz results + pre/post test logic  
+utilityService.js    → Progress tracking + access control
+categoryService.js   → Categories (unchanged)
+quizService.js       → Quiz CRUD (unchanged) 
+storage.js           → File uploads (unchanged)
+audioService.js      → Audio URLs (unchanged)
+
+Component Flow:
+Home → Topic Selection → Pre-Test Check
+                      ↓
+                   Pre-Test Required → Take Pre-Test → Lesson Unlocked
+                      ↓
+                   Access Granted → Lesson + Unlimited Post-Tests

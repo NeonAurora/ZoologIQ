@@ -127,8 +127,11 @@ export default function TigerEcology({ currentLanguage = 'en' }) {
         }
       ],
 
+      // Try to add a yearly trends section if not exists
+      // Yearly Trends (2010–2023): India: Increased from 1,411 (2010) to 3,167 (2023) due to strict anti-poaching laws (NTCA, 2023).; Malaysia: Declined from 500 (2010) to <150 (2023) due to habitat fragmentation (DWNP, 2023)., Global: ~3,900 wild tigers (2023), up from 3,200 (2010) but still below historic 100,000 (WWF, 2023).
+
       // Key Insights
-      keyInsights: [
+      keyInsightsData: [
         'India: Highest density (75% of global population) due to strict anti-poaching laws',
         'Malaysia & Indonesia: Fastest decline due to palm oil expansion—requiring urgent conservation action',
         'Russia: Recovery success: Siberian tigers rebounded via anti-poaching patrols',
@@ -252,7 +255,7 @@ export default function TigerEcology({ currentLanguage = 'en' }) {
       ],
 
       // Key Insights
-      keyInsights: [
+      keyInsightsData: [
         'India: Kepadatan tertinggi (75% populasi global) akibat undang-undang anti-pemburuan ketat',
         'Malaysia & Indonesia: Penurunan tercepat akibat perluasan kelapa sawit—memerlukan tindakan pemuliharaan segera',
         'Rusia: Kejayaan pemulihan: Harimau Siberia pulih melalui rondaan anti-pemburuan haram',
@@ -534,7 +537,7 @@ export default function TigerEcology({ currentLanguage = 'en' }) {
             borderColor: isDark ? Colors.dark.border : Colors.light.border
           }
         ]}>
-          {text.keyInsights.map((insight, index) => (
+          {text.keyInsightsData.map((insight, index) => (
             <View key={index} style={styles.insightItem}>
               <View style={[
                 styles.insightBullet,

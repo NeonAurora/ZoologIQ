@@ -7,7 +7,6 @@ import { Alert } from 'react-native';
 import TurtleLessonLayout from '@/components/lesson/turtle/TurtleLessonLayout';
 
 export default function TurtleLessonPage() {
-  const { quizId, sessionId } = useLocalSearchParams();
   const { user } = useAuth();
   const router = useRouter();
 
@@ -26,10 +25,7 @@ export default function TurtleLessonPage() {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <TurtleLessonLayout 
-        quizId={quizId} 
-        sessionId={sessionId}
-      />
+      <TurtleLessonLayout />
     </ThemedView>
   );
 }
