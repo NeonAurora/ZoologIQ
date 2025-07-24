@@ -85,16 +85,6 @@ export default function QuizzesListPage() {
           <ThemedText style={styles.title} numberOfLines={2}>
             {item.title}
           </ThemedText>
-          <View style={[
-            styles.difficultyBadge, 
-            item.difficulty === 'Easy' ? styles.easyBadge :
-            item.difficulty === 'Hard' ? styles.hardBadge :
-            styles.mediumBadge
-          ]}>
-            <Text style={styles.difficultyText}>
-              {item.difficulty || 'Medium'}
-            </Text>
-          </View>
         </View>
         
         {item.description && (

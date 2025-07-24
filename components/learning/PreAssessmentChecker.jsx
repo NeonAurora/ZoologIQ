@@ -1,5 +1,5 @@
 // components/learning/PreAssessmentChecker.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { getPreAssessmentStatus } from '@/services/supabase';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useFocusEffect } from '@react-navigation/native'; // 🔥 NEW IMPORT
 
 export default function PreAssessmentChecker({ topic, quizId }) {
   const { user, supabaseData } = useAuth();
@@ -84,25 +85,44 @@ export default function PreAssessmentChecker({ topic, quizId }) {
 
   const text = content[currentLanguage] || content.en;
 
-  // Load pre-assessment status
-  useEffect(() => {
-    const loadPreAssessmentStatus = async () => {
-      if (!user?.sub || !topic) return;
+  // 🔥 NEW: Extract the loading logic into a reusable function
+  const loadPreAssessmentStatus = useCallback(async () => {
+    if (!user?.sub || !topic) {
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      console.log('🔄 Loading pre-assessment status for:', { userId: user.sub, topic });
       
-      try {
-        setLoading(true);
-        const status = await getPreAssessmentStatus(user.sub);
-        setPreAssessmentCompleted(status?.[topic] || false);
-      } catch (error) {
-        console.error('Error loading pre-assessment status:', error);
-        Alert.alert(text.error, text.failedToLoad);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPreAssessmentStatus();
+      const status = await getPreAssessmentStatus(user.sub);
+      const isCompleted = status?.[topic] || false;
+      
+      console.log('✅ Pre-assessment status loaded:', { topic, isCompleted, fullStatus: status });
+      setPreAssessmentCompleted(isCompleted);
+    } catch (error) {
+      console.error('❌ Error loading pre-assessment status:', error);
+      setPreAssessmentCompleted(null);
+      Alert.alert(text.error, text.failedToLoad);
+    } finally {
+      setLoading(false);
+    }
   }, [user?.sub, topic, text.error, text.failedToLoad]);
+
+  // 🔥 NEW: Use useFocusEffect to refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      console.log('🎯 PreAssessmentChecker screen focused, refreshing status...');
+      loadPreAssessmentStatus();
+    }, [loadPreAssessmentStatus])
+  );
+
+  // 🔥 UPDATED: Keep the original useEffect for initial load, but make it simpler
+  useEffect(() => {
+    console.log('🚀 PreAssessmentChecker mounted, initial load...');
+    loadPreAssessmentStatus();
+  }, []); // Only run on mount
 
   const handleTakePreAssessment = () => {
     if (!quizId) {
@@ -110,10 +130,14 @@ export default function PreAssessmentChecker({ topic, quizId }) {
       return;
     }
     
-    router.push(`/quizPlay?quizId=${quizId}&type=pre-lesson&topic=${topic}`);
+    // Add timestamp to force component remount and prevent caching issues
+    const timestamp = Date.now();
+    console.log('📝 Starting pre-assessment:', { quizId, topic, timestamp });
+    router.push(`/quizPlay?quizId=${quizId}&type=pre-lesson&topic=${topic}&fresh=true&t=${timestamp}`);
   };
 
   const handleViewLesson = () => {
+    console.log('📚 Opening lesson:', topic);
     router.push(`/${topic}Lesson`);
   };
 
@@ -123,29 +147,15 @@ export default function PreAssessmentChecker({ topic, quizId }) {
       return;
     }
     
-    router.push(`/quizPlay?quizId=${quizId}&type=post-lesson&topic=${topic}`);
+    // Add timestamp to force component remount and prevent caching issues
+    const timestamp = Date.now();
+    console.log('🎯 Starting post-assessment:', { quizId, topic, timestamp });
+    router.push(`/quizPlay?quizId=${quizId}&type=post-lesson&topic=${topic}&fresh=true&t=${timestamp}`);
   };
 
   const handleRetry = () => {
-    setLoading(true);
-    setPreAssessmentCompleted(null);
-    // Trigger re-load
-    setTimeout(() => {
-      if (user?.sub && topic) {
-        const loadStatus = async () => {
-          try {
-            const status = await getPreAssessmentStatus(user.sub);
-            setPreAssessmentCompleted(status?.[topic] || false);
-          } catch (error) {
-            console.error('Error loading pre-assessment status:', error);
-            Alert.alert(text.error, text.failedToLoad);
-          } finally {
-            setLoading(false);
-          }
-        };
-        loadStatus();
-      }
-    }, 100);
+    console.log('🔄 Manual retry requested');
+    loadPreAssessmentStatus();
   };
 
   if (loading) {
@@ -336,6 +346,7 @@ export default function PreAssessmentChecker({ topic, quizId }) {
   );
 }
 
+// ... styles remain the same
 const styles = StyleSheet.create({
   container: {
     flex: 1,

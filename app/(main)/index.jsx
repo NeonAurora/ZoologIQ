@@ -41,21 +41,21 @@ export default function HomePage() {
       title: isEnglish ? "Malayan Tiger" : "Harimau Malaya",
       icon: "pets",
       color: "#FF6B35",
-      quizId: "5b55e3c3-7d4a-4895-a320-57469103b359"
+      quizId: "c4329688-8fda-442b-a520-4e7d5cdbcbba"
     },
     {
       topic: "tapir",
       title: isEnglish ? "Malayan Tapir" : "Tapir Malaya",
       icon: "forest",
       color: "#4CAF50",
-      quizId: "1f021dc7-3103-4768-97ac-1d9b654b07d1"
+      quizId: "a8789ec1-d724-4b38-9285-2988efdc09d1"
     },
     {
       topic: "turtle",
       title: isEnglish ? "Green Sea Turtle" : "Penyu Agar",
       icon: "waves",
       color: "#2196F3",
-      quizId: "49da865c-5cb7-4f24-9489-711f634d09a7"
+      quizId: "81e9e258-82b1-42c4-878d-89ee1b50cec9"
     }
   ];
 

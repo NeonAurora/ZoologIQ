@@ -11,11 +11,21 @@ export const saveQuizResult = async (resultData) => {
     console.log('Saving quiz result:', resultData);
     
     // Get quiz and category info
-    const { data: quiz } = await supabase
+    const { data: quiz, error: quizError } = await supabase
       .from('quizzes')
       .select('category_id, quiz_categories(name, slug)')
       .eq('id', resultData.quiz_id)
       .single();
+
+    if (quizError) {
+      console.error('Error fetching quiz info:', quizError);
+      return null;
+    }
+
+    if (!quiz || !quiz.category_id) {
+      console.error('Quiz or category_id not found:', quiz);
+      return null;
+    }
     
     const { data, error } = await supabase
       .from('quiz_results')
@@ -45,8 +55,8 @@ export const saveQuizResult = async (resultData) => {
       return null;
     }
 
-    // 🔥 NEW: If this is a pre-lesson quiz, mark pre-assessment as completed
-    if (resultData.session_type === 'pre_study') {
+    // 🔥 FIXED: Now checks for 'pre-lesson' instead of 'pre_study'
+    if (resultData.session_type === 'pre-lesson') {
       const topicSlug = quiz?.quiz_categories?.slug;
       if (topicSlug && ['tiger', 'tapir', 'turtle'].includes(topicSlug)) {
         console.log(`🎯 Marking pre-assessment completed for topic: ${topicSlug}`);
@@ -89,7 +99,7 @@ export const getUserQuizResults = async (userId, quizId = null) => {
 };
 
 // ==================================
-// NEW PRE-ASSESSMENT SPECIFIC FUNCTIONS
+// PRE-ASSESSMENT SPECIFIC FUNCTIONS - UPDATED
 // ==================================
 
 /**
@@ -105,7 +115,7 @@ export const getPreTestScore = async (userId, categoryId) => {
       .select('*')
       .eq('user_id', userId)
       .eq('category_id', categoryId)
-      .eq('session_type', 'pre_study')
+      .eq('session_type', 'pre-lesson') // 🔥 FIXED: Changed from 'pre_study'
       .order('completed_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -131,11 +141,8 @@ export const savePostTestResult = async (resultData) => {
   try {
     console.log('Saving post-test result with improvement calculation');
     
-    // Save the regular quiz result first
-    const savedResult = await saveQuizResult({
-      ...resultData,
-      session_type: 'post_study'
-    });
+    // 🔥 FIXED: Direct save without changing session_type
+    const savedResult = await saveQuizResult(resultData);
 
     if (!savedResult) {
       return null;
@@ -177,7 +184,7 @@ export const savePostTestResult = async (resultData) => {
 /**
  * Get all quiz results by session type
  * @param {string} userId - Auth0 user ID
- * @param {string} sessionType - 'pre_study', 'post_study', or 'regular'
+ * @param {string} sessionType - 'pre-lesson', 'post-lesson', or 'regular'
  * @param {string} categoryId - Optional category filter
  * @returns {Promise<array>} Array of quiz results
  */
@@ -187,7 +194,7 @@ export const getQuizResultsByType = async (userId, sessionType, categoryId = nul
       .from('quiz_results')
       .select('*')
       .eq('user_id', userId)
-      .eq('session_type', sessionType)
+      .eq('session_type', sessionType) // Now expects 'pre-lesson', 'post-lesson', 'regular'
       .order('completed_at', { ascending: false });
     
     if (categoryId) {
@@ -216,7 +223,7 @@ export const getQuizResultsByType = async (userId, sessionType, categoryId = nul
  */
 export const getAllPostTestAttempts = async (userId, categoryId) => {
   try {
-    return await getQuizResultsByType(userId, 'post_study', categoryId);
+    return await getQuizResultsByType(userId, 'post-lesson', categoryId); // 🔥 FIXED: Changed from 'post_study'
   } catch (error) {
     console.error('Error getting post-test attempts:', error);
     return [];
@@ -236,7 +243,7 @@ export const getBestPostTestScore = async (userId, categoryId) => {
       .select('*')
       .eq('user_id', userId)
       .eq('category_id', categoryId)
-      .eq('session_type', 'post_study')
+      .eq('session_type', 'post-lesson') // 🔥 FIXED: Changed from 'post_study'
       .order('percentage', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -262,34 +269,23 @@ export const getBestPostTestScore = async (userId, categoryId) => {
 export const getImprovementData = async (userId, categoryId) => {
   try {
     const preTestResult = await getPreTestScore(userId, categoryId);
-    const bestPostTestResult = await getBestPostTestScore(userId, categoryId);
+    const bestPostResult = await getBestPostTestScore(userId, categoryId);
     
-    if (!preTestResult) {
-      return { error: 'No pre-test found' };
+    if (!preTestResult || !bestPostResult) {
+      return null;
     }
-
-    if (!bestPostTestResult) {
-      return { 
-        pre_test: preTestResult,
-        post_test: null,
-        improvement: null,
-        message: 'No post-tests completed yet'
-      };
-    }
-
-    const prePercentage = preTestResult.percentage;
-    const postPercentage = bestPostTestResult.percentage;
-    const improvement = postPercentage - prePercentage;
-
+    
+    const improvement = bestPostResult.score - preTestResult.score;
+    const improvementPercentage = preTestResult.score > 0 
+      ? ((improvement / preTestResult.score) * 100) 
+      : 0;
+    
     return {
       pre_test: preTestResult,
-      post_test: bestPostTestResult,
-      improvement: {
-        percentage_change: improvement,
-        improved: improvement > 0,
-        points_gained: bestPostTestResult.score - preTestResult.score,
-        performance_level: getPerformanceLevel(improvement)
-      }
+      best_post_test: bestPostResult,
+      improvement_score: improvement,
+      improvement_percentage: improvementPercentage,
+      has_improved: improvement > 0
     };
   } catch (error) {
     console.error('Error getting improvement data:', error);
@@ -297,16 +293,43 @@ export const getImprovementData = async (userId, categoryId) => {
   }
 };
 
+// ==================================
+// ANALYTICS FUNCTIONS
+// ==================================
+
 /**
- * Helper function to categorize performance improvement
- * @param {number} improvementPercentage - Percentage improvement
- * @returns {string} Performance level
+ * Get user's quiz performance summary
+ * @param {string} userId - Auth0 user ID
+ * @returns {Promise<object>} Performance summary
  */
-const getPerformanceLevel = (improvementPercentage) => {
-  if (improvementPercentage >= 20) return 'Excellent';
-  if (improvementPercentage >= 10) return 'Good';
-  if (improvementPercentage >= 5) return 'Fair';
-  if (improvementPercentage > 0) return 'Slight';
-  if (improvementPercentage === 0) return 'Same';
-  return 'Decreased';
+export const getUserPerformanceSummary = async (userId) => {
+  try {
+    const { data: results, error } = await supabase
+      .from('quiz_results')
+      .select('*')
+      .eq('user_id', userId);
+    
+    if (error) {
+      console.error('Error getting performance summary:', error);
+      return null;
+    }
+    
+    const preTests = results.filter(r => r.session_type === 'pre-lesson');
+    const postTests = results.filter(r => r.session_type === 'post-lesson');
+    const regularQuizzes = results.filter(r => r.session_type === 'regular');
+    
+    return {
+      total_attempts: results.length,
+      pre_assessments: preTests.length,
+      post_assessments: postTests.length,
+      regular_quizzes: regularQuizzes.length,
+      average_score: results.length > 0 
+        ? results.reduce((sum, r) => sum + r.percentage, 0) / results.length 
+        : 0,
+      categories_attempted: [...new Set(results.map(r => r.category_id))].length
+    };
+  } catch (error) {
+    console.error('Error getting performance summary:', error);
+    return null;
+  }
 };

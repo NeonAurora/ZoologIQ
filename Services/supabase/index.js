@@ -73,5 +73,11 @@ export {
   removeCategoryAudio
 } from './audioService';
 
+// Database automation (Admin only)
+export {
+  resetAndPopulateDatabase,
+  getDatabaseStatus
+} from './databaseAutomationService';
+
 // Config
 export { supabase } from './config';

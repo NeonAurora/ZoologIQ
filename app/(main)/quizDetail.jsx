@@ -39,7 +39,6 @@ export default function QuizDetailPage() {
       cancel: 'Cancel',
       signIn: 'Sign In',
       questions: 'Questions',
-      difficulty: 'Difficulty',
       totalPoints: 'Total Points',
       category: 'Category:',
       gradeLevel: 'Grade Level:',
@@ -55,9 +54,6 @@ export default function QuizDetailPage() {
       quizAdministrator: 'Quiz Administrator',
       noQuestionsAvailable: 'No Questions Available',
       startQuiz: 'Start Quiz',
-      easy: 'Easy',
-      medium: 'Medium',
-      hard: 'Hard'
     },
     ms: {
       loadingQuiz: 'Sedang memuatkan kuiz...',
@@ -68,7 +64,6 @@ export default function QuizDetailPage() {
       cancel: 'Batal',
       signIn: 'Log Masuk',
       questions: 'Soalan',
-      difficulty: 'Kesukaran',
       totalPoints: 'Jumlah Mata',
       category: 'Kategori:',
       gradeLevel: 'Tahap Gred:',
@@ -84,9 +79,6 @@ export default function QuizDetailPage() {
       quizAdministrator: 'Pentadbir Kuiz',
       noQuestionsAvailable: 'Tiada Soalan Tersedia',
       startQuiz: 'Mula Kuiz',
-      easy: 'Mudah',
-      medium: 'Sederhana',
-      hard: 'Sukar'
     }
   };
 
@@ -97,16 +89,6 @@ export default function QuizDetailPage() {
     if (!textObj) return fallback;
     if (typeof textObj === 'string') return textObj;
     return textObj[preferredLanguage] || textObj.en || fallback;
-  };
-
-  const getDifficultyText = (difficulty) => {
-    if (!difficulty) return text.medium;
-    const difficultyMap = {
-      Easy: text.easy,
-      Medium: text.medium,
-      Hard: text.hard
-    };
-    return difficultyMap[difficulty] || difficulty;
   };
 
   const startQuiz = () => {
@@ -127,7 +109,8 @@ export default function QuizDetailPage() {
       return;
     }
     
-    router.push(`/quizPlay?quizId=${quizId}`);
+    const timestamp = Date.now();
+    router.push(`/quizPlay?quizId=${quizId}&type=regular&fresh=true&t=${timestamp}`);
   };
   
   if (loading) {
@@ -216,12 +199,6 @@ export default function QuizDetailPage() {
             styles.infoCard,
             { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
           ]}>
-            <ThemedText style={[
-              styles.infoValue,
-              { color: isDark ? Colors.dark.tint : Colors.light.tint }
-            ]}>
-              {getDifficultyText(quiz.difficulty)}
-            </ThemedText>
             <ThemedText style={[
               styles.infoLabel,
               { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
-import { getPreAssessmentStatus } from '@/services/supabase';
+import { getPreAssessmentStatus, resetAndPopulateDatabase, getDatabaseStatus } from '@/services/supabase';
 
 export function DrawerContent(props) {
   const { user, supabaseData, signOut, loading } = useAuth();
   const router = useRouter();
   const [preAssessmentStatus, setPreAssessmentStatus] = useState(null);
+  const [isResettingDatabase, setIsResettingDatabase] = useState(false);
   
   // Theme detection
   const { isDark } = useTheme();
@@ -57,7 +58,8 @@ export function DrawerContent(props) {
           { 
             text: 'Take Pre-Assessment', 
             onPress: () => {
-              router.push(`/quizPlay?quizId=${getQuizIdForTopic(topic)}&type=pre-lesson&topic=${topic}`);
+              const timestamp = Date.now();
+              router.push(`/quizPlay?quizId=${getQuizIdForTopic(topic)}&type=pre-lesson&topic=${topic}&fresh=true&t=${timestamp}`);
               props.navigation.closeDrawer();
             }
           }
@@ -75,6 +77,129 @@ export function DrawerContent(props) {
       turtle: '49da865c-5cb7-4f24-9489-711f634d09a7'
     };
     return quizIds[topic];
+  };
+
+  // Cross-platform alert function
+  const showAlert = (title, message, buttons) => {
+    if (Platform.OS === 'web') {
+      // Web browser alert system
+      const confirmed = window.confirm(`${title}\n\n${message}`);
+      if (confirmed && buttons) {
+        const confirmButton = buttons.find(btn => btn.style !== 'cancel');
+        if (confirmButton && confirmButton.onPress) {
+          confirmButton.onPress();
+        }
+      }
+    } else {
+      // React Native Alert system (iOS/Android)
+      Alert.alert(title, message, buttons);
+    }
+  };
+
+  const showConfirm = (title, message) => {
+    return new Promise((resolve) => {
+      if (Platform.OS === 'web') {
+        const result = window.confirm(`${title}\n\n${message}`);
+        resolve(result);
+      } else {
+        Alert.alert(
+          title,
+          message,
+          [
+            { text: "Cancel", style: "cancel", onPress: () => resolve(false) },
+            { text: "Confirm", style: "destructive", onPress: () => resolve(true) }
+          ]
+        );
+      }
+    });
+  };
+
+  const showInfo = (title, message, callback) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${message}`);
+      if (callback) callback();
+    } else {
+      Alert.alert(title, message, [{ text: "OK", onPress: callback }]);
+    }
+  };
+
+  const handleDatabaseReset = async () => {
+    try {
+      // First confirmation
+      const firstConfirm = await showConfirm(
+        "⚠️ Database Reset",
+        "This will PERMANENTLY delete all existing data and recreate the database with fresh quiz content. This action cannot be undone.\n\nAre you sure you want to proceed?"
+      );
+      
+      if (!firstConfirm) return;
+
+      // Second confirmation
+      const secondConfirm = await showConfirm(
+        "⚠️ Final Confirmation",
+        "Last chance! This will delete ALL user data, quiz results, and content.\n\nThis action is irreversible. Continue?"
+      );
+      
+      if (!secondConfirm) return;
+
+      // If both confirmations passed, proceed with reset
+      await performDatabaseReset();
+
+    } catch (error) {
+      console.error('Error in handleDatabaseReset:', error);
+      showInfo("❌ Error", "An error occurred while handling the database reset request.");
+    }
+  };
+
+  const performDatabaseReset = async () => {
+    if (isResettingDatabase) return;
+
+    setIsResettingDatabase(true);
+    
+    try {
+      console.log('🚀 Starting database reset process...');
+      
+      // Get current database status first
+      const statusBefore = await getDatabaseStatus();
+      console.log('📊 Database status before reset:', statusBefore);
+
+      showInfo(
+        "🔄 Database Reset in Progress",
+        "Resetting database and populating with quiz data. Please wait..."
+      );
+
+      // Perform the reset and population
+      const result = await resetAndPopulateDatabase(user.sub);
+      
+      if (result.success) {
+        showInfo(
+          "✅ Database Reset Complete",
+          `Successfully reset and populated database!\n\n` +
+          `📚 Categories: ${result.data.categoriesCreated}\n` +
+          `📝 Quizzes: ${result.data.quizzesCreated}\n` +
+          `❓ Questions: ${result.data.questionsCreated}\n\n` +
+          `The app will now refresh to load the new data.`,
+          () => {
+            // Refresh the app or navigate to home
+            router.replace('/');
+            props.navigation.closeDrawer();
+          }
+        );
+      } else {
+        showInfo(
+          "❌ Database Reset Failed",
+          result.message || "An error occurred while resetting the database. Please check the console for details."
+        );
+      }
+
+    } catch (error) {
+      console.error('💥 Database reset error:', error);
+      showInfo(
+        "❌ Database Reset Error",
+        `Failed to reset database: ${error.message}\n\nPlease check the console for more details.`
+      );
+    } finally {
+      setIsResettingDatabase(false);
+    }
   };
 
   // Get user display data (prioritize supabaseData, fallback to Auth0 user)
@@ -253,6 +378,17 @@ export function DrawerContent(props) {
                     descriptionStyle={styles.listItemDescription}
                     style={styles.listItem}
                   />
+                  
+                  <List.Item
+                    title={isResettingDatabase ? "Resetting Database..." : "🔄 Reset Database"}
+                    description={isResettingDatabase ? "Please wait..." : "Reset & populate with quiz data"}
+                    left={props => <List.Icon {...props} icon={isResettingDatabase ? "loading" : "database-refresh"} color={isResettingDatabase ? '#FFA500' : '#E74C3C'} />}
+                    onPress={isResettingDatabase ? null : handleDatabaseReset}
+                    titleStyle={[styles.listItemTitle, isResettingDatabase && styles.disabledItemTitle]}
+                    descriptionStyle={[styles.listItemDescription, isResettingDatabase && styles.disabledItemDescription]}
+                    style={[styles.listItem, isResettingDatabase && styles.disabledListItem]}
+                    disabled={isResettingDatabase}
+                  />
                 </>
               )}
             </>
@@ -420,6 +556,17 @@ const createStyles = (isDark) => {
       color: '#999999',
     },
     lockedItemDescription: {
+      opacity: 0.5,
+      color: '#999999',
+    },
+    disabledListItem: {
+      opacity: 0.6,
+    },
+    disabledItemTitle: {
+      opacity: 0.6,
+      color: '#999999',
+    },
+    disabledItemDescription: {
       opacity: 0.5,
       color: '#999999',
     },

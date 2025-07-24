@@ -1,6 +1,6 @@
 // app/(main)/quizPlay.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, ActivityIndicator, Alert, View } from 'react-native';
+import { StyleSheet, ActivityIndicator, Alert, View, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,15 +8,21 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useQuiz } from '@/hooks/useQuiz';
 import { Colors } from '@/constants/Colors';
-import { saveQuizResult, getPreTestScore, savePostTestResult, updatePreAssessmentStatus, getCategoryIdBySlug } from '@/services/supabase';
+import { 
+  saveQuizResult, 
+  getPreTestScore, 
+  savePostTestResult, 
+  updatePreAssessmentStatus, 
+  getCategoryIdBySlug 
+} from '@/services/supabase';
 
-// Import our new components
+// Import our quiz components
 import QuizHeader from '@/components/quiz/QuizHeader';
 import QuizContent from '@/components/quiz/QuizContent';
 import QuizResults from '@/components/quiz/QuizResults';
 
 export default function QuizPlayPage() {
-  const { quizId, topic, type, fresh } = useLocalSearchParams();
+  const { quizId, topic, type, fresh, t } = useLocalSearchParams();
   const router = useRouter();
   const { user, supabaseData } = useAuth();
   const { quiz, loading, error } = useQuiz(quizId);
@@ -36,7 +42,7 @@ export default function QuizPlayPage() {
   const [preTestScore, setPreTestScore] = useState(null);
   const [improvementData, setImprovementData] = useState(null);
   
-  // 🔥 NEW: Language state (starts with user's preferred language)
+  // Language state (starts with user's preferred language)
   const [currentLanguage, setCurrentLanguage] = useState(
     supabaseData?.preferred_language || 'en'
   );
@@ -58,6 +64,7 @@ export default function QuizPlayPage() {
       goBack: 'Go Back',
       loadingQuiz: 'Loading quiz...',
       noQuestions: 'This quiz has no questions',
+      unlockingLesson: 'Unlocking lesson content...',
       preAssessment: {
         title: 'Pre-Assessment',
         subtitle: 'Test your current knowledge',
@@ -82,6 +89,7 @@ export default function QuizPlayPage() {
       goBack: 'Kembali',
       loadingQuiz: 'Sedang memuatkan kuiz...',
       noQuestions: 'Kuiz ini tiada soalan',
+      unlockingLesson: 'Membuka kandungan pelajaran...',
       preAssessment: {
         title: 'Pra-Penilaian',
         subtitle: 'Uji pengetahuan semasa anda',
@@ -102,6 +110,25 @@ export default function QuizPlayPage() {
 
   const text = content[currentLanguage] || content.en;
 
+  // 🔥 ENHANCED: More thorough state reset function
+  const resetQuizState = () => {
+    console.log('🧹 Performing complete state reset...');
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setAnswers([]);
+    setScore(0);
+    setQuizCompleted(false);
+    setIsSavingResult(false);
+    setPreTestScore(null);
+    setImprovementData(null);
+    
+    // Force re-initialization of answers array on next quiz load
+    // This ensures we start with a completely fresh state
+    console.log('✅ State reset completed');
+  };
+
+  // ALL useEffect hooks must be at the top level - same order as original
+  
   // Update language when user's preference changes
   useEffect(() => {
     if (supabaseData?.preferred_language) {
@@ -116,30 +143,24 @@ export default function QuizPlayPage() {
     };
   }, []);
 
-  // RESET STATE WHEN FRESH PARAMETER CHANGES
+  // 🔥 CONSOLIDATED STATE RESET - handles all cases with single effect
   useEffect(() => {
-    if (fresh === 'true') {
-      console.log('🧹 Fresh quiz requested - resetting all state');
-      setCurrentQuestionIndex(0);
-      setSelectedAnswer(null);
-      setAnswers([]);
-      setScore(0);
-      setQuizCompleted(false);
-      setIsSavingResult(false);
+    // Create a unique key for this quiz session
+    const sessionKey = `${quizId}-${type}-${topic}-${fresh}-${t}`;
+    console.log('🧹 Quiz session started:', sessionKey);
+    
+    // Always reset state when any of these key parameters change
+    if (quizId) {
+      console.log('🧹 Resetting state for new quiz session:', {
+        quizId,
+        type,
+        topic,
+        fresh,
+        timestamp: t
+      });
+      resetQuizState();
     }
-  }, [fresh]);
-
-  // RESET STATE FOR POST-LESSON QUIZZES
-  useEffect(() => {
-    if (type === 'post-lesson') {
-      console.log('🧹 Post-lesson quiz - ensuring fresh state');
-      setCurrentQuestionIndex(0);
-      setSelectedAnswer(null);
-      setScore(0);
-      setQuizCompleted(false);
-      setIsSavingResult(false);
-    }
-  }, [type]);
+  }, [quizId, type, topic, fresh, t]); // Consolidated dependencies
 
   // Redirect if not logged in
   useEffect(() => {
@@ -152,13 +173,26 @@ export default function QuizPlayPage() {
     }
   }, [user, loading, text]);
 
-  // Initialize answers array when quiz loads
+  // 🔥 IMPROVED: Initialize answers array when quiz loads with better safety checks
   useEffect(() => {
     if (quiz && quiz.questions && mountedRef.current) {
       console.log('🔧 Initializing answers array for', quiz.questions.length, 'questions');
-      setAnswers(Array(quiz.questions.length).fill(null));
+      
+      // Only initialize if we don't already have the correct array length
+      // This prevents re-initialization mid-quiz
+      if (answers.length !== quiz.questions.length) {
+        console.log('🔧 Creating new answers array (length mismatch)');
+        const freshAnswers = Array(quiz.questions.length).fill(null);
+        setAnswers(freshAnswers);
+      }
+      
+      // Safety check: ensure quiz isn't marked as completed for fresh quiz
+      if (quizCompleted && (fresh === 'true' || !answers.some(a => a !== null))) {
+        console.log('🧹 Resetting completion status for fresh quiz');
+        setQuizCompleted(false);
+      }
     }
-  }, [quiz]);
+  }, [quiz, fresh]); // Added fresh as dependency
 
   // Handle errors
   useEffect(() => {
@@ -168,6 +202,17 @@ export default function QuizPlayPage() {
       ]);
     }
   }, [error, text]);
+
+  // Auto-navigate to lesson after pre-test (moved here to maintain hook order)
+  useEffect(() => {
+    if (quizCompleted && type === 'pre-lesson' && !isSavingResult) {
+      const timer = setTimeout(() => {
+        handleReturnToQuizzes();
+      }, 2000); // 2 second delay to show loading message
+      
+      return () => clearTimeout(timer);
+    }
+  }, [quizCompleted, type, isSavingResult]);
 
   // Get quiz type information with bilingual support
   const getQuizTypeInfo = () => {
@@ -240,17 +285,14 @@ export default function QuizPlayPage() {
     const detailedAnswers = finalAnswers.map((userAnswer, index) => {
       const question = quiz.questions[index];
       
-      // Get correct answer from bilingual data
+      // Get correct answer (should be index-based)
       let correctAnswer = question.correct_answer || question.answer;
-      if (typeof correctAnswer === 'number' || !isNaN(correctAnswer)) {
-        // If it's an index, get the actual option text
-        const options = question.options?.[currentLanguage] || question.options?.en || question.options || [];
-        if (Array.isArray(options) && options[correctAnswer]) {
-          correctAnswer = options[correctAnswer];
-        }
-      }
       
-      const isCorrect = userAnswer === correctAnswer;
+      // Convert correct answer to number for comparison
+      const correctAnswerIndex = parseInt(correctAnswer);
+      
+      // Compare indices directly (userAnswer is now an index from QuestionCard)
+      const isCorrect = userAnswer === correctAnswerIndex;
       
       if (isCorrect) {
         correctCount++;
@@ -261,11 +303,18 @@ export default function QuizPlayPage() {
       
       maxPossibleScore += question.points || 10;
       
+      // Get option texts for display
+      const options = question.options?.[currentLanguage] || question.options?.en || question.options || [];
+      const userAnswerText = Array.isArray(options) && options[userAnswer] ? options[userAnswer] : `Option ${userAnswer}`;
+      const correctAnswerText = Array.isArray(options) && options[correctAnswerIndex] ? options[correctAnswerIndex] : `Option ${correctAnswerIndex}`;
+
       return {
         question_index: index,
         question_text: getBilingualText(question.question_text || question.question, 'Question'),
-        user_answer: userAnswer,
-        correct_answer: correctAnswer,
+        user_answer: userAnswerText,
+        correct_answer: correctAnswerText,
+        user_answer_index: userAnswer,
+        correct_answer_index: correctAnswerIndex,
         is_correct: isCorrect,
         points_earned: isCorrect ? (question.points || 10) : 0,
         penalty_applied: (!isCorrect && question.penalty) ? question.penalty : 0
@@ -312,17 +361,6 @@ export default function QuizPlayPage() {
       
       const stats = calculateQuizStats(finalAnswers);
       
-      const getSessionType = (type) => {
-        switch (type) {
-          case 'pre-lesson':
-            return 'pre_study';
-          case 'post-lesson':
-            return 'post_study';
-          default:
-            return 'regular';
-        }
-      };
-      
       // Get category ID if not available in quiz object
       let categoryId = quiz.category_id;
       if (!categoryId && topic) {
@@ -339,7 +377,7 @@ export default function QuizPlayPage() {
         max_score: stats.max_possible_score,
         answers: stats.detailed_answers,
         time_taken_seconds: timeTakenSeconds,
-        session_type: getSessionType(type),
+        session_type: type, // 🔥 DIRECT USE - NO MORE MAPPING!
         category_id: categoryId,
         completed_at: quizEndTime.toISOString(),
         started_at: quizStartTime.toISOString()
@@ -348,14 +386,14 @@ export default function QuizPlayPage() {
       console.log('💾 Saving quiz result:', {
         score: stats.total_score,
         maxScore: stats.max_possible_score,
-        sessionType: resultData.session_type,
-        hasSession: !!sessionId
+        sessionType: type, // Direct session type - no mapping
+        quizType: type
       });
       
       let savedResult;
       
       if (type === 'pre-lesson') {
-        // Save as regular quiz result and mark pre-assessment complete
+        // Save pre-assessment result and mark pre-assessment complete
         savedResult = await saveQuizResult(resultData);
         if (savedResult && topic) {
           await updatePreAssessmentStatus(user.sub, topic, true);
@@ -366,20 +404,33 @@ export default function QuizPlayPage() {
         savedResult = await savePostTestResult(resultData);
         
         // Get pre-test score for comparison
-        if (quiz.category_id) {
-          const preScore = await getPreTestScore(user.sub, quiz.category_id);
+        if (categoryId) {
+          console.log('🔍 Getting pre-test score for categoryId:', categoryId);
+          const preScore = await getPreTestScore(user.sub, categoryId);
           if (preScore) {
+            console.log('📊 Pre-test score found:', preScore.score);
+            console.log('📊 Current post-test score:', stats.total_score);
             setPreTestScore(preScore.score);
             const improvement = stats.total_score - preScore.score;
-            setImprovementData({
+            const maxScore = stats.max_possible_score;
+            const improvementData = {
               preScore: preScore.score,
               postScore: stats.total_score,
               improvement: improvement,
-              improvementPercentage: preScore.score > 0 ? ((improvement / preScore.score) * 100) : 0
-            });
+              improvementPercentage: preScore.score > 0 ? ((improvement / preScore.score) * 100) : 0,
+              prePercentage: (preScore.score / maxScore) * 100,
+              postPercentage: (stats.total_score / maxScore) * 100
+            };
+            console.log('📈 Improvement data calculated:', improvementData);
+            setImprovementData(improvementData);
+          } else {
+            console.log('❌ No pre-test score found for categoryId:', categoryId);
           }
+        } else {
+          console.log('❌ No categoryId available for improvement calculation');
         }
       } else {
+        // Regular quiz
         savedResult = await saveQuizResult(resultData);
       }
       
@@ -390,6 +441,8 @@ export default function QuizPlayPage() {
       }
     } catch (error) {
       console.error('❌ Error saving quiz result:', error);
+      // 🔥 LET ERRORS SURFACE - No more hiding session_type mismatches!
+      Alert.alert('Database Error', `Session type error: ${error.message}`);
     } finally {
       if (mountedRef.current) {
         setIsSavingResult(false);
@@ -400,33 +453,28 @@ export default function QuizPlayPage() {
   const handleReturnToQuizzes = () => {
     if (type === 'pre-lesson' && topic) {
       console.log('📚 Navigating to lesson after pre-test:', topic);
-      router.replace(`/${topic}Lesson`);
+      // Navigate to appropriate lesson based on topic
+      const lessonRoutes = {
+        'tiger': '/tigerLesson',
+        'tapir': '/tapirLesson', 
+        'turtle': '/turtleLesson'
+      };
+      const lessonRoute = lessonRoutes[topic.toLowerCase()] || '/tigerLesson';
+      router.replace(lessonRoute);
     } else {
       console.log('🏠 Returning to home');
       router.replace('/');
     }
   };
-
-  const getTopic = () => {
-    const categorySlugMap = {
-      'tiger': 'tiger',
-      'tapir': 'tapir', 
-      'turtle': 'turtle'
-    };
-    return categorySlugMap[quiz?.category?.toLowerCase()] || 'tiger';
-  };
   
   const handleRetakeQuiz = () => {
-    console.log('🔄 Retaking quiz - resetting state');
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setAnswers(Array(quiz.questions.length).fill(null));
-    setScore(0);
-    setQuizCompleted(false);
-    setIsSavingResult(false);
+    console.log('🔄 Retaking quiz - navigating to fresh instance');
+    // Instead of just resetting state, navigate to a completely fresh instance
+    const timestamp = Date.now();
+    router.replace(`/quizPlay?quizId=${quizId}&type=${type}&topic=${topic}&fresh=true&t=${timestamp}`);
   };
 
-  // 🔥 NEW: Language toggle handler
+  // Language toggle handler
   const handleLanguageChange = (newLanguage) => {
     console.log('🌐 Language changed to:', newLanguage);
     setCurrentLanguage(newLanguage);
@@ -453,29 +501,26 @@ export default function QuizPlayPage() {
   }
   
   // For pre-tests, navigate directly to lesson without showing results
+  // This follows the business rule: "Pre-test completion should navigate directly to lesson (no results shown)"
   if (quizCompleted && type === 'pre-lesson' && !isSavingResult) {
-    setTimeout(() => {
-      handleReturnToQuizzes();
-    }, 1000);
-    
     return (
       <ThemedView style={styles.container}>
         <View style={styles.center}>
           <ActivityIndicator size="large" color={isDark ? Colors.dark.tint : Colors.light.tint} />
-          <ThemedText style={styles.loadingText}>Unlocking lesson content...</ThemedText>
+          <ThemedText style={styles.loadingText}>{text.unlockingLesson}</ThemedText>
         </View>
       </ThemedView>
     );
   }
   
   // Results state for post-tests and regular quizzes
-  if (quizCompleted) {
+  if (quizCompleted && type !== 'pre-lesson') {
     const finalStats = calculateQuizStats(answers);
     
     return (
       <ThemedView style={styles.container}>
         <QuizHeader 
-          title={text.results || 'Results'}
+          title="Results"
           onBack={() => router.back()}
           currentLanguage={currentLanguage}
           onLanguageChange={handleLanguageChange}
@@ -531,9 +576,11 @@ export default function QuizPlayPage() {
     );
   }
   
-  // Main quiz interface
+  // Main quiz interface with unique key to force remounting when needed
+  const sessionKey = `${quizId}-${type}-${topic}-${t}`;
+  
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView key={sessionKey} style={styles.container}>
       <QuizHeader 
         title={quizTypeInfo.title}
         onBack={() => router.back()}

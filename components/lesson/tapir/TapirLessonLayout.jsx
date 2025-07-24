@@ -97,7 +97,6 @@ export default function TapirLessonLayout() {
   });
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [hasStartedLesson, setHasStartedLesson] = useState(false);
   const [completedSections, setCompletedSections] = useState(new Set());
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -160,22 +159,6 @@ export default function TapirLessonLayout() {
     }
   };
 
-  // Track lesson start
-  useEffect(() => {
-    if (sessionId && !hasStartedLesson) {
-      const trackLessonStart = async () => {
-        try {
-          await startLesson(sessionId);
-          setHasStartedLesson(true);
-          console.log('Lesson content viewing started for session:', sessionId);
-        } catch (error) {
-          console.error('Error tracking lesson start:', error);
-        }
-      };
-      
-      trackLessonStart();
-    }
-  }, [sessionId, hasStartedLesson]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -220,19 +203,8 @@ export default function TapirLessonLayout() {
     }
   };
 
-  const markCurrentSectionCompleted = async () => {
-    if (sessionId && hasStartedLesson && !completedSections.has(safeSectionIndex)) {
-      try {
-        const section = sections[safeSectionIndex];
-        await markSectionCompleted(sessionId, safeSectionIndex, section.title);
-        setCompletedSections(prev => new Set([...prev, safeSectionIndex]));
-      } catch (error) {
-        console.error('Error marking section as completed:', error);
-      }
-    }
-  };
 
-  const goToNextSection = async () => {
+  const goToNextSection = () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
       return;
@@ -240,22 +212,15 @@ export default function TapirLessonLayout() {
 
     setIsNavigating(true);
     
-    try {
-      markCurrentSectionCompleted();
-      
-      const nextIndex = safeSectionIndex + 1;
-      if (nextIndex < sections.length) {
-        safeSetCurrentSectionIndex(nextIndex);
-      } else {
-        setIsNavigating(false);
-      }
-    } catch (error) {
-      console.error('Error in goToNextSection:', error);
+    const nextIndex = safeSectionIndex + 1;
+    if (nextIndex < sections.length) {
+      safeSetCurrentSectionIndex(nextIndex);
+    } else {
       setIsNavigating(false);
     }
   };
 
-  const goToPreviousSection = async () => {
+  const goToPreviousSection = () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
       return;
@@ -263,55 +228,34 @@ export default function TapirLessonLayout() {
 
     setIsNavigating(true);
     
-    try {
-      markCurrentSectionCompleted();
-      
-      const prevIndex = safeSectionIndex - 1;
-      if (prevIndex >= 0) {
-        safeSetCurrentSectionIndex(prevIndex);
-      } else {
-        setIsNavigating(false);
-      }
-    } catch (error) {
-      console.error('Error in goToPreviousSection:', error);
+    const prevIndex = safeSectionIndex - 1;
+    if (prevIndex >= 0) {
+      safeSetCurrentSectionIndex(prevIndex);
+    } else {
       setIsNavigating(false);
     }
   };
 
-  const handleLessonComplete = async () => {
+  const handleLessonComplete = () => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring lesson complete');
       return;
     }
-
-    if (sessionId) {
-      await markCurrentSectionCompleted();
-      console.log('All lesson sections completed');
-    }
+    
+    console.log('Tapir lesson completed');
   };
 
-  const handleSectionSelect = async (index) => {
+  const handleSectionSelect = (index) => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring sidebar click');
       return;
     }
     
     setIsNavigating(true);
-    markCurrentSectionCompleted();
     safeSetCurrentSectionIndex(index);
     closeSidebar();
   };
 
-  const getAudioUrl = () => {
-    // You'll need to fetch this from your category data
-    // For now, return hardcoded URLs or fetch from your database
-    const audioUrls = {
-      en: 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752830971046.mp3',
-      ms: 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832401154.mp3'
-    };
-    
-    return audioUrls[currentLanguage] || audioUrls.en;
-  };
 
   if (!currentSection || !currentSection.component) {
     return (
@@ -358,7 +302,7 @@ export default function TapirLessonLayout() {
           </TouchableOpacity>
           
           <View style={styles.headerContent}>
-            <ThemedText style={styles.lessonEmoji}>🐅</ThemedText>
+            <ThemedText style={styles.lessonEmoji}>🌴</ThemedText>
             <View style={styles.headerTitleContainer}>
               <ThemedText style={[
                 styles.headerTitle,

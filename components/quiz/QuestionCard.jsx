@@ -87,25 +87,25 @@ export default function QuestionCard({
             style={[
               styles.optionButton,
               { 
-                borderColor: selectedAnswer === option 
+                borderColor: selectedAnswer === index 
                   ? quizColor
                   : (isDark ? Colors.dark.border : Colors.light.border),
-                backgroundColor: selectedAnswer === option 
+                backgroundColor: selectedAnswer === index 
                   ? quizColor + '15'
                   : (isDark ? Colors.dark.surface : Colors.light.surface),
               }
             ]}
-            onPress={() => onSelectAnswer(option)}
+            onPress={() => onSelectAnswer(index)}
             activeOpacity={0.7}
           >
             <View style={styles.optionContent}>
               <View style={[
                 styles.optionLetter,
                 { 
-                  backgroundColor: selectedAnswer === option 
+                  backgroundColor: selectedAnswer === index 
                     ? quizColor
                     : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
-                  borderColor: selectedAnswer === option 
+                  borderColor: selectedAnswer === index 
                     ? quizColor
                     : 'transparent'
                 }
@@ -113,7 +113,7 @@ export default function QuestionCard({
                 <ThemedText style={[
                   styles.optionLetterText,
                   { 
-                    color: selectedAnswer === option 
+                    color: selectedAnswer === index 
                       ? '#fff'
                       : (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
                   }
@@ -125,12 +125,12 @@ export default function QuestionCard({
                 styles.optionText,
                 { 
                   color: isDark ? Colors.dark.text : Colors.light.text,
-                  fontWeight: selectedAnswer === option ? '500' : 'normal'
+                  fontWeight: selectedAnswer === index ? '500' : 'normal'
                 }
               ]}>
                 {option}
               </ThemedText>
-              {selectedAnswer === option && (
+              {selectedAnswer === index && (
                 <ThemedText style={[
                   styles.selectedIcon,
                   { color: quizColor }

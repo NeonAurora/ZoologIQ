@@ -149,30 +149,21 @@ export const saveQuiz = async (quizData) => {
       }
     }
     
-    // Step 2: Ensure quiz data is in bilingual format
+    // Step 2: Ensure quiz title is in bilingual format
     let title = quizData.title;
-    let description = quizData.description;
     
     // Convert to bilingual if needed
     if (typeof title === 'string') {
       title = { en: title, ms: title }; // For now, keep same - admin can update later
     }
     
-    if (typeof description === 'string') {
-      description = { en: description, ms: description }; // For now, keep same - admin can update later
-    }
-    
-    // Step 3: Create the quiz
+    // Step 3: Create the quiz (simplified - only essential fields)
     const { data: quiz, error: quizError } = await supabase
       .from('quizzes')
       .insert({
         category_id: categoryId,
         title: title,
-        description: description,
-        instructions: quizData.instructions,
-        difficulty: quizData.difficulty || 'Medium',
-        is_published: true,
-        is_active: true,
+        quiz_type: quizData.quiz_type || 'standalone', // 🔥 NEW: Support quiz types
         created_by: quizData.created_by || quizData.createdBy
       })
       .select()
@@ -206,7 +197,7 @@ export const saveQuiz = async (quizData) => {
           explanation = { en: explanation, ms: explanation };
         }
 
-        // 🔥 UPDATED: Handle correct_answer - could be index or text
+        // Handle correct_answer - could be index or text
         let correctAnswer = q.correct_answer || q.answer;
         const englishOptions = options.en;
         
@@ -216,7 +207,7 @@ export const saveQuiz = async (quizData) => {
           english_options: englishOptions
         });
 
-        // 🔥 NEW: Check if correct_answer is already an index or if it's text
+        // Check if correct_answer is already an index or if it's text
         if (typeof correctAnswer === 'string') {
           // Try to parse as number first (could be index like "1")
           const parsedIndex = parseInt(correctAnswer, 10);
@@ -247,7 +238,7 @@ export const saveQuiz = async (quizData) => {
           throw new Error(`Question ${index + 1}: Invalid correct_answer type: ${typeof correctAnswer}`);
         }
         
-        // 🔥 VALIDATE: Ensure the index is valid for both language arrays
+        // Validate: Ensure the index is valid for both language arrays
         const finalIndex = parseInt(correctAnswer, 10);
         if (finalIndex < 0 || finalIndex >= englishOptions.length || finalIndex >= options.ms.length) {
           throw new Error(`Question ${index + 1}: Index ${finalIndex} is out of bounds (EN: ${englishOptions.length}, MS: ${options.ms.length})`);
@@ -293,12 +284,12 @@ export const saveQuiz = async (quizData) => {
       console.log(`✅ Inserted ${questionsToInsert.length} bilingual questions with index-based correct answers`);
     }
     
-    // Return quiz data in the format your components expect
+    // Return quiz data in the format your components expect (simplified)
     return {
       id: quiz.id,
       title: quiz.title,
       category: quizData.category,
-      difficulty: quiz.difficulty,
+      quiz_type: quiz.quiz_type, // 🔥 NEW: Return quiz type instead of difficulty
       createdBy: quiz.created_by,
       createdAt: quiz.created_at
     };

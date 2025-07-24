@@ -12,6 +12,8 @@ export default function QuizResults({
   quizTypeInfo,
   sessionId,
   isSavingResult,
+  improvementData,
+  preTestScore,
   onRetakeQuiz,
   onReturnToQuizzes
 }) {
@@ -46,6 +48,16 @@ export default function QuizResults({
       saving: 'Saving...',
       savingResults: 'Saving your results...',
       proceedToLessons: 'Proceed to Lessons',
+      improvement: 'Improvement',
+      compared: 'compared to pre-assessment',
+      preAssessment: 'Pre-Assessment',
+      postAssessment: 'Post-Assessment',
+      improved: 'Improved!',
+      declined: 'Declined',
+      noChange: 'No Change',
+      betterThanBefore: 'Better than before',
+      needsImprovement: 'Keep practicing',
+      sameScore: 'Same as before',
     },
     ms: {
       results: 'Keputusan',
@@ -66,6 +78,16 @@ export default function QuizResults({
       saving: 'Menyimpan...',
       savingResults: 'Menyimpan keputusan anda...',
       proceedToLessons: 'Teruskan ke Pelajaran',
+      improvement: 'Peningkatan',
+      compared: 'berbanding pra-penilaian',
+      preAssessment: 'Pra-Penilaian',
+      postAssessment: 'Pasca-Penilaian',
+      improved: 'Meningkat!',
+      declined: 'Menurun',
+      noChange: 'Tiada Perubahan',
+      betterThanBefore: 'Lebih baik dari sebelum',
+      needsImprovement: 'Teruskan berlatih',
+      sameScore: 'Sama seperti sebelum',
     }
   };
 
@@ -223,6 +245,145 @@ export default function QuizResults({
           </View>
         </View>
       </View>
+      
+      {/* Improvement Section - Only for Post-Assessment */}
+      {improvementData && (quizTypeInfo.title === 'Post-Assessment' || quizTypeInfo.title === 'Pasca-Penilaian') && (
+        <View style={[
+          styles.improvementSection,
+          { 
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
+          <View style={styles.improvementHeader}>
+            <ThemedText style={[
+              styles.improvementTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              📈 {text.improvement}
+            </ThemedText>
+            <ThemedText style={[
+              styles.improvementSubtitle,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.compared}
+            </ThemedText>
+          </View>
+
+          <View style={styles.comparisonRow}>
+            {/* Pre-Assessment Score */}
+            <View style={styles.comparisonItem}>
+              <ThemedText style={[
+                styles.comparisonLabel,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {text.preAssessment}
+              </ThemedText>
+              <View style={[
+                styles.comparisonScore,
+                { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
+              ]}>
+                <ThemedText style={[
+                  styles.comparisonScoreText,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                  {improvementData.preScore}/{finalStats.max_possible_score}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.comparisonPercentage,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                  {Math.round(improvementData.prePercentage)}%
+                </ThemedText>
+              </View>
+            </View>
+
+            {/* Arrow */}
+            <View style={styles.arrowContainer}>
+              <ThemedText style={[
+                styles.arrow,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                →
+              </ThemedText>
+            </View>
+
+            {/* Post-Assessment Score */}
+            <View style={styles.comparisonItem}>
+              <ThemedText style={[
+                styles.comparisonLabel,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                {text.postAssessment}
+              </ThemedText>
+              <View style={[
+                styles.comparisonScore,
+                { backgroundColor: quizTypeInfo.color + '20' }
+              ]}>
+                <ThemedText style={[
+                  styles.comparisonScoreText,
+                  { color: quizTypeInfo.color }
+                ]}>
+                  {improvementData.postScore}/{finalStats.max_possible_score}
+                </ThemedText>
+                <ThemedText style={[
+                  styles.comparisonPercentage,
+                  { color: quizTypeInfo.color }
+                ]}>
+                  {Math.round(improvementData.postPercentage)}%
+                </ThemedText>
+              </View>
+            </View>
+          </View>
+
+          {/* Improvement Indicator */}
+          <View style={styles.improvementIndicator}>
+            {improvementData.improvement > 0 ? (
+              <View style={[styles.improvementCard, { backgroundColor: '#4CAF5020' }]}>
+                <ThemedText style={[styles.improvementIcon, { color: '#4CAF50' }]}>
+                  ↗️
+                </ThemedText>
+                <View style={styles.improvementTextContainer}>
+                  <ThemedText style={[styles.improvementStatus, { color: '#4CAF50' }]}>
+                    {text.improved}
+                  </ThemedText>
+                  <ThemedText style={[styles.improvementDescription, { color: '#4CAF50' }]}>
+                    +{improvementData.improvement} {text.betterThanBefore}
+                  </ThemedText>
+                </View>
+              </View>
+            ) : improvementData.improvement < 0 ? (
+              <View style={[styles.improvementCard, { backgroundColor: '#FF572220' }]}>
+                <ThemedText style={[styles.improvementIcon, { color: '#FF5722' }]}>
+                  ↘️
+                </ThemedText>
+                <View style={styles.improvementTextContainer}>
+                  <ThemedText style={[styles.improvementStatus, { color: '#FF5722' }]}>
+                    {text.declined}
+                  </ThemedText>
+                  <ThemedText style={[styles.improvementDescription, { color: '#FF5722' }]}>
+                    {improvementData.improvement} {text.needsImprovement}
+                  </ThemedText>
+                </View>
+              </View>
+            ) : (
+              <View style={[styles.improvementCard, { backgroundColor: '#FFC10720' }]}>
+                <ThemedText style={[styles.improvementIcon, { color: '#FFC107' }]}>
+                  ➡️
+                </ThemedText>
+                <View style={styles.improvementTextContainer}>
+                  <ThemedText style={[styles.improvementStatus, { color: '#FFC107' }]}>
+                    {text.noChange}
+                  </ThemedText>
+                  <ThemedText style={[styles.improvementDescription, { color: '#FFC107' }]}>
+                    {text.sameScore}
+                  </ThemedText>
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
+      )}
       
       {/* Answer Analysis Section */}
       <View style={[
@@ -575,5 +736,95 @@ const styles = StyleSheet.create({
   savingText: {
     fontSize: 14,
     fontStyle: 'italic',
+  },
+  
+  // Improvement Section Styles
+  improvementSection: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  improvementHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  improvementTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  improvementSubtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  comparisonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  comparisonItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  comparisonLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  comparisonScore: {
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    minWidth: 80,
+  },
+  comparisonScoreText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  comparisonPercentage: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  arrowContainer: {
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  arrow: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  improvementIndicator: {
+    marginTop: 8,
+  },
+  improvementCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    gap: 12,
+  },
+  improvementIcon: {
+    fontSize: 24,
+  },
+  improvementTextContainer: {
+    flex: 1,
+  },
+  improvementStatus: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  improvementDescription: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

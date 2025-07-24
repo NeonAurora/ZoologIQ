@@ -49,11 +49,11 @@ export default function TurtleLessonLayout() {
     }
   }, [supabaseData?.preferred_language]);
 
-  // 🔥 UPDATED: Bilingual content objects
+  // 🔥 NEW: Bilingual content
   const content = {
     en: {
       lessonName: 'Green Sea Turtle',
-      errorMessage: 'Unable to load lesson content',
+      unableToLoadContent: 'Unable to load lesson content',
       sections: [
         { id: 'introduction', title: 'Introduction & Basics' },
         { id: 'biology', title: 'Biology & Adaptations' },
@@ -67,7 +67,7 @@ export default function TurtleLessonLayout() {
     },
     ms: {
       lessonName: 'Penyu Agar',
-      errorMessage: 'Tidak dapat memuatkan kandungan pelajaran',
+      unableToLoadContent: 'Tidak dapat memuatkan kandungan pelajaran',
       sections: [
         { id: 'introduction', title: 'Pengenalan & Asas' },
         { id: 'biology', title: 'Biologi & Adaptasi' },
@@ -83,10 +83,9 @@ export default function TurtleLessonLayout() {
 
   const text = content[currentLanguage] || content.en;
 
-  // 🔥 UPDATED: Use bilingual section titles with references
-  const sections = text.sections.map((section, index) => ({
-    ...section,
-    component: [
+  // 🔥 UPDATED: Sections with bilingual titles and references
+  const sections = text.sections.map((section, index) => {
+    const components = [
       TurtleIntroduction,
       TurtleBiology,
       TurtleBehavior,
@@ -95,11 +94,15 @@ export default function TurtleLessonLayout() {
       TurtleThreats,
       TurtleConservation,
       (props) => <ReferencesSection {...props} topic="turtle" />
-    ][index]
-  }));
+    ];
+    
+    return {
+      ...section,
+      component: components[index]
+    };
+  });
 
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [hasStartedLesson, setHasStartedLesson] = useState(false);
   const [completedSections, setCompletedSections] = useState(new Set());
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -162,22 +165,6 @@ export default function TurtleLessonLayout() {
     }
   };
 
-  // Track lesson start
-  useEffect(() => {
-    if (sessionId && !hasStartedLesson) {
-      const trackLessonStart = async () => {
-        try {
-          await startLesson(sessionId);
-          setHasStartedLesson(true);
-          console.log('Lesson content viewing started for session:', sessionId);
-        } catch (error) {
-          console.error('Error tracking lesson start:', error);
-        }
-      };
-      
-      trackLessonStart();
-    }
-  }, [sessionId, hasStartedLesson]);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -222,19 +209,8 @@ export default function TurtleLessonLayout() {
     }
   };
 
-  const markCurrentSectionCompleted = async () => {
-    if (sessionId && hasStartedLesson && !completedSections.has(safeSectionIndex)) {
-      try {
-        const section = sections[safeSectionIndex];
-        await markSectionCompleted(sessionId, safeSectionIndex, section.title);
-        setCompletedSections(prev => new Set([...prev, safeSectionIndex]));
-      } catch (error) {
-        console.error('Error marking section as completed:', error);
-      }
-    }
-  };
 
-  const goToNextSection = async () => {
+  const goToNextSection = () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
       return;
@@ -242,22 +218,15 @@ export default function TurtleLessonLayout() {
 
     setIsNavigating(true);
     
-    try {
-      markCurrentSectionCompleted();
-      
-      const nextIndex = safeSectionIndex + 1;
-      if (nextIndex < sections.length) {
-        safeSetCurrentSectionIndex(nextIndex);
-      } else {
-        setIsNavigating(false);
-      }
-    } catch (error) {
-      console.error('Error in goToNextSection:', error);
+    const nextIndex = safeSectionIndex + 1;
+    if (nextIndex < sections.length) {
+      safeSetCurrentSectionIndex(nextIndex);
+    } else {
       setIsNavigating(false);
     }
   };
 
-  const goToPreviousSection = async () => {
+  const goToPreviousSection = () => {
     if (isNavigating) {
       console.log('Already navigating, ignoring rapid click');
       return;
@@ -265,43 +234,32 @@ export default function TurtleLessonLayout() {
 
     setIsNavigating(true);
     
-    try {
-      markCurrentSectionCompleted();
-      
-      const prevIndex = safeSectionIndex - 1;
-      if (prevIndex >= 0) {
-        safeSetCurrentSectionIndex(prevIndex);
-      } else {
-        setIsNavigating(false);
-      }
-    } catch (error) {
-      console.error('Error in goToPreviousSection:', error);
+    const prevIndex = safeSectionIndex - 1;
+    if (prevIndex >= 0) {
+      safeSetCurrentSectionIndex(prevIndex);
+    } else {
       setIsNavigating(false);
     }
   };
 
-  const handleLessonComplete = async () => {
+  const handleLessonComplete = () => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring lesson complete');
       return;
     }
-
-    if (sessionId) {
-      await markCurrentSectionCompleted();
-      console.log('All lesson sections completed');
-    }
+    
+    console.log('Turtle lesson completed');
   };
 
-  const handleSectionSelect = async (index) => {
+  const handleSectionSelect = (index) => {
     if (isNavigating) {
       console.log('Navigation in progress, ignoring sidebar click');
       return;
     }
     
     setIsNavigating(true);
-    markCurrentSectionCompleted();
     safeSetCurrentSectionIndex(index);
-    closeSidebar(); // Close sidebar after selection
+    closeSidebar();
   };
 
   if (!currentSection || !currentSection.component) {
@@ -312,7 +270,7 @@ export default function TurtleLessonLayout() {
       ]}>
         <View style={styles.errorContainer}>
           <ThemedText style={styles.errorText}>
-            {text.errorMessage}
+            {text.unableToLoadContent}
           </ThemedText>
         </View>
       </View>
