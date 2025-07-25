@@ -23,7 +23,6 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
       quickFacts: "Quick Facts",
       whatMakesSpecial: "What Makes Malayan Tigers Special",
       whyMatters: "Why the Malayan Tiger Matters",
-      scientificClassification: "Scientific Classification",
       bePartOfSolution: "Be Part of the Solution",
       
       // Basic Info
@@ -70,24 +69,24 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
           description: 'Regulates prey populations, preventing overgrazing and maintaining forest balance'
         },
         {
-          icon: 'eco',
-          title: 'Ecosystem Engineer',
-          description: 'Protecting tiger habitats safeguards countless other species'
+          icon: 'diversity_1',
+          title: 'Biodiversity Guardian',
+          description: 'Protecting tiger habitats safeguards countless other species in the ecosystem'
         },
         {
-          icon: 'eco',
-          title: 'Ecosystem Engineer',
-          description: 'Indirectly aids forest regeneration by influencing herbivore behavior, which shapes plant distribution'
+          icon: 'forest',
+          title: 'Forest Regenerator',
+          description: 'Indirectly aids forest regeneration by influencing herbivore behavior and plant distribution'
         },
         {
-          icon: 'eco',
-          title: 'Ecosystem Engineer',
-          description: 'It is deeply rooted in Indigenous folklore '
+          icon: 'auto_stories',
+          title: 'Cultural Heritage',
+          description: 'Deeply rooted in Indigenous folklore and Malaysian cultural identity'
         },
         {
-          icon: 'eco',
-          title: 'Ecosystem Engineer',
-          description: 'Healthy tiger habitats support agriculture and clean water sources'
+          icon: 'water_drop',
+          title: 'Ecosystem Services',
+          description: 'Healthy tiger habitats support agriculture and provide clean water sources'
         },
         {
           icon: 'flag',
@@ -116,17 +115,6 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
         }
       ],
       
-      // Taxonomy
-      taxonomy: [
-        { rank: 'Kingdom', name: 'Animalia' },
-        { rank: 'Phylum', name: 'Chordata' },
-        { rank: 'Class', name: 'Mammalia' },
-        { rank: 'Order', name: 'Carnivora' },
-        { rank: 'Family', name: 'Felidae' },
-        { rank: 'Genus', name: 'Panthera' },
-        { rank: 'Species', name: 'P. tigris' },
-        { rank: 'Subspecies', name: 'P. t. jacksoni' }
-      ],
       
       // Call to Action
       ctaText: "Every Malaysian can help protect these iconic stripes for future generations. By learning about the Malayan tiger, you're already contributing to conservation efforts. Knowledge leads to awareness, and awareness leads to action that can save this remarkable species."
@@ -143,7 +131,6 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
       quickFacts: "Fakta Pantas",
       whatMakesSpecial: "Apa yang Menjadikan Harimau Malaya Istimewa",
       whyMatters: "Mengapa Harimau Malaya Penting",
-      scientificClassification: "Klasifikasi Saintifik",
       bePartOfSolution: "Menjadi Sebahagian Penyelesaian",
       
       // Basic Info
@@ -216,17 +203,6 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
         }
       ],
       
-      // Taxonomy
-      taxonomy: [
-        { rank: 'Kingdom', name: 'Animalia' },
-        { rank: 'Filum', name: 'Chordata' },
-        { rank: 'Kelas', name: 'Mammalia' },
-        { rank: 'Order', name: 'Carnivora' },
-        { rank: 'Keluarga', name: 'Felidae' },
-        { rank: 'Genus', name: 'Panthera' },
-        { rank: 'Spesies', name: 'P. tigris' },
-        { rank: 'Subspesies', name: 'P. t. jacksoni' }
-      ],
       
       // Call to Action
       ctaText: "Setiap rakyat Malaysia boleh membantu melindungi belang ikonik ini untuk generasi akan datang. Dengan mempelajari tentang harimau Malaya, anda sudah menyumbang kepada usaha pemuliharaan. Pengetahuan membawa kepada kesedaran, dan kesedaran membawa kepada tindakan yang boleh menyelamatkan spesies luar biasa ini."
@@ -449,47 +425,6 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
         </View>
       </View>
 
-      {/* Taxonomic Classification */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <MaterialIcons 
-            name="account-tree" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
-          />
-          <ThemedText style={[
-            styles.sectionTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.scientificClassification}
-          </ThemedText>
-        </View>
-        
-        <View style={[
-          styles.taxonomyCard,
-          { 
-            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-            borderColor: isDark ? Colors.dark.border : Colors.light.border
-          }
-        ]}>
-          {text.taxonomy.map((item, index) => (
-            <View key={index} style={styles.taxonomyRow}>
-              <ThemedText style={[
-                styles.taxonomyRank,
-                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-              ]}>
-                {item.rank}:
-              </ThemedText>
-              <ThemedText style={[
-                styles.taxonomyName,
-                { color: isDark ? Colors.dark.text : Colors.light.text }
-              ]}>
-                {item.name}
-              </ThemedText>
-            </View>
-          ))}
-        </View>
-      </View>
 
       {/* Call to Action */}
       <View style={[
@@ -711,30 +646,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  // Taxonomy
-  taxonomyCard: {
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  taxonomyRow: {
-    flexDirection: 'row',
-    paddingVertical: 6,
-  },
-  taxonomyRank: {
-    fontSize: 14,
-    width: 90,
-  },
-  taxonomyName: {
-    fontSize: 14,
-    fontWeight: '500',
-    flex: 1,
-  },
 
   // Call to Action
   ctaCard: {

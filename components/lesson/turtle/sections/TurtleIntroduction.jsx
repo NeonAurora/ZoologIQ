@@ -22,7 +22,6 @@ export default function TurtleIntroduction({ currentLanguage = 'en' }) {
       quickFacts: "Quick Facts",
       ecologicalRole: "Ecological Role",
       biodiversityImportance: "Why Green Sea Turtles Matter in Biodiversity",
-      scientificClassification: "Scientific Classification",
       conservationStatus: "Conservation Challenge",
       
       // Basic Info
@@ -81,16 +80,6 @@ export default function TurtleIntroduction({ currentLanguage = 'en' }) {
         'Acts as an indicator species, reflecting the health of marine ecosystems'
       ],
       
-      // Taxonomy
-      taxonomy: [
-        { rank: 'Kingdom', name: 'Animalia' },
-        { rank: 'Phylum', name: 'Chordata' },
-        { rank: 'Class', name: 'Reptilia' },
-        { rank: 'Order', name: 'Testudines' },
-        { rank: 'Family', name: 'Cheloniidae' },
-        { rank: 'Genus', name: 'Chelonia' },
-        { rank: 'Species', name: 'Chelonia mydas' },
-      ],
       
       // Conservation CTA
       ctaTitle: "Conservation Challenge",
@@ -106,7 +95,6 @@ export default function TurtleIntroduction({ currentLanguage = 'en' }) {
       quickFacts: "Fakta Pantas",
       ecologicalRole: "Peranan Ekologi",
       biodiversityImportance: "Mengapa Penyu Agar Penting dalam Kepelbagaian Biologi",
-      scientificClassification: "Klasifikasi Saintifik",
       conservationStatus: "Cabaran Pemuliharaan",
       
       // Basic Info
@@ -165,16 +153,6 @@ export default function TurtleIntroduction({ currentLanguage = 'en' }) {
         'Bertindak sebagai spesies penunjuk, mencerminkan kesihatan ekosistem marin'
       ],
       
-      // Taxonomy
-      taxonomy: [
-        { rank: 'Kingdom', name: 'Animalia' },
-        { rank: 'Phylum', name: 'Chordata' },
-        { rank: 'Class', name: 'Reptilia' },
-        { rank: 'Order', name: 'Testudines' },
-        { rank: 'Family', name: 'Cheloniidae' },
-        { rank: 'Genus', name: 'Chelonia' },
-        { rank: 'Species', name: 'Chelonia mydas' },
-      ],
       
       // Conservation CTA
       ctaTitle: "Cabaran Pemuliharaan",
@@ -379,56 +357,6 @@ export default function TurtleIntroduction({ currentLanguage = 'en' }) {
         </View>
       </View>
 
-      {/* Scientific Classification */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <MaterialIcons 
-            name="account-tree" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
-          />
-          <ThemedText style={[
-            styles.sectionTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.scientificClassification}
-          </ThemedText>
-        </View>
-        
-        <View style={[
-          styles.taxonomyCard,
-          { 
-            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-            borderColor: isDark ? Colors.dark.border : Colors.light.border
-          }
-        ]}>
-          {text.taxonomy.map((item, index) => (
-            <View key={index} style={[
-              styles.taxonomyRow,
-              index < text.taxonomy.length - 1 && {
-                borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
-                borderBottomWidth: 1
-              }
-            ]}>
-              <ThemedText style={[
-                styles.taxonomyRank,
-                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-              ]}>
-                {item.rank}:
-              </ThemedText>
-              <ThemedText style={[
-                styles.taxonomyName,
-                { 
-                  color: isDark ? Colors.dark.text : Colors.light.text,
-                  fontStyle: item.rank === 'Species' ? 'italic' : 'normal'
-                }
-              ]}>
-                {item.name}
-              </ThemedText>
-            </View>
-          ))}
-        </View>
-      </View>
 
       {/* Conservation Call to Action */}
       <View style={[
@@ -636,32 +564,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Taxonomy
-  taxonomyCard: {
-    borderRadius: 12,
-    borderWidth: 1,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  taxonomyRow: {
-    flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  taxonomyRank: {
-    fontSize: 14,
-    width: 90,
-    fontWeight: '500',
-  },
-  taxonomyName: {
-    fontSize: 14,
-    fontWeight: '500',
-    flex: 1,
-  },
 
   // Call to Action
   ctaCard: {

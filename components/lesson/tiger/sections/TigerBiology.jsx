@@ -95,7 +95,9 @@ export default function TigerBiology({ currentLanguage = 'en' }) {
         'Night vision is 6x better than humans thanks to reflective eye layer',
         'Can sprint up to 65 km/h in short bursts when hunting',
         'Whiskers detect tiny air movements to sense prey in darkness',
-        'Territorial markers: spray urine and scratch trees to mark territory'
+        'Territorial markers: spray urine and scratch trees to mark territory',
+        'Mini but Mighty: smallest mainland tiger subspecies yet can leap over 5 meters',
+        'Swimming Stars: unlike most cats, they love water and swim to cool off'
       ],
 
       // Reproduction & Family
@@ -192,7 +194,9 @@ export default function TigerBiology({ currentLanguage = 'en' }) {
         'Penglihatan malam 6x lebih baik daripada manusia kerana lapisan mata pemantul',
         'Boleh berlari sehingga 65 km/j dalam jarak pendek semasa memburu',
         'Misai mengesan pergerakan udara kecil untuk merasai mangsa dalam kegelapan',
-        'Penanda wilayah: menyembur air kencing dan mencakar pokok untuk menanda wilayah'
+        'Penanda wilayah: menyembur air kencing dan mencakar pokok untuk menanda wilayah',
+        'Kecil tapi Gagah: subspesies harimau tanah besar terkecil namun boleh melompat lebih 5 meter',
+        'Perenang Handal: tidak seperti kebanyakan kucing, mereka suka air dan berenang untuk menyejukkan badan'
       ],
 
       // Reproduction & Family

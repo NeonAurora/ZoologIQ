@@ -2,6 +2,7 @@
 // Database automation service for resetting and populating quiz data
 
 import { supabase } from './config';
+import { AUDIO_URLS } from '@/constants/AudioUrls';
 
 // Quiz data structured from contextBuffer.txt
 const QUIZ_DATA = {
@@ -498,12 +499,17 @@ export async function resetAndPopulateDatabase(adminUserId) {
     const categoryIds = {};
     
     for (const categoryData of QUIZ_DATA.categories) {
+      // Get audio URLs for this category
+      const audioUrls = AUDIO_URLS[categoryData.slug];
+      
       const { data: category, error: categoryError } = await supabase
         .from('quiz_categories')
         .insert({
           name: categoryData.name,
           slug: categoryData.slug,
           description: categoryData.description,
+          lesson_audio_en: audioUrls?.english || null,
+          lesson_audio_ms: audioUrls?.malay || null,
           is_active: true,
           display_order: categoryData.display_order,
           created_by: adminUserId
@@ -518,6 +524,7 @@ export async function resetAndPopulateDatabase(adminUserId) {
 
       categoryIds[categoryData.slug] = category.id;
       console.log(`✅ Created category: ${categoryData.name.en} (${category.id})`);
+      console.log(`   🎵 Audio URLs added: EN=${audioUrls?.english ? 'Yes' : 'No'}, MS=${audioUrls?.malay ? 'Yes' : 'No'}`);
     }
 
     // Step 4: Create one standalone quiz per category (used for both pre and post assessments)

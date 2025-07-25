@@ -273,3 +273,65 @@ create policy "Public access for results" on public.quiz_results for all using (
 grant all on all tables in schema public to postgres, anon, authenticated;
 grant all on all sequences in schema public to postgres, anon, authenticated;
 grant all on all functions in schema public to postgres, anon, authenticated;
+
+-- =========================================
+-- INITIAL DATA SETUP WITH AUDIO URLS
+-- =========================================
+
+-- First create a system admin user (replace with actual Auth0 user ID when available)
+insert into public.users (auth0_user_id, email, name, role, onboarding_completed) 
+values ('system-admin', 'admin@zoologiq.com', 'System Admin', 'admin', true)
+on conflict (auth0_user_id) do nothing;
+
+-- Insert quiz categories with audio URLs
+insert into public.quiz_categories (
+  id,
+  name,
+  slug,
+  description,
+  lesson_audio_en,
+  lesson_audio_ms,
+  is_active,
+  display_order,
+  created_by
+) values 
+-- Tiger Category
+(
+  'c4329688-8fda-442b-a520-4e7d5cdbcbba',
+  '{"en": "Malayan Tiger", "ms": "Harimau Malaya"}',
+  'tiger',
+  '{"en": "Learn about Malaysia''s critically endangered national symbol", "ms": "Pelajari tentang simbol kebangsaan Malaysia yang kritikal terancam"}',
+  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832645865.mp3',
+  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832665072.mp3',
+  true,
+  1,
+  'system-admin'
+),
+-- Tapir Category  
+(
+  'a8789ec1-d724-4b38-9285-2988efdc09d1',
+  '{"en": "Malayan Tapir", "ms": "Tapir Malaya"}',
+  'tapir',
+  '{"en": "Discover Malaysia''s gentle forest guardian", "ms": "Temui penjaga hutan Malaysia yang lembut"}',
+  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752830971046.mp3',
+  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832401154.mp3',
+  true,
+  2,
+  'system-admin'
+),
+-- Turtle Category
+(
+  '81e9e258-82b1-42c4-878d-89ee1b50cec9',
+  '{"en": "Green Sea Turtle", "ms": "Penyu Agar"}',
+  'turtle',
+  '{"en": "Explore the ocean''s gentle giant and its conservation journey", "ms": "Jelajahi gergasi lembut lautan dan perjalanan pemuliharaannya"}',
+  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832964739.mp3',
+  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/audio/1752832984608.mp3',
+  true,
+  3,
+  'system-admin'
+)
+on conflict (id) do update set
+  lesson_audio_en = excluded.lesson_audio_en,
+  lesson_audio_ms = excluded.lesson_audio_ms,
+  updated_at = now();

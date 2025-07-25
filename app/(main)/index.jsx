@@ -9,6 +9,7 @@ import React from 'react';
 import { ActivityIndicator } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { QUIZ_IDS } from '@/constants/QuizIds';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function HomePage() {
@@ -41,21 +42,21 @@ export default function HomePage() {
       title: isEnglish ? "Malayan Tiger" : "Harimau Malaya",
       icon: "pets",
       color: "#FF6B35",
-      quizId: "c4329688-8fda-442b-a520-4e7d5cdbcbba"
+      quizId: QUIZ_IDS.tiger
     },
     {
       topic: "tapir",
       title: isEnglish ? "Malayan Tapir" : "Tapir Malaya",
       icon: "forest",
       color: "#4CAF50",
-      quizId: "a8789ec1-d724-4b38-9285-2988efdc09d1"
+      quizId: QUIZ_IDS.tapir
     },
     {
       topic: "turtle",
       title: isEnglish ? "Green Sea Turtle" : "Penyu Agar",
       icon: "waves",
       color: "#2196F3",
-      quizId: "81e9e258-82b1-42c4-878d-89ee1b50cec9"
+      quizId: QUIZ_IDS.turtle
     }
   ];
 

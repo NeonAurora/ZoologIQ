@@ -74,7 +74,9 @@ export default function AudioPlayer({
   useEffect(() => {
     return () => {
       if (soundRef.current) {
-        soundRef.current.unloadAsync();
+        soundRef.current.unloadAsync().catch(() => {
+          // Ignore errors during cleanup - component is unmounting
+        });
       }
     };
   }, []);
@@ -82,7 +84,9 @@ export default function AudioPlayer({
   // Handle audio URL changes
   useEffect(() => {
     if (soundRef.current) {
-      soundRef.current.unloadAsync();
+      soundRef.current.unloadAsync().catch(() => {
+        // Ignore cleanup errors
+      });
       soundRef.current = null;
       setSound(null);
       setIsPlaying(false);
@@ -150,8 +154,11 @@ export default function AudioPlayer({
         await currentSound.playAsync();
       }
     } catch (error) {
-      console.error('Error playing/pausing audio:', error);
-      Alert.alert('Error', text.audioError);
+      // Only log errors that aren't AbortError (common during navigation)
+      if (error.name !== 'AbortError') {
+        console.error('Error playing/pausing audio:', error);
+        Alert.alert('Error', text.audioError);
+      }
     }
   };
 
@@ -163,7 +170,10 @@ export default function AudioPlayer({
         setIsPlaying(false);
       }
     } catch (error) {
-      console.error('Error stopping audio:', error);
+      // Only log errors that aren't AbortError (common during navigation)
+      if (error.name !== 'AbortError') {
+        console.error('Error stopping audio:', error);
+      }
     }
   };
 

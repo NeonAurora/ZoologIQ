@@ -4,6 +4,7 @@ import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { QUIZ_IDS } from '@/constants/QuizIds';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -14,7 +15,8 @@ export default function TigerNavigation({
   onNext, 
   onPrevious,
   onComplete,
-  isNavigating = false
+  isNavigating = false,
+  topic = 'tiger'
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -45,7 +47,8 @@ export default function TigerNavigation({
     if (onComplete) {
       onComplete();
     }
-    router.replace('/');
+    const quizId = QUIZ_IDS[topic];
+    router.replace(`/startLearning?topic=${topic}&quizId=${quizId}`);
   };
 
   // Progress dots

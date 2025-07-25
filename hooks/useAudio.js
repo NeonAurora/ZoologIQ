@@ -1,6 +1,6 @@
 // hooks/useAudio.js
 import { useState, useEffect } from 'react';
-import { getCategoryAudio } from '@/services/supabase/audioService';
+import { getCategoryAudioWithFallback } from '@/services/supabase/audioService';
 
 export const useAudio = (categorySlug, currentLanguage) => {
   const [audioUrls, setAudioUrls] = useState({ en: null, ms: null });
@@ -11,7 +11,7 @@ export const useAudio = (categorySlug, currentLanguage) => {
       if (!categorySlug) return;
       
       setLoading(true);
-      const urls = await getCategoryAudio(categorySlug);
+      const urls = await getCategoryAudioWithFallback(categorySlug);
       setAudioUrls(urls);
       setLoading(false);
     };

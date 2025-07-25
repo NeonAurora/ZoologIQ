@@ -16,7 +16,8 @@ import TigerIntroduction from './sections/TigerIntroduction';
 import TigerBiology from './sections/TigerBiology';
 import TigerEcology from './sections/TigerEcology';
 import TigerConservation from './sections/TigerConservation';
-import ReferencesSection from '../ReferencesSection';
+import TigerInfographics from './sections/TigerInfographics';
+import TigerReferences from './sections/TigerReferences';
 import TigerSidebar from './TigerSidebar';
 import TigerNavigation from './TigerNavigation';
 import { ThemedText } from '@/components/ThemedText';
@@ -56,6 +57,7 @@ export default function TigerLessonLayout() {
         { id: 'biology', title: 'Biology & Classification' },
         { id: 'ecology', title: 'Ecology & Behavior' },
         { id: 'conservation', title: 'Conservation' },
+        { id: 'infographics', title: 'Infographics' },
         { id: 'references', title: 'References' },
       ]
     },
@@ -67,6 +69,7 @@ export default function TigerLessonLayout() {
         { id: 'biology', title: 'Biologi & Klasifikasi' },
         { id: 'ecology', title: 'Ekologi & Tingkah Laku' },
         { id: 'conservation', title: 'Pemuliharaan' },
+        { id: 'infographics', title: 'Infografik' },
         { id: 'references', title: 'References' },
       ]
     }
@@ -81,7 +84,8 @@ export default function TigerLessonLayout() {
       TigerBiology,
       TigerEcology,
       TigerConservation,
-      (props) => <ReferencesSection {...props} topic="tiger" />
+      TigerInfographics,
+      TigerReferences
     ];
     
     return {
@@ -350,6 +354,7 @@ export default function TigerLessonLayout() {
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
           isNavigating={isNavigating}
+          topic="tiger"
         />
       </View>
 

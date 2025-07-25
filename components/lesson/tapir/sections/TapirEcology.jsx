@@ -94,6 +94,34 @@ export default function TapirEcology({ currentLanguage = 'en' }) {
           benefit: 'Improves soil fertility across territories'
         }
       ],
+
+      // Biodiversity Role Table - from tapir.txt
+      biodiversityRoles: [
+        {
+          aspect: 'Seed Dispersal',
+          description: 'Malayan tapirs play a vital role as seed dispersers. By eating fruits and defecating in different areas, they help new plants grow, maintaining forest diversity and regeneration.'
+        },
+        {
+          aspect: 'Forest Ecosystem Health',
+          description: 'Tapirs contribute to the natural cycling of nutrients and vegetation structure by browsing on plants, which can reduce overgrowth and promote diverse plant communities.'
+        },
+        {
+          aspect: 'Keystone Herbivore',
+          description: 'As a keystone species, their feeding behavior influences which plants dominate, helping maintain balance in the forest ecosystem.'
+        },
+        {
+          aspect: 'Biodiversity Indicator',
+          description: 'The presence of healthy tapir populations often indicates a well-functioning ecosystem, since they require significant, undisturbed habitats.'
+        },
+        {
+          aspect: 'Supports Other Wildlife',
+          description: 'By opening forest paths and maintaining diverse plant life, tapirs indirectly benefit other species, such as birds, insects, and smaller mammals.'
+        },
+        {
+          aspect: 'Cultural & Ecotourism Value',
+          description: 'Their unique appearance makes them a flagship species for conservation and ecotourism, helping raise awareness and funding for biodiversity protection.'
+        }
+      ],
       
       // Diet Details
       dietDetails: [
@@ -253,6 +281,34 @@ export default function TapirEcology({ currentLanguage = 'en' }) {
           impact: 'Pengayaan tanah',
           description: 'Mengedarkan nutrien melalui najis',
           benefit: 'Meningkatkan kesuburan tanah di seluruh wilayah'
+        }
+      ],
+
+      // Biodiversity Role Table - from tapir.txt
+      biodiversityRoles: [
+        {
+          aspect: 'Penyebaran Biji Benih',
+          description: 'Tapir Malaya memainkan peranan penting sebagai penyebar biji benih. Dengan memakan buah-buahan dan membuang najis di kawasan berbeza, mereka membantu pertumbuhan tumbuhan baru, mengekalkan kepelbagaian dan pertumbuhan semula hutan.'
+        },
+        {
+          aspect: 'Kesihatan Ekosistem Hutan',
+          description: 'Tapir menyumbang kepada kitaran semula jadi nutrien dan struktur tumbuh-tumbuhan melalui aktiviti makan mereka, yang dapat mengawal pertumbuhan berlebihan dan mempromosikan komuniti tumbuhan yang pelbagai.'
+        },
+        {
+          aspect: 'Herbivor Kunci',
+          description: 'Sebagai spesies kunci, tingkah laku pemakanan mereka mempengaruhi dominasi tumbuhan tertentu, membantu mengekalkan keseimbangan dalam ekosistem hutan.'
+        },
+        {
+          aspect: 'Petunjuk Kepelbagaian Biologi',
+          description: 'Kehadiran populasi tapir yang sihat sering menunjukkan ekosistem yang berfungsi dengan baik, memandangkan mereka memerlukan habitat yang luas dan tidak terganggu.'
+        },
+        {
+          aspect: 'Menyokong Hidupan Liar Lain',
+          description: 'Dengan membuka laluan hutan dan mengekalkan kepelbagaian tumbuhan, tapir secara tidak langsung memberi manfaat kepada spesies lain seperti burung, serangga, dan mamalia kecil.'
+        },
+        {
+          aspect: 'Nilai Budaya & Eko-pelancongan',
+          description: 'Penampilan unik mereka menjadikan tapir sebagai spesies utama untuk pemuliharaan dan eko-pelancongan, membantu meningkatkan kesedaran dan pembiayaan untuk perlindungan biodiversiti.'
         }
       ],
       

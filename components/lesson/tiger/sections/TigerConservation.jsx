@@ -68,8 +68,8 @@ export default function TigerConservation({ currentLanguage = 'en' }) {
           description: 'Overhunting of deer and wild boar reduces tigers\' food supply'
         },
         {
-          icon: 'home',
-          title: 'Human-Wildlife Conflict',
+          icon: 'thermostat',
+          title: 'Climate Change',
           description: 'Rising temperatures may reduce suitable habitats'
         },
       ],
@@ -171,6 +171,26 @@ export default function TigerConservation({ currentLanguage = 'en' }) {
           icon: 'travel-explore',
           title: 'Ecotourism',
           description: 'Sustainable tourism creates jobs as alternative to forest exploitation'
+        },
+        {
+          icon: 'security',
+          title: 'Predator-Proof Enclosures',
+          description: 'Protected livestock enclosures prevent tiger-human conflicts'
+        },
+        {
+          icon: 'forest',
+          title: 'Non-Timber Products',
+          description: 'Wild honey and forest products reduce logging dependence'
+        },
+        {
+          icon: 'groups',
+          title: 'Community Patrols',
+          description: 'Local patrol units (e.g., PATROL Perak) monitor tigers and deter poachers'
+        },
+        {
+          icon: 'policy',
+          title: 'Land-Use Planning',
+          description: 'Strategic planning prioritizes tiger habitat conservation'
         }
       ],
 
@@ -344,6 +364,26 @@ export default function TigerConservation({ currentLanguage = 'en' }) {
           icon: 'travel-explore',
           title: 'Ekopelancongan',
           description: 'Pelancongan mampan mewujudkan pekerjaan alternatif selain eksploitasi hutan'
+        },
+        {
+          icon: 'security',
+          title: 'Kandang Kalis Pemangsa',
+          description: 'Kandang ternakan terlindung mencegah konflik harimau-manusia'
+        },
+        {
+          icon: 'forest',
+          title: 'Produk Bukan Kayu',
+          description: 'Madu liar dan hasil hutan mengurangkan kebergantungan kepada pembalakan'
+        },
+        {
+          icon: 'groups',
+          title: 'Rondaan Komuniti',
+          description: 'Unit rondaan tempatan (contoh: PATROL Perak) memantau harimau dan menghalang pemburu'
+        },
+        {
+          icon: 'policy',
+          title: 'Perancangan Guna Tanah',
+          description: 'Perancangan strategik mengutamakan pemuliharaan habitat harimau'
         }
       ],
 

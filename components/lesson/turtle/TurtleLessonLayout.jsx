@@ -19,7 +19,8 @@ import TurtleReproduction from './sections/TurtleReproduction';
 import TurtleBiodiversity from './sections/TurtleBiodiversity';
 import TurtleThreats from './sections/TurtleThreats';
 import TurtleConservation from './sections/TurtleConservation';
-import ReferencesSection from '../ReferencesSection';
+import TurtleInfographics from './sections/TurtleInfographics';
+import TurtleReferences from './sections/TurtleReferences';
 import TurtleSidebar from './TurtleSidebar';
 import TurtleNavigation from './TurtleNavigation';
 import { ThemedText } from '@/components/ThemedText';
@@ -62,6 +63,7 @@ export default function TurtleLessonLayout() {
         { id: 'biodiversity', title: 'Biodiversity & Ecology' },
         { id: 'threats', title: 'Threats & Challenges' },
         { id: 'conservation', title: 'Conservation & Success Stories' },
+        { id: 'infographics', title: 'Infographics' },
         { id: 'references', title: 'References' },
       ]
     },
@@ -76,6 +78,7 @@ export default function TurtleLessonLayout() {
         { id: 'biodiversity', title: 'Biodiversiti & Ekologi' },
         { id: 'threats', title: 'Ancaman & Cabaran' },
         { id: 'conservation', title: 'Pemuliharaan & Kisah Kejayaan' },
+        { id: 'infographics', title: 'Infografik' },
         { id: 'references', title: 'References' },
       ]
     }
@@ -93,7 +96,8 @@ export default function TurtleLessonLayout() {
       TurtleBiodiversity,
       TurtleThreats,
       TurtleConservation,
-      (props) => <ReferencesSection {...props} topic="turtle" />
+      TurtleInfographics,
+      TurtleReferences
     ];
     
     return {
@@ -362,6 +366,7 @@ export default function TurtleLessonLayout() {
           onPrevious={goToPreviousSection}
           onComplete={handleLessonComplete}
           isNavigating={isNavigating}
+          topic="turtle"
         />
       </View>
 
