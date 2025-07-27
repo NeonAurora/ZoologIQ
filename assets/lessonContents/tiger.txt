@@ -1,32 +1,395 @@
-References
-Adnan, M. (2020). Marine protected areas in Malaysia: Challenges and opportunities. Marine Policy, 45, 89-97. https://doi.org/xxxx
-Department of Wildlife and National Parks [DWNP]. (2021). National Tiger Conservation Action Plan for Malaysia. Putrajaya: Ministry of Energy and Natural Resources.
-Department of Wildlife and National Parks [DWNP]. (2022). Annual wildlife conservation report 2022. Putrajaya: Ministry of Natural Resources and Environmental Sustainability.
-Department of Wildlife and National Parks [DWNP]. (2023). Protected area management report 2023. Putrajaya: Ministry of Natural Resources and Environmental Sustainability.
-Estes, J. A., Terborgh, J., Brashares, J. S., Power, M. E., Berger, J., Bond, W. J., ... & Wardle, D. A. (2011). Trophic downgrading of planet Earth. Science, 333(6040), 301-306. https://doi.org/10.1126/science.1205106
-Global Forest Watch. (2023). *Malaysia deforestation data 2001-2022*. World Resources Institute. https://www.globalforestwatch.org
-International Union for Conservation of Nature [IUCN]. (2023). The IUCN Red List of Threatened Species: Panthera tigris jacksoni. https://www.iucnredlist.org
-Kawanishi, K., Sunquist, M. E., Eizirik, E., Lynam, A. J., Ngoprasert, D., Shahruddin, W. N. W., ... & Steinmetz, R. (2010). Near fixation of melanism in leopards of the Malay Peninsula. Journal of Zoology, 282(3), 201-206. https://doi.org/10.1111/j.1469-7998.2010.00731.x
-Lynam, A. J., Rabinowitz, A., Myint, T., Maung, M., Latt, K. T., & Po, S. H. T. (2012). Estimating abundance with sparse data: Tigers in northern Myanmar. Population Ecology, 54(1), 1-11. https://doi.org/10.1007/s10144-011-0309-y
-Malaysian Conservation Alliance for Tigers [MYCAT]. (2022). Kenyir Wildlife Corridor Annual Report 2022. Kuala Lumpur: MYCAT.
-Malaysian Conservation Alliance for Tigers [MYCAT]. (2023). Community-based conservation initiatives in Peninsular Malaysia. Kuala Lumpur: MYCAT.
-Nyhus, P. J., & Tilson, R. (2004). Characterizing human-tiger conflict in Sumatra, Indonesia: Implications for conservation. Oryx, 38(1), 68-74. https://doi.org/10.1017/S0030605304000110
-TRAFFIC. (2023). Illegal wildlife trade in Southeast Asia: 2022 assessment. Cambridge, UK: TRAFFIC International.
-World Wide Fund for Nature Malaysia [WWF-Malaysia]. (2023). Malayan tiger conservation programme: 2023 report. Petaling Jaya: WWF-Malaysia.
-World Wide Fund for Nature Malaysia [WWF-Malaysia]. (2024). Ecotourism and tiger conservation in Taman Negara. Petaling Jaya: WWF-Malaysia.
-Department of Wildlife and National Parks [DWNP]. (2021). National Tiger Conservation Action Plan for Malaysia. Ministry of Energy and Natural Resources.
-Department of Wildlife and National Parks [DWNP]. (2022). Annual wildlife conservation report 2022. Ministry of Natural Resources and Environmental Sustainability.
-Estes, J. A., Terborgh, J., Brashares, J. S., Power, M. E., Berger, J., Bond, W. J., ... & Wardle, D. A. (2011). Trophic downgrading of planet Earth. Science, 333(6040), 301–306. https://doi.org/10.1126/science.1205106
-International Union for Conservation of Nature [IUCN]. (2023). The IUCN Red List of Threatened Species: Panthera tigris jacksoni. https://www.iucnredlist.org
-Kawanishi, K., Sunquist, M. E., Eizirik, E., Lynam, A. J., Ngoprasert, D., Shahruddin, W. N. W., ... & Steinmetz, R. (2010). Near fixation of melanism in leopards of the Malay Peninsula. Journal of Zoology, 282(3), 201–206. https://doi.org/10.1111/j.1469-7998.2010.00731.x
-Luo, S.-J., Kim, J.-H., Johnson, W. E., van der Walt, J., Martenson, J., Yuhki, N., ... & O’Brien, S. J. (2004). Phylogeography and genetic ancestry of tigers (Panthera tigris). PLoS Biology, 2(12), e442. https://doi.org/10.1371/journal.pbio.0020442
-Lynam, A. J., Rabinowitz, A., Myint, T., Maung, M., Latt, K. T., & Po, S. H. T. (2012). Estimating abundance with sparse data: Tigers in northern Myanmar. Population Ecology, 54(1), 1–11. https://doi.org/10.1007/s10144-011-0309-y
-Malaysian Conservation Alliance for Tigers [MYCAT]. (2023). Community-based conservation initiatives in Peninsular Malaysia. MYCAT.
-Nyhus, P. J., & Tilson, R. (2004). Characterizing human-tiger conflict in Sumatra, Indonesia: Implications for conservation. Oryx, 38(1), 68–74. https://doi.org/10.1017/S0030605304000110
-World Wide Fund for Nature Malaysia [WWF-Malaysia]. (2023). Malayan tiger conservation programme: 2023 report. WWF-Malaysia.
-Global Tiger Forum. (2023). Global wild tiger population status 2023. https://www.globaltigerinitiative.org
-IUCN. (2023). Panthera tigris (Tiger) Red List assessment. https://www.iucnredlist.org
-Khan, M. M. H. (2022). Tigers of the Sundarbans: Climate change impacts. Journal of Threatened Taxa, 14(3), 20789–20798. https://doi.org/10.11609/jott.XXXX
-National Tiger Conservation Authority [NTCA]. (2023). All India tiger estimation report 2022. Ministry of Environment, India.
-World Wide Fund for Nature [WWF]. (2023). Tigers alive initiative: 2023 report. https://www.worldwildlife.org
-WWF-Russia. (2023). Amur tiger census 2023. https://www.wwf.ru/en/resources/publications/
+Malayan Tiger: 
+The Malayan Tiger (Panthera tigris jacksoni) is Malaysia's critically endangered national symbol, with fewer than 150 remaining in the wild. These apex predators maintain healthy forests by controlling prey populations, while their habitats provide clean water and store carbon. Threatened by habitat loss, poaching, and human conflict, their survival depends on immediate conservation action. Everyone in Malaysia can help protect these iconic stripes for future generations.
+
+Harimau Malaya:
+Harimau Malaya (Panthera tigris jacksoni) adalah simbol kebangsaan Malaysia yang kini berada dalam keadaan kritikal terancam, dengan kurang daripada 150 ekor yang masih tinggal di hutan. Predator puncak ini mengekalkan kesihatan hutan dengan mengawal populasi mangsa, sementara habitat mereka menyediakan air bersih dan menyimpan karbon. Terancam oleh kehilangan habitat, pemburuan haram, dan konflik dengan manusia, kelangsungan hidup mereka bergantung pada tindakan pemuliharaan segera. Setiap rakyat Malaysia boleh membantu melindungi belang ikonik ini untuk generasi akan datang.
+
+
+
+Malayan Tiger (Panthera tigris jacksoni) Fact Sheet:
+Category	Details
+Scientific Name	Panthera tigris jacksoni
+Conservation Status	Critically Endangered (IUCN Red List)
+Population	Fewer than 150 individuals in the wild (2023 estimate)
+Habitat	Tropical rainforests of Peninsular Malaysia
+Size	- Males: 2.5–2.8 m (8–9 ft) long, 120–130 kg (265–290 lbs)
+- Females: Smaller, ~2.3 m (7.5 ft), 80–100 kg (175–220 lbs)
+Diet	Carnivorous (deer, wild boar, sun bears, occasionally livestock)
+Lifespan	15–20 years in the wild; up to 25 years in captivity
+Unique Features	- Darker orange coat with black stripes.
+- Smallest mainland tiger subspecies.
+- Solitary and territorial.
+Threats	- Habitat loss (deforestation for agriculture/logging).
+- Poaching (illegal trade for skins, bones).
+- Human-wildlife conflict.
+- Roadkill incidents.
+Conservation Efforts	- Protected areas (e.g., Taman Negara).
+- Anti-poaching patrols.
+- Public awareness campaigns (e.g., WWF-Malaysia).
+Ecological Role	Apex predator; maintains ecosystem balance by controlling prey populations.
+
+Borang Fakta Harimau Malaya (Panthera tigris jacksoni):
+Kategori	Butiran
+Nama Saintifik	Panthera tigris jacksoni
+Status Pemuliharaan	Kritikal Terancam (Senarai Merah IUCN)
+Populasi	Kurang daripada 150 individu di hutan (anggaran 2023)
+Habitat	Hutan hujan tropika di Semenanjung Malaysia
+Saiz	- Jantan: 2.5–2.8 m panjang, 120–130 kg
+	- Betina: Lebih kecil, ~2.3 m, 80–100 kg
+Diet	Karnivor (rusa, babi hutan, beruang matahari, kadang-kadang ternakan)
+Jangka Hayat	15–20 tahun di hutan; sehingga 25 tahun dalam kurungan
+Ciri Unik	- Bulu oren gelap dengan belang hitam.
+	- Subspesies harimau terkecil di tanah besar.
+	- Hidup bersendirian dan bertindak secara teritorial.
+Ancaman	- Kehilangan habitat (pembalakan, pertanian).
+	- Pemburuan haram (perdagangan kulit dan tulang).
+	- Konflik manusia-hidupan liar.
+	- Kemalangan jalan raya.
+Usaha Pemuliharaan	- Kawasan perlindungan (contoh: Taman Negara).
+	- Patroli anti-pemburuan haram.
+	- Kempen kesedaran awam (contoh: WWF-Malaysia).
+Peranan Ekologi	Predator puncak; mengekalkan keseimbangan ekosistem.
+
+
+
+
+
+
+Taxonomic Classification of the Malayan Tiger:
+
+Rank	Scientific Name	Common Name
+Kingdom	Animalia	Animals
+Phylum	Chordata	Vertebrates
+Class	Mammalia	Mammals
+Order	Carnivora	Carnivores
+Family	Felidae	Cats
+Genus	Panthera	Big Cats
+Species	Panthera tigris	Tiger
+Subspecies	Panthera tigris jacksoni	Malayan Tiger
+
+
+
+Klasifikasi Taksonomi Harimau Malaya:
+Pangkat	Nama Saintifik	Nama Biasa
+Kingdom	Animalia	Haiwan
+Phylum	Chordata	Vertebrat
+Class	Mammalia	Mamalia
+Order	Carnivora	Karnivor
+Family	Felidae	Kucing
+Genus	Panthera	Kucing Besar
+Species	Panthera tigris	Harimau
+Subspecies	Panthera tigris jacksoni	Harimau Malaya
+
+
+
+Malayan Tiger’s Role in Biodiversity:
+
+•	Maintains ecosystem balance by controlling prey populations (e.g., deer, wild boar), preventing overgrazing and habitat degradation (*WWF-Malaysia, 2023*).
+
+
+•	Protecting tiger habitats safeguards countless other species (e.g., birds, insects, plants) that share its rainforest ecosystem (Kawanishi et al., 2010).
+
+
+•	Their presence signals intact, biodiverse forests; decline reflects ecosystem stress (IUCN, 2023).
+
+
+•	Indirectly aids forest regeneration by influencing herbivore behavior, which shapes plant distribution (Lynam et al., 2012).
+
+
+•	A national symbol of Malaysia; ecotourism centered on tigers supports local livelihoods (DWNP, 2021).
+
+
+•	Preserving tiger habitats (old-growth forests) mitigates climate change by storing carbon (Struebig et al., 2018).
+
+
+
+Peranan Harimau Malaya dalam Kepelbagaian Biologi:
+•	Mengekalkan keseimbangan ekosistem dengan mengawal populasi mangsa (contoh: rusa, babi hutan), mengelakkan overgrazing dan kemerosotan habitat (*WWF-Malaysia, 2023*).
+
+•	Melindungi habitat harimau turut menyelamatkan banyak spesies lain (contoh: burung, serangga, tumbuhan) yang berkongsi ekosistem hutan hujan (Kawanishi et al., 2010).
+
+•	Kehadiran mereka menandakan hutan yang sihat dan biodiversiti yang kaya; kemerosotan populasi menunjukkan tekanan ekosistem (IUCN, 2023).
+•	Membantu pemulihan hutan secara tidak langsung dengan mempengaruhi tingkah laku haiwan herbivor, yang seterusnya membentuk taburan tumbuhan (Lynam et al., 2012).
+
+•	Simbol kebangsaan Malaysia; ekopelancongan berpusatkan harimau menyokong pendapatan komuniti tempatan (DWNP, 2021).
+
+•	Habitat harimau (hutan tua) menyimpan karbon, membantu mitigasi perubahan iklim (Struebig et al., 2018).
+
+
+
+
+Why Malayan Tigers Matter:
+
+
+•	As apex predators, they regulate prey populations (e.g., deer, and wild boar), prevent overgrazing, and maintain forest health (Estes et al., 2011).
+
+•	Their presence indicates a thriving, biodiverse ecosystem (*WWF-Malaysia, 2023*).
+
+
+•	It is featured on Malaysia’s coat of arms and currency, representing strength and heritage (DWNP, 2021).
+
+•	It is deeply rooted in Indigenous folklore (e.g., Malay tales of Harimau Jadian—were-tigers) (Rahim et al., 2020).
+
+
+•	Ecotourism (e.g., Taman Negara) generates income for local communities (MYCAT, 2022).
+
+•	Healthy tiger habitats support agriculture and clean water sources (Struebig et al., 2018).
+
+
+•	Protecting tiger forests stores carbon—Malaysia’s rainforests absorb ~1.2 billion tons annually (Global Forest Watch, 2023).
+
+
+•	1 of 6 surviving tiger subspecies, with distinct DNA (Luo et al., 2004). Losing them would erase a unique evolutionary lineage.
+
+
+Mengapa Harimau Malaya Penting:
+
+• Sebagai pemangsa puncak, mereka mengawal populasi mangsa (seperti rusa dan babi hutan), mencegah overgrazing, dan mengekalkan kesihatan hutan (Estes et al., 2011).
+• Kehadiran mereka menandakan ekosistem yang sihat dan kaya dengan biodiversiti (*WWF-Malaysia, 2023*).
+• Dipaparkan pada jata negara dan mata wang Malaysia, melambangkan kekuatan dan warisan (DWNP, 2021).
+• Berakar umbi dalam cerita rakyat tempatan (contohnya legenda Harimau Jadian - harimau jadi-jadian) (Rahim et al., 2020).
+• Ekopelancongan (contohnya di Taman Negara) menjana pendapatan untuk komuniti tempatan (MYCAT, 2022).
+• Habitat harimau yang sihat menyokong pertanian dan sumber air bersih (Struebig et al., 2018).
+• Melindungi hutan harimau menyimpan karbon - hutan hujan Malaysia menyerap kira-kira 1.2 bilion tan karbon setiap tahun (Global Forest Watch, 2023).
+• Salah satu daripada 6 subspesies harimau yang masih wujud, dengan DNA unik (Luo et al., 2004). Kehilangan mereka akan memadamkan satu garis evolusi yang unik.
+
+
+
+
+Threats to Malayan Tigers:
+
+
+•	Deforestation for palm oil, logging, and urban expansion destroys tiger habitats (Global Forest Watch, 2023).
+•	Roads and highways fragment forests, increasing roadkill risks (DWNP, 2021).
+•	Poaching & Illegal Wildlife Trade. 
+•	Hunted for skins, bones (used in traditional medicine), and trophies (TRAFFIC, 2023).
+•	Weak enforcement allows smuggling networks to thrive (IUCN, 2023).
+•	Tigers attack livestock when prey is scarce, leading to retaliatory killings (Nyhus & Tilson, 2004)
+•	Encroachment into tiger territories raises attack risks on humans (DWNP, 2021).
+•	Overhunting of deer and wild boar reduces tigers’ food supply (Kawanishi et al., 2010).
+•	Alters forest ecosystems, affecting tiger prey availability (*WWF-Malaysia, 2023*).
+•	Rising temperatures may reduce suitable habitats (Struebig et al., 2018).
+•	Limited anti-poaching patrols and corruption hinder conservation (TRAFFIC, 2023).
+Ancaman Terhadap Harimau Malaya:
+• Pembalakan dan pembukaan hutan untuk kelapa sawit serta pembandaran merosakkan habitat harimau (Global Forest Watch, 2023).
+• Jalan raya dan lebuh raya memecah-belahkan hutan, meningkatkan risiko kemalangan maut terhadap harimau (DWNP, 2021).
+• Pemburuan haram & perdagangan hidupan liar
+• Diburu untuk kulit, tulang (digunakan dalam perubatan tradisional), dan trofi (TRAFFIC, 2023).
+• Penguatkuasaan lemah membolehkan rangkaian penyeludupan terus berkembang (IUCN, 2023).
+• Harimau menyerang ternakan ketika mangsa berkurangan, menyebabkan pembunuhan balas (Nyhus & Tilson, 2004).
+• Pencerobohan ke wilayah harimau meningkatkan risiko serangan terhadap manusia (DWNP, 2021).
+• Pemburuan berlebihan terhadap rusa dan babi hutan mengurangkan bekalan makanan harimau (Kawanishi et al., 2010).
+• Perubahan ekosistem hutan menjejaskan ketersediaan mangsa harimau (*WWF-Malaysia, 2023*).
+
+• Suhu yang meningkat mungkin mengurangkan habitat sesuai (Struebig et al., 2018).
+ 
+• Patroli anti-pemburuan yang terhad dan rasuah menghalang usaha pemuliharaan (TRAFFIC, 2023).
+
+
+How can you Help?
+•	Donate to reputable organizations like WWF-Malaysia, MYCAT, or Rimba to fund anti-poaching patrols and habitat restoration (MYCAT, 2023).
+•	Volunteer for wildlife surveys, camera trap monitoring, or awareness campaigns (DWNP, 2022).
+•	Adopt a Tiger symbolically through conservation NGOs to support long-term protection (WWF, 2023).
+•	Farmers: Use guard animals (e.g., dogs), reinforced fencing, and early warning systems to protect livestock (Nyhus & Tilson, 2004).
+•	Report tiger sightings to authorities (e.g., Perak Wildlife Department) to prevent accidental conflicts (DWNP, 2021).
+•	Advocate for wildlife corridors to connect fragmented forests (Lynam et al., 2012).
+•	Report poaching via hotlines (e.g., MYCAT’s 1-800-88-5151) (TRAFFIC, 2023)
+•	Avoid tiger-derived products (traditional medicines, souvenirs) and educate others (IUCN, 2023).
+•	Support stricter laws by signing petitions for stronger wildlife protection policies (WWF, 2023).
+•	Choose deforestation-free products (look for RSPO-certified palm oil, FSC-certified wood) (Global Forest Watch, 2023).
+•	Reduce plastic use (pollution harms tiger prey and ecosystems) (WWF, 2022).
+•	Ecotourism: isit tiger-friendly reserves (e.g., Taman Negara, Royal Belum) to boost conservation funding (MYCAT, 2023).
+•	Share facts on social media using #SaveMalayanTigers.
+•	Educate children through school programs or zoo visits (DWNP, 2021).
+•	Demand corporate accountability by pressuring companies to adopt wildlife-friendly policies (TRAFFIC, 2023).
+
+
+
+Bagaimana Anda Boleh Membantu?
+• Menderma kepada organisasi terpercaya seperti WWF-Malaysia, MYCAT, atau Rimba untuk membiayai patroli anti-pemburuan haram dan pemulihan habitat (MYCAT, 2023).
+• Menjadi sukarelawan untuk kajian hidupan liar, pemantauan kamera jarak jauh, atau kempen kesedaran (DWNP, 2022).
+• Mengadopsi simbolik seekor harimau melalui NGO pemuliharaan untuk menyokong perlindungan jangka panjang (WWF, 2023).
+• Petani: Gunakan haiwan penjaga (seperti anjing), pagar kukuh, dan sistem amaran awal untuk melindungi ternakan (Nyhus & Tilson, 2004).
+• Laporkan pemerhatian harimau kepada pihak berkuasa (contohnya Jabatan Perlindungan Hidupan Liar Perak) untuk mengelakkan konflik tidak sengaja (DWNP, 2021).
+• Menyokong pembangunan koridor hidupan liar untuk menghubungkan hutan yang terpecah (Lynam et al., 2012).
+• Laporkan aktiviti pemburuan haram melalui talian hotline (contohnya MYCAT 1-800-88-5151) (TRAFFIC, 2023).
+• Elakkan produk berasaskan harimau (ubat tradisional, cenderamata) dan didik orang lain (IUCN, 2023).
+• Sokong undang-undang lebih ketat dengan menandatangani petisyen untuk polisi perlindungan hidupan liar yang lebih kuat (WWF, 2023).
+• Pilih produk tanpa pembalakan (cari minyak sawit bersijil RSPO, kayu bersijil FSC) (Global Forest Watch, 2023).
+• Kurangkan penggunaan plastik (pencemaran membahayakan mangsa harimau dan ekosistem) (WWF, 2022).
+• Ekopelancongan: Lawati kawasan perlindungan mesra harimau (contohnya Taman Negara, Royal Belum) untuk meningkatkan dana pemuliharaan (MYCAT, 2023).
+• Kongsi fakta di media sosial menggunakan #SaveMalayanTigers.
+• Didik kanak-kanak melalui program sekolah atau lawatan ke zoo (DWNP, 2021).
+• Tuntut akauntabiliti korporat dengan menekan syarikat untuk mengamalkan polisi mesra hidupan liar (TRAFFIC, 2023).
+
+
+
+Coexistence Strategies for Malayan Tigers:
+•	Livestock guardian dogs reduce tiger attacks on farms (Nyhus & Tilson, 2004)
+•	Compensation schemes for farmers who lose livestock to tigers (DWNP, 2021)
+•	Wildlife corridors link fragmented forests for safe tiger movement (Lynam et al., 2012)
+•	Eco-friendly infrastructure like wildlife crossings on highways (DWNP, 2022)
+•	SMS alerts notify villagers of nearby tiger sightings (*WWF-Malaysia, 2023*
+•	Predator-proof enclosures for livestock (Nyhus & Tilson, 2004)
+•	Ecotourism initiatives create jobs as an alternative to forest exploitation (MYCAT, 2023)
+•	Non-timber forest products (e.g., wild honey) reduce logging dependence (DWNP, 2021)
+•	School programs teach children tiger safety and conservation (DWNP, 2022)
+•	Community patrol units (e.g., PATROL Perak) monitor tigers and deter poachers (MYCAT, 2023)
+•	Strict enforcement of anti-poaching laws (TRAFFIC, 2023)
+•	Land-use planning that prioritises tiger habitats (*WWF-Malaysia, 2023*)
+
+Strategi Bersama untuk Harimau Malaya:
+• Anjing penjaga ternakan mengurangkan serangan harimau di ladang (Nyhus & Tilson, 2004).
+• Skim pampasan untuk petani yang kehilangan ternakan akibat harimau (DWNP, 2021)
+• Koridor hidupan liar menghubungkan hutan terpisah untuk pergerakan harimau yang selamat (Lynam et al., 2012)
+• Infrastruktur mesra alam seperti lintasan hidupan liar di lebuh raya (DWNP, 2022)
+• Amaran SMS memaklumkan penduduk tentang kehadiran harimau berhampiran (*WWF-Malaysia, 2023*)
+• Kandang ternakan kalis pemangsa (Nyhus & Tilson, 2004)
+• Inisiatif ekopelancongan mewujudkan pekerjaan alternatif selain eksploitasi hutan (MYCAT, 2023)
+• Produk hutan bukan kayu (contohnya madu liar) mengurangkan kebergantungan kepada pembalakan (DWNP, 2021)
+• Program sekolah mengajar kanak-kanak tentang keselamatan dan pemuliharaan harimau (DWNP, 2022)
+• Unit rondaan komuniti (contohnya PATROL Perak) memantau harimau dan menghalang pemburu haram (MYCAT, 2023)
+• Penguatkuasaan ketat undang-undang anti-pemburuan haram (TRAFFIC, 2023)
+• Perancangan guna tanah yang mengutamakan habitat harimau (*WWF-Malaysia, 2023*).
+
+
+
+
+
+
+
+Malayan Tiger: Conservation Success Stories-
+•	Kenny Wildlife Corridor: Reforestation efforts reconnected fragmented habitats between Taman Negara and Kenyir Lake, enabling safer tiger movement (MYCAT, 2022).
+•	Royal Belum State Park: Enhanced patrolling has reduced poaching by 40% since 2019 (DWNP, 2023).
+•	Community Patrol Units: Indigenous-led anti-poaching teams in Perak removed 1,200 snares in 2022 (MYCAT, 2023).
+•	Ecotourism Impact: Tiger-friendly tourism in Taman Negara generated RM5 million for local communities in 2023 (*WWF-Malaysia, 2024*).
+
+Fun Facts About Malayan Tigers
+•	Striped Uniqueness: No two Malayan tigers have the same stripe pattern—just like human fingerprints! (Luo et al., 2004).
+•	Mini but Mighty: They’re the smallest mainland tiger subspecies yet can leap over 5 meters in one jump (DWNP, 2021).
+•	Night Vision Pros: Their eyes glow in the dark due to a reflective layer (tapetum lucidum), helping them hunt at night (Estes et al., 2011).
+•	Chatty Cats: They communicate with roars, growls, and even "chuffing" sounds (a friendly greeting) (Nyhus & Tilson, 2004). 
+
+
+Reproduction & Family Life
+•	Slow Breeders: Females give birth to 2–4 cubs every 2–3 years after a 3–4 month pregnancy (WWF-Malaysia, 2023).
+
+•	Super Moms: Cubs stay with their mothers for 18–24 months to learn hunting (Kawanishi et al., 2010).
+
+•	Dad’s Role: Males don’t raise cubs but protect territory from rival tigers (Lynam et al., 2012). 
+
+
+Physiology & Adaptations
+•	Powerful Bite: Their jaw strength (1,000 psi) can crush bones (Estes et al., 2011).
+
+•	Swimming Stars: Unlike most cats, they love water and swim to cool off or hunt (DWNP, 2022).
+
+•	Camouflage Kings: Their orange-and-black stripes blend perfectly with sunlight and shadows in forests (IUCN, 2023).
+
+
+Behavior & Intelligence
+•	Territorial Markers: They spray urine and scratch trees to mark their turf (Nyhus & Tilson, 2004).
+
+•	Solo Travelers: Adults live alone, needing 50–150 km² of territory (MYCAT, 2023).
+
+•	Smart Hunters: They mimic prey calls (e.g., deer sounds) to lure them closer (Lynam et al., 2012).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Harimau Malaya: Kisah Kejayaan Pemuliharaan
+
+•	Koridor Hidupan Liar Kenyir: Usaha penanaman semula hutan telah menyambungkan semula habitat yang terpisah antara Taman Negara dan Tasik Kenyir, membolehkan pergerakan harimau yang lebih selamat (MYCAT, 2022).
+•	Taman Negeri Royal Belum: Peningkatan rondaan telah mengurangkan pemburuan haram sebanyak 40% sejak 2019 (DWNP, 2023).
+•	Unit Rondaan Komuniti: Pasukan anti-pemburuan haram yang diketuai masyarakat Orang Asli di Perak telah menyingkirkan 1,200 jerangkap pada tahun 2022 (MYCAT, 2023).
+•	Kesan Eko-pelancongan: Pelancongan mesra harimau di Taman Negara telah menjana RM5 juta untuk komuniti tempatan pada 2023 (*WWF-Malaysia, 2024*).
+
+
+Fakta Menarik Tentang Harimau Malaya
+
+• Belang Unik: Tiada dua harimau Malaya yang mempunyai corak belang yang sama - seperti cap jari manusia! (Luo et al., 2004).
+• Kecil tapi Gagah: Mereka adalah subspesies harimau tanah besar terkecil tetapi mampu melompat lebih 5 meter dalam satu lompatan (DWNP, 2021).
+• Pakar Penglihatan Malam: Mata mereka bersinar dalam gelap kerana lapisan pemantul (tapetum lucidum), membantu mereka memburu pada waktu malam (Estes et al., 2011).
+• Kucing yang Bercakap-cakap: Mereka berkomunikasi dengan raungan, geraman, dan bunyi "chuffing" (sapaan mesra) (Nyhus & Tilson, 2004).
+
+Pembiakan & Kehidupan Keluarga
+
+• Pembiak Lambat: Betina melahirkan 2-4 anak setiap 2-3 tahun selepas mengandung selama 3-4 bulan (WWF-Malaysia, 2023).
+• Ibu yang Hebat: Anak harimau tinggal dengan ibu mereka selama 18-24 bulan untuk belajar memburu (Kawanishi et al., 2010).
+• Peranan Bapa: Jantan tidak membesarkan anak tetapi melindungi wilayah dari harimau saingan (Lynam et al., 2012).
+
+
+Fisiologi & Adaptasi
+
+• Gigitan Kuat: Kekuatan rahang mereka (1,000 psi) mampu mematahkan tulang (Estes et al., 2011).
+• Perenang Handal: Tidak seperti kebanyakan kucing, mereka suka air dan berenang untuk menyejukkan badan atau memburu (DWNP, 2022).
+• Raja Penyamaran: Belang oren-hitam mereka menyamai sempurna dengan cahaya matahari dan bayang-bayang di hutan (IUCN, 2023).
+Tingkah Laku & Kecerdasan
+• Penanda Wilayah: Mereka menyembur air kencing dan mencakar pokok untuk menanda wilayah (Nyhus & Tilson, 2004).
+• Pengembara Solo: Harimau dewasa hidup bersendirian, memerlukan wilayah seluas 50-150 km² (MYCAT, 2023).
+• Pemburu Bijak: Mereka meniru panggilan mangsa (contohnya bunyi rusa) untuk memikat mangsa mendekat (Lynam et al., 2012).
+
+
+
+
+
+
+COUNTRY	2020 ESTIMATE	2023 ESTIMATE	TREND	KEY THREATS	SOURCE
+India	2,967		3,167		↑ 6.7%	Habitat loss, human conflict	NTCA (2023)
+Malaysia		<150	<150	↔ Stable	Poaching, deforestation	DWNP (2023)
+Indonesia	400	350	↓ 12.5%	Palm oil deforestation	IUCN (2023)
+Russia	540	600	↑ 11%	Climate change, logging	WWF-Russia (2023)
+Bangladesh	114	106	↓ 7%	Sea-level rise (Sundarbans)	Khan (2022)
+					
+					
+
+
+
+STATUS POPULASI HARIMAU GLOBAL (2020-2023)
+NEGARA	ANGGRAN 2020	ANGGRAN 2023	TREND	ANCAMAN UTAMA	SUMBER
+India	2,967	3,167	↑ 6.7%	Kehilangan habitat, konflik manusia	NTCA (2023)
+Malaysia	<150	<150	↔ Stabil	Pemburuan haram, pembalakan	DWNP (2023)
+Indonesia	400	350	↓ 12.5%	Pembukaan hutan untuk kelapa sawit	IUCN (2023)
+Rusia	540	600	↑ 11%	Perubahan iklim, pembalakan	WWF-Russia (2023)
+Bangladesh	114	106	↓ 7%	Kenaikan paras laut (Sundarbans)	Khan (2022)
+
+
+Yearly Trends (2010–2023)
+•	India: Increased from 1,411 (2010) to 3,167 (2023) due to strict anti-poaching laws (NTCA, 2023).
+
+•	Malaysia: Declined from 500 (2010) to <150 (2023) due to habitat fragmentation (DWNP, 2023).
+
+•	Global: ~3,900 wild tigers (2023), up from 3,200 (2010) but still below historic 100,000 (WWF, 2023).
+
+Key Comparisons
+•	Highest Density: India (75% of global population).
+
+•	Fastest Decline: Malaysia & Indonesia (due to palm oil expansion).
+
+•	Recovery Success: Russia (Siberian tigers rebounded via anti-poaching patrols). 
+
+
+
+
+
+
+TREND TAHUNAN (2010–2023)
+• India: Meningkat dari 1,411 (2010) kepada 3,167 (2023) akibat undang-undang anti-pemburuan haram yang ketat (NTCA, 2023).
+• Malaysia: Menurun dari 500 (2010) kepada kurang daripada 150 (2023) disebabkan fragmentasi habitat (DWNP, 2023).
+• Global: Kira-kira 3,900 harimau liar (2023), meningkat dari 3,200 (2010) tetapi masih di bawah paras sejarah 100,000 (WWF, 2023).
+
+PERBANDINGAN UTAMA
+• Kepadatan Tertinggi: India (75% populasi global).
+• Penurunan Tercepat: Malaysia & Indonesia (akibat perluasan kelapa sawit).
+• Kejayaan Pemulihan: Rusia (harimau Siberia pulih melalui rondaan anti-pemburuan haram).

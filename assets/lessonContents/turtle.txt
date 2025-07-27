@@ -1,13 +1,395 @@
-References:
+Meet the Green Sea Turtle (Chelonia mydas):
+The Green Sea Turtle is a gentle giant of the ocean, named not for its shell but for the green fat beneath it, thanks to its seagrass diet! Found in warm coastal waters and coral reefs, this turtle can grow up to 1 meter and weigh as much as 160 kg.
 
-Bjorndal, K. A. (1997). Foraging ecology and nutrition of sea turtles. In P. L. Lutz & J. A. Musick (Eds.), The biology of sea turtles (pp. 199–232). CRC Press.
-Bjorndal, K. A., Bolten, A. B., & Chaloupka, M. Y. (2003). Survival probability estimates for immature green turtles (Chelonia mydas) in the Bahamas. Marine Ecology Progress Series, 252, 273–281. https://doi.org/10.3354/meps252273
-Great Barrier Reef Marine Park Authority. (2023). Raine Island Recovery Project. https://www.gbrmpa.gov.au
-IUCN. (2023). Green turtle (Chelonia mydas). The IUCN Red List of Threatened Species. https://www.iucnredlist.org/species/4615/11037468
-Lutz, P. L., & Musick, J. A. (Eds.). (1997). The biology of sea turtles. CRC Press.
-NOAA. (2023). Green sea turtle (Chelonia mydas). National Oceanic and Atmospheric Administration. https://www.fisheries.noaa.gov/species/green-turtle
-Spotila, J. R. (2004). Sea turtles: A complete guide to their biology, behavior, and conservation. Johns Hopkins University Press.
-WWF. (2023). Marine turtles. World Wide Fund for Nature. https://www.worldwildlife.org/species/marine-turtle
-WWF Indonesia. (2023). Turtle conservation in Bali. https://www.wwf.or.id
-WWF Malaysia. (2023). Sea turtle conservation programs. https://www.wwf.org.my
-WWF Philippines. (2023). Marine turtle protection. https://www.wwf.org.ph
+These fantastic creatures play a crucial role in maintaining the ocean's health. By munching on seagrass and algae, they prevent overgrowth and allow marine ecosystems to thrive. Their long migrations—from feeding spots to nesting beaches—also help spread nutrients across the seas.
+
+Green Sea Turtles live for 60–70 years, but they face many threats like habitat loss, plastic pollution, fishing nets, and climate change. Despite being endangered, conservation efforts around the world—from Malaysia to Costa Rica—are giving them a fighting chance.
+
+By protecting beaches, reducing plastic use, and supporting eco-friendly tourism, we can help save this ancient mariner—and the vibrant world it supports. 
+
+
+Kenali Penyu Agar (Chelonia mydas):
+Penyu Agar ialah gergasi lembut lautan, dinamakan bukan kerana cengkerangnya tetapi kerana lemak hijau di bawahnya—hasil daripada diet rumpai lautnya! Ia ditemui di perairan pantai yang hangat dan terumbu karang, dan boleh membesar sehingga 1 meter panjang serta mencapai berat sehingga 160 kg.
+Makhluk menakjubkan ini memainkan peranan penting dalam mengekalkan kesihatan lautan. Dengan memakan rumpai laut dan alga, mereka mengelakkan pertumbuhan berlebihan dan membolehkan ekosistem marin berkembang maju. Migrasi mereka yang jauh—dari kawasan makan ke pantai penetasan—juga membantu menyebarkan nutrien ke seluruh lautan.
+Penyu Agar hidup selama 60–70 tahun, tetapi menghadapi pelbagai ancaman seperti kehilangan habitat, pencemaran plastik, jaring perikanan, dan perubahan iklim. Walaupun berstatus terancam, usaha pemuliharaan di seluruh dunia—dari Malaysia hingga Costa Rica—memberikan mereka peluang untuk terus hidup.
+Dengan melindungi pantai, mengurangkan penggunaan plastik, dan menyokong pelancongan mesra alam, kita dapat membantu menyelamatkan pelayar purba ini—dan dunia laut yang penuh warna yang disokongnya.
+
+
+
+Green Sea Turtle (Chelonia mydas) Basic Information:
+
+Category	Details
+Common Name	Green Sea Turtle
+Scientific Name	Chelonia mydas
+Habitat	Found in warm oceans, coastal areas, and coral reefs.
+Physical Features	It has a smooth, greenish shell; adults weigh up to 160 kg and grow ~1 meter.
+Diet	Eat mainly seagrasses and algae.
+Reproduction	Lays eggs on sandy beaches; each clutch has 80–120 eggs.
+Lifespan	Lives about 60–70 years.
+Conservation Status	Endangered due to fishing, pollution, and habitat loss.
+
+
+
+
+
+
+
+Maklumat Asas Penyu Agar (Chelonia mydas):
+
+Kategori	Butiran
+Nama Biasa	Penyu Agar
+Nama Saintifik	Chelonia mydas
+Habitat	Ditemui di lautan tropika, kawasan pantai, dan terumbu karang.
+Ciri Fizikal	Mempunyai cengkerang licin berwarna kehijauan; dewasa seberat hingga 160 kg dan panjang sekitar 1 meter.
+Diet	Memakan terutamanya rumpai laut dan alga.
+Pembiakan	Bertelur di pantai berpasir; setiap sarang mengandungi 80–120 biji telur.
+Jangka Hayat	Hidup selama kira-kira 60–70 tahun.
+Status Pemuliharaan	Terancam akibat penangkapan ikan, pencemaran, dan kehilangan habitat.
+
+
+Taxonomic Classification of Green Sea Turtle (Chelonia mydas):
+
+Rank	Classification
+Kingdom	Animalia
+ Phylum	Chordata
+Class	Reptilia
+Order	Testudines
+Family	Cheloniidae
+Genus	Chelonia
+Species	Chelonia Mydas
+
+Klasifikasi Taksonomi Penyu Agar (Chelonia mydas):
+Peringkat	Klasifikasi
+Kingdom	Animalia
+Filum	Chordata
+Kelas	Reptilia
+Order	Testudines
+Famili	Cheloniidae
+Genus	Chelonia
+Spesies	Chelonia mydas
+
+
+
+
+
+
+Role of Chelonia mydas (Green Sea Turtle) in Biodiversity:
+
+Aspect	Details
+Seagrass Maintenance	Grazing helps maintain healthy seagrass meadows, promoting growth and preventing overgrowth.
+Coral Reef Health	Controls algae on coral reefs, allowing corals to thrive and maintain reef ecosystems.
+Nutrient Cycling	Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems.
+Food Web Dynamics	Eggs and hatchlings are a food source for predators like crabs, birds, and fish.
+Biodiversity Support	Seagrass meadows and coral reefs, supported by turtles, provide habitats for diverse marine life.
+Indicator Species	Acts as a biological indicator of ocean health due to its sensitivity to habitat changes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Peranan Chelonia mydas (Penyu Agar) dalam Kepelbagaian Biologi:
+Aspek	Butiran
+Penyelenggaraan Rumpai Laut	Pemakanan membantu mengekalkan padang rumpai laut yang sihat, menggalakkan pertumbuhan dan mencegah pertumbuhan berlebihan.
+Kesihatan Terumbu Karang	Mengawal alga di terumbu karang, membolehkan karang hidup subur dan mengekalkan ekosistem terumbu.
+Kitaran Nutrien	Pergerakan antara pantai penetasan dan kawasan makan mengedarkan nutrien, memperkayakan ekosistem.
+Dinamik Rangkaian Makanan	Telur dan anak penyu menjadi sumber makanan kepada pemangsa seperti ketam, burung, dan ikan.
+Sokongan Kepelbagaian Biologi	Padang rumpai laut dan terumbu karang yang disokong oleh penyu menyediakan habitat untuk pelbagai hidupan marin.
+Spesies Penunjuk	Bertindak sebagai penunjuk biologi terhadap kesihatan laut kerana kepekaannya terhadap perubahan habitat.
+
+
+Why Chelonia mydas (Green Sea Turtle) Matters in Biodiversity:
+
+•	Grazing by Chelonia mydas keeps seagrass meadows healthy, preventing overgrowth and fostering biodiversity. (Bjorndal, 1997)
+
+•	Controls algae on coral reefs, promoting a balanced environment for corals and marine life. (Lutz & Musick, 1997)
+
+•	Transports nutrients between nesting beaches and feeding grounds, enriching ecosystems. (NOAA, 2023)
+
+•	Eggs and hatchlings are a vital food source for predators such as birds, crabs, and fish. (Spotila, 2004)
+
+•	Maintains seagrass beds that serve as habitats for numerous marine organisms. (IUCN, 2023)
+
+•	Acts as an indicator species, reflecting the health of marine ecosystems. (NOAA, 2023)
+
+
+
+Threats to Chelonia Mydas (Green Sea Turtle):
+
+Habitat Loss: Coastal development and tourism destroy nesting and feeding habitats. (IUCN, 2023)
+
+Bycatch: Accidental capture in fishing gear such as nets and longlines results in injuries or death. (NOAA, 2023)
+
+Pollution: Plastic waste ingestion and oil spills harm turtles directly or degrade their habitats. (Lutz & Musick, 1997)
+
+Climate Change: Rising temperatures affect sex ratios of hatchlings and cause habitat changes due to rising sea levels. (Spotila, 2004)
+
+Illegal Trade: Poaching for meat, eggs, and shells contributes to population decline. (WWF, 2023)
+
+Diseases: Fibropapillomatosis, a disease associated with environmental degradation, affects turtle health. (Bjorndal et al., 2003)
+
+Boat Strikes: Collisions with boats cause severe injuries or fatalities, especially in coastal regions. (NOAA, 2023).
+
+
+How can You Help to save the Green Sea Turtle?
+
+Protect Nesting Beaches: Establish protected areas to prevent human disturbances during nesting. (IUCN, 2023)
+
+Reduce Bycatch: Use turtle excluder devices (TEDs) in fishing gear to minimize accidental captures. (NOAA, 2023)
+
+Combat Pollution: Reduce plastic use, promote recycling, and conduct ocean cleanup drives to prevent pollution. (WWF, 2023)
+
+Mitigate Climate Change: Support policies that reduce carbon emissions and protect coastal habitats from sea level rise. (Spotila, 2004)
+
+Ban Illegal Trade: Enforce laws against poaching and the sale of turtle products. (Lutz & Musick, 1997)
+
+Raise Awareness: Educate local communities and tourists about the importance of turtles in ecosystems. (WWF, 2023)
+
+Support Conservation Programs: Fund and volunteer for initiatives that rescue injured turtles and monitor populations. (NOAA, 2023).
+
+Mengapa Chelonia mydas (Penyu Agar) Penting dalam Kepelbagaian Biologi:
+•	Pemakanan oleh Chelonia mydas membantu mengekalkan padang rumpai laut yang sihat, mencegah pertumbuhan berlebihan dan menyokong kepelbagaian biologi. (Bjorndal, 1997)
+•	Mengawal pertumbuhan alga di terumbu karang, mewujudkan persekitaran seimbang untuk karang dan hidupan marin. (Lutz & Musick, 1997)
+•	Mengangkut nutrien antara pantai penetasan dan kawasan makan, memperkayakan ekosistem. (NOAA, 2023)
+•	Telur dan anak penyu menjadi sumber makanan penting kepada pemangsa seperti burung, ketam, dan ikan. (Spotila, 2004)
+•	Mengekalkan padang rumpai laut yang menjadi habitat bagi pelbagai organisma laut. (IUCN, 2023)
+•	Bertindak sebagai spesies penunjuk, mencerminkan kesihatan ekosistem marin. (NOAA, 2023)
+________________________________________
+Ancaman terhadap Chelonia mydas (Penyu Agar):
+•	Kehilangan Habitat: Pembangunan pantai dan pelancongan memusnahkan habitat penetasan dan kawasan makan. (IUCN, 2023)
+•	Tangkapan Sampingan (Bycatch): Tertangkap secara tidak sengaja dalam peralatan perikanan seperti pukat dan tali panjang boleh menyebabkan kecederaan atau kematian. (NOAA, 2023)
+•	Pencemaran: Pengambilan sampah plastik dan tumpahan minyak merosakkan penyu secara langsung atau merosakkan habitatnya. (Lutz & Musick, 1997)
+•	Perubahan Iklim: Peningkatan suhu mempengaruhi nisbah jantina anak penyu dan mengubah habitat akibat kenaikan aras laut. (Spotila, 2004)
+•	Perdagangan Haram: Pemburuan untuk daging, telur dan cengkerang menyumbang kepada kemerosotan populasi. (WWF, 2023)
+•	Penyakit: Fibropapillomatosis, penyakit yang dikaitkan dengan kemerosotan alam sekitar, menjejaskan kesihatan penyu. (Bjorndal et al., 2003)
+•	Pelanggaran Bot: Perlanggaran dengan bot menyebabkan kecederaan serius atau kematian, terutamanya di kawasan pantai. (NOAA, 2023)
+________________________________________
+Bagaimana Anda Boleh Membantu Menyelamatkan Penyu Agar:
+•	Lindungi Pantai Penetasan: Wujudkan kawasan perlindungan untuk mengelakkan gangguan manusia semasa musim bertelur. (IUCN, 2023)
+•	Kurangkan Tangkapan Sampingan: Gunakan peralatan yang mesra penyu seperti Turtle Excluder Devices (TEDs) dalam aktiviti perikanan. (NOAA, 2023)
+•	Banteras Pencemaran: Kurangkan penggunaan plastik, galakkan kitar semula dan anjurkan aktiviti pembersihan laut. (WWF, 2023)
+•	Atasi Perubahan Iklim: Sokong dasar pengurangan pelepasan karbon dan perlindungan habitat pantai daripada kenaikan paras laut. (Spotila, 2004)
+•	Haramkan Perdagangan Ikan Haram: Tegakkan undang-undang terhadap pemburuan haram dan penjualan produk penyu. (Lutz & Musick, 1997)
+•	Sebarkan Kesedaran: Didik komuniti setempat dan pelancong mengenai kepentingan penyu dalam ekosistem. (WWF, 2023)
+•	Sokong Program Pemuliharaan: Sumbangkan dana atau jadi sukarelawan untuk inisiatif menyelamatkan penyu cedera dan pemantauan populasi. (NOAA, 2023)
+
+
+
+
+
+Conservation Strategies for the Green Sea Turtle:
+
+Marine Protected Areas (MPAs): Establish and enforce MPAs to safeguard critical habitats such as nesting and feeding grounds. (IUCN, 2023).
+
+Sustainable Fishing Practices: Implement turtle excluder devices (TEDs) and enforce bycatch reduction measures. (NOAA, 2023).
+
+Habitat Restoration: Rehabilitate degraded nesting beaches and seagrass meadows to support turtle populations. (WWF, 2023).
+
+Legislation and Enforcement: Strengthen laws against poaching, illegal trade, and habitat destruction. (Lutz & Musick, 1997).
+
+Climate Adaptation Measures: Implement strategies to manage rising temperatures and protect coastal nesting sites from sea level rise. (Spotila, 2004).
+
+Community Engagement: Involve local communities in conservation efforts through education and eco-tourism initiatives. (WWF, 2023)
+
+Research and Monitoring: Conduct studies to track turtle populations, migration patterns, and health for data-driven strategies. (NOAA, 2023).
+
+
+Coexistence Strategies for the Malayan Tapir in Other Parts of the World:
+
+Eco-Tourism Programs: Promote turtle-friendly tourism to generate income for conservation while minimizing human disturbance. (WWF Malaysia, 2023)
+
+Community-Led Conservation: Empower local communities in Malaysia and globally to monitor nesting sites and reduce poaching. (IUCN, 2023)
+
+Fishing Gear Modifications: Encourage the use of turtle excluder devices (TEDs) in fisheries to reduce bycatch in Malaysia and beyond. (NOAA, 2023)
+
+Public Awareness Campaigns: Educate citizens and tourists about responsible behaviors to prevent habitat disruption. (WWF, 2023)
+
+Integrated Coastal Management: Collaborate with industries, governments, and conservation groups to balance development with habitat preservation. (Spotila, 2004)
+
+Climate Adaptation Policies: Develop local and global strategies to protect nesting beaches from rising sea levels. (IUCN, 2023).
+
+Legal Protection: Enforce international treaties, such as CITES, to combat the illegal trade of turtle products worldwide. (Lutz & Musick, 1997).
+
+
+Conservation Success Stories of the Malayan Tapir in Malaysia & Other Parts of the World:
+
+Redang Island, Malaysia: Conservation programs have increased nesting activity through protected beaches and eco-tourism initiatives. (WWF Malaysia, 2023)
+
+Hawaii, USA: The Green Sea Turtle population rebounded after the 1978 listing under the U.S. Endangered Species Act and strict protections. (NOAA, 2023)
+
+Tortuguero, Costa Rica: Community-driven conservation programs have led to a steady increase in nesting turtles. (Bjorndal et al., 2003)
+
+Australia: Raine Island Recovery Project restored nesting habitats, significantly improving hatchling success rates. (Great Barrier Reef Marine Park Authority, 2023)
+
+Bali, Indonesia: Community involvement and legal action against poaching have reduced the trade in turtle products. (WWF Indonesia, 2023)
+
+Oman: Protected areas such as Ras Al Jinz have become sanctuaries for nesting turtles, supported by eco-tourism. (IUCN, 2023)
+
+Philippines: Marine sanctuaries and local awareness campaigns have led to measurable increases in nesting and a reduction in poaching. (WWF Philippines, 2023). 
+
+
+Reproduction & Family Life of the Green Sea Turtle:
+
+Mating Behavior: Green Sea Turtles mate in shallow coastal waters near nesting beaches, typically during the breeding season. (Spotila, 2004).
+
+Nesting: Females return to the same beach where they were born (natal homing) to lay eggs, often at night. (IUCN, 2023).
+
+Clutch Size: Each female lays 80–120 eggs per nest, and nests multiple times (up to 7) during a single season. (Lutz & Musick, 1997).
+
+Incubation Period: Eggs incubate for ~60 days; the sand temperature influences the sex of the hatchlings (warmer sand = more females). (NOAA, 2023).
+
+Hatchling Emergence: Hatchlings emerge at night to avoid predators and use moonlight to navigate toward the ocean. (WWF, 2023).
+
+Juvenile Stage: Juveniles drift in ocean currents for several years, feeding on plankton before moving to coastal habitats. (Bjorndal et al., 2003).
+
+Longevity and Maturity: Green Sea Turtles reach sexual maturity after 20–50 years and can live for 60–70 years. (Spotila, 2004).
+
+
+
+
+Strategi Pemuliharaan untuk Penyu Agar:
+•	Kawasan Perlindungan Marin (MPA): Menubuhkan dan menguatkuasakan MPA untuk melindungi habitat penting seperti kawasan penetasan dan pemakanan. (IUCN, 2023)
+•	Amalan Perikanan Lestari: Menggunakan alat penghalang penyu (Turtle Excluder Devices - TEDs) dan menguatkuasakan langkah pengurangan tangkapan sampingan. (NOAA, 2023)
+•	Pemulihan Habitat: Memulihkan pantai penetasan dan padang rumpai laut yang rosak untuk menyokong populasi penyu. (WWF, 2023)
+•	Perundangan dan Penguatkuasaan: Memperkuat undang-undang terhadap pemburuan haram, perdagangan haram, dan pemusnahan habitat. (Lutz & Musick, 1997)
+•	Langkah Penyesuaian Iklim: Melaksanakan strategi untuk mengurus suhu yang meningkat dan melindungi tapak penetasan pantai daripada kenaikan paras laut. (Spotila, 2004)
+•	Penglibatan Komuniti: Melibatkan komuniti tempatan dalam usaha pemuliharaan melalui pendidikan dan inisiatif eko-pelancongan. (WWF, 2023)
+•	Penyelidikan dan Pemantauan: Menjalankan kajian untuk menjejak populasi penyu, corak migrasi, dan kesihatan untuk strategi berdasarkan data. (NOAA, 2023)
+________________________________________
+Strategi Perkongsian Hidup untuk Penyu Agar di Malaysia dan Negara Lain:
+•	Program Eko-Pelancongan: Menggalakkan pelancongan mesra penyu untuk menjana pendapatan bagi pemuliharaan sambil meminimumkan gangguan manusia. (WWF Malaysia, 2023)
+•	Pemuliharaan Dipacu Komuniti: Memberi kuasa kepada komuniti tempatan di Malaysia dan seluruh dunia untuk memantau tapak penetasan dan mengurangkan pemburuan haram. (IUCN, 2023)
+•	Pengubahsuaian Peralatan Perikanan: Menggalakkan penggunaan TEDs dalam sektor perikanan bagi mengurangkan tangkapan sampingan di Malaysia dan kawasan lain. (NOAA, 2023)
+•	Kempen Kesedaran Awam: Mendidik rakyat dan pelancong mengenai tingkah laku bertanggungjawab untuk mengelakkan gangguan habitat. (WWF, 2023)
+•	Pengurusan Pantai Bersepadu: Bekerjasama dengan industri, kerajaan, dan kumpulan pemuliharaan untuk mengimbangi pembangunan dan pemeliharaan habitat. (Spotila, 2004)
+•	Dasar Penyesuaian Iklim: Membangunkan strategi tempatan dan global untuk melindungi pantai penetasan daripada kenaikan paras laut. (IUCN, 2023)
+•	Perlindungan Perundangan: Menguatkuasakan perjanjian antarabangsa seperti CITES untuk membanteras perdagangan haram produk penyu di seluruh dunia. (Lutz & Musick, 1997)
+________________________________________
+Kisah Kejayaan Pemuliharaan Penyu Agar di Malaysia dan Negara Lain:
+•	Pulau Redang, Malaysia: Program pemuliharaan telah meningkatkan aktiviti penetasan melalui pantai yang dilindungi dan inisiatif eko-pelancongan. (WWF Malaysia, 2023)
+•	Hawaii, Amerika Syarikat: Populasi penyu meningkat semula selepas disenaraikan sebagai spesies terancam pada tahun 1978 dan diberikan perlindungan ketat. (NOAA, 2023)
+•	Tortuguero, Costa Rica: Program pemuliharaan yang dipacu oleh komuniti membawa kepada peningkatan berterusan penyu yang mendarat untuk bertelur. (Bjorndal et al., 2003)
+•	Australia: Projek Pemulihan Pulau Raine telah memulihkan habitat penetasan, meningkatkan kadar kejayaan penetasan dengan ketara. (Great Barrier Reef Marine Park Authority, 2023)
+•	Bali, Indonesia: Penglibatan komuniti dan tindakan undang-undang terhadap pemburuan haram telah mengurangkan perdagangan produk penyu. (WWF Indonesia, 2023)
+•	Oman: Kawasan perlindungan seperti Ras Al Jinz menjadi tempat perlindungan penyu penetasan, disokong oleh eko-pelancongan. (IUCN, 2023)
+•	Filipina: Kawasan perlindungan marin dan kempen kesedaran tempatan telah meningkatkan kadar penetasan dan mengurangkan pemburuan. (WWF Philippines, 2023)
+________________________________________
+Pembiakan & Kehidupan Keluarga Penyu Agar:
+•	Kelakuan Mengawan: Penyu Agar mengawan di perairan pantai cetek berhampiran pantai penetasan, biasanya semasa musim pembiakan. (Spotila, 2004)
+•	Penetasan Telur: Penyu betina kembali ke pantai tempat mereka dilahirkan (natal homing) untuk bertelur, selalunya pada waktu malam. (IUCN, 2023)
+•	Bilangan Telur: Setiap betina meletakkan 80–120 biji telur setiap sarang dan boleh bersarang sehingga 7 kali dalam satu musim. (Lutz & Musick, 1997)
+•	Tempoh Inkubasi: Telur mengambil masa ~60 hari untuk menetas; suhu pasir menentukan jantina anak penyu (suhu panas = lebih banyak betina). (NOAA, 2023)
+•	Kemunculan Anak Penyu: Anak penyu muncul pada waktu malam untuk mengelak pemangsa dan menggunakan cahaya bulan untuk menuju ke laut. (WWF, 2023)
+•	Peringkat Juvenil: Anak penyu hanyut dalam arus laut selama beberapa tahun, memakan plankton sebelum berpindah ke habitat pantai. (Bjorndal et al., 2003)
+•	Tempoh Matang & Hayat: Penyu Agar mencapai kematangan seksual antara umur 20–50 tahun dan boleh hidup selama 60–70 tahun. (Spotila, 2004)
+
+
+
+Physiology & Adaptations of the Green Sea Turtle:
+
+Streamlined Shell: The smooth, heart-shaped carapace reduces water resistance, aiding efficient swimming. (Lutz & Musick, 1997)
+
+Powerful Flippers: Forelimbs are adapted as flippers for long-distance swimming in oceans. (NOAA, 2023)
+
+Lungs for Diving: Large, efficient lungs allow them to hold their breath for hours while resting underwater. (Spotila, 2004)
+
+Salt Glands: Specialized glands near the eyes excrete excess salt from seawater, enabling life in saline environments. (Bjorndal, 1997)
+
+Coloration: The greenish hue of their fat, from which they get their name, helps in camouflage among seagrass beds. (WWF, 2023)
+
+Temperature Regulation: Ectothermic physiology relies on external temperatures, driving behaviors like basking in the sun. (IUCN, 2023)
+
+Magnetic Navigation: Use Earth's magnetic fields to navigate thousands of kilometers between feeding and nesting sites. (NOAA, 2023).
+
+
+
+
+
+
+
+
+Behavior & Intelligence of the Green Sea Turtle:
+
+Migratory Behavior: Green Sea Turtles undertake long migrations between feeding grounds and nesting beaches, sometimes crossing entire oceans. (Spotila, 2004)
+
+Natal Homing: They exhibit remarkable memory and precision, returning to the exact beach where they were born to lay eggs. (IUCN, 2023)
+
+Social Behavior: Typically solitary, but congregated in large numbers at nesting and feeding sites. (NOAA, 2023)
+
+Feeding Habits: Demonstrate selective feeding, preferring seagrasses and algae, which they crop carefully without uprooting. (Bjorndal, 1997)
+
+Avoidance of Predators: Hatchlings use coordinated emergence and instinctive navigation to evade predators and reach the sea. (WWF, 2023)
+
+Cognitive Abilities: Possess spatial awareness and navigation skills, relying on Earth’s magnetic fields and visual cues. (Lutz & Musick, 1997)
+
+Resting Behavior: Rest in underwater caves, crevices, or floating on the surface, showing adaptability to different environments. (NOAA, 2023).
+
+
+Fisiologi & Penyesuaian Penyu Agar:
+•	Cengkerang Berbentuk Aerodinamik: Karapas yang licin dan berbentuk hati mengurangkan rintangan air, membantu renangan yang cekap. (Lutz & Musick, 1997)
+•	Sirip yang Kuat: Anggota hadapan berubah menjadi sirip yang sesuai untuk renangan jarak jauh di lautan. (NOAA, 2023)
+•	Paru-paru untuk Menyelam: Paru-paru yang besar dan cekap membolehkan penyu menahan nafas selama berjam-jam ketika berehat di bawah air. (Spotila, 2004)
+•	Kelenjar Garam: Kelenjar khas berhampiran mata menyingkirkan garam berlebihan daripada air laut, membolehkan kehidupan dalam persekitaran masin. (Bjorndal, 1997)
+•	Pewarnaan Tubuh: Warna kehijauan pada lemaknya—asal-usul nama “Penyu Agar”—membantu penyamaran di padang rumpai laut. (WWF, 2023)
+•	Pengawalan Suhu: Fisiologi ektotermik yang bergantung kepada suhu luaran, menyebabkan tingkah laku seperti berjemur di bawah matahari. (IUCN, 2023)
+•	Navigasi Magnetik: Menggunakan medan magnet Bumi untuk mengemudi ribuan kilometer antara tempat makan dan pantai penetasan. (NOAA, 2023)
+________________________________________
+Tingkah Laku & Kecerdasan Penyu Agar:
+•	Tingkah Laku Migrasi: Penyu Agar melakukan migrasi jauh antara kawasan makan dan pantai penetasan, kadangkala melintasi seluruh lautan. (Spotila, 2004)
+•	Homing Natal: Menunjukkan ingatan dan ketepatan yang luar biasa, kembali ke pantai tempat mereka dilahirkan untuk bertelur. (IUCN, 2023)
+•	Tingkah Laku Sosial: Biasanya bersifat menyendiri, tetapi berkumpul dalam jumlah besar di kawasan makan dan penetasan. (NOAA, 2023)
+•	Tabiat Pemakanan: Menunjukkan pemakanan selektif, lebih suka makan rumpai laut dan alga dengan cara memotong secara berhati-hati tanpa mencabut akarnya. (Bjorndal, 1997)
+•	Mengelakkan Pemangsa: Anak penyu menggunakan kemunculan secara serentak dan navigasi naluri untuk mengelak pemangsa dan menuju ke laut. (WWF, 2023)
+•	Keupayaan Kognitif: Mempunyai kesedaran ruang dan kebolehan navigasi, bergantung pada medan magnet Bumi dan isyarat visual. (Lutz & Musick, 1997)
+•	Tingkah Laku Berehat: Berehat di gua bawah air, celahan batu, atau terapung di permukaan laut, menunjukkan keupayaan menyesuaikan diri dengan pelbagai persekitaran. (NOAA, 2023)
+
+
+
+
+
+
+
+
+
+
+
+
+Green Sea Turtle Population Trend (2019–2024):
+
+Year	Malaysia Nesting Females (Estimate)	Global Nesting Females (Estimate)	Trend Summary
+2019	3,900	450,000	Baseline: steady nesting activity globally
+2020	4,500	460,000	Slight increase amid pandemic restrictions
+2021	5,200	475,000	Continued recovery and nesting success
+2022	6,700	490,000	Positive trend from conservation efforts
+2023	10,100	510,000	Significant jump in Malaysia; global growth
+2024	9,200 (provisional)	520,000	Slight dip in Malaysia; global increase steady
+2025	Data pending	530,000	Awaiting Malaysia data; global positive trend.
+
+
+
+
+
+
+
+
+
+
+
+
+Trend Populasi Penyu Agar (2019–2024):
+
+Tahun	Anggaran Penyu Betina Bertelur di Malaysia	Anggaran Penyu Betina Bertelur Global	Ringkasan Trend
+2019	3,900	450,000	Asas: aktiviti penetasan stabil di peringkat global
+2020	4,500	460,000	Peningkatan kecil semasa sekatan pandemik
+2021	5,200	475,000	Pemulihan berterusan dan kejayaan penetasan
+2022	6,700	490,000	Trend positif hasil usaha pemuliharaan
+2023	10,100	510,000	Lonjakan ketara di Malaysia; pertumbuhan global
+2024	9,200 (sementara)	520,000	Penurunan sedikit di Malaysia; peningkatan global berterusan
+2025	Data belum tersedia	530,000	Menunggu data Malaysia; trend global kekal positif

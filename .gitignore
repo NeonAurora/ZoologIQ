@@ -38,6 +38,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+claude.md
+
 app-example
 
 
