@@ -3,12 +3,18 @@ import { View, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCertificate } from '@/contexts/CertificateContext';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
-import { getPreAssessmentStatus, resetAndPopulateDatabase, getDatabaseStatus } from '@/services/supabase';
+import { 
+  getPreAssessmentStatus, 
+  resetAndPopulateDatabase, 
+  getDatabaseStatus 
+} from '@/services/supabase';
 
 export function DrawerContent(props) {
   const { user, supabaseData, signOut, loading } = useAuth();
+  const { certificateEligible, loading: loadingCertificateStatus, checkCertificateEligibility, initialized } = useCertificate();
   const router = useRouter();
   const [preAssessmentStatus, setPreAssessmentStatus] = useState(null);
   const [isResettingDatabase, setIsResettingDatabase] = useState(false);
@@ -18,6 +24,8 @@ export function DrawerContent(props) {
   
   // Dynamic styles based on theme
   const styles = createStyles(isDark);
+
+  // ... existing handler functions (handleSignOut, navigateTo, etc.) ...
 
   const handleSignOut = async () => {
     try {
@@ -69,6 +77,18 @@ export function DrawerContent(props) {
       navigateTo(route, title);
     }
   };
+
+  const handleCertificateDownload = () => {
+    if (certificateEligible) {
+      navigateTo('/certificate', 'Certificate');
+    } else {
+      Alert.alert(
+        'Certificate Not Available',
+        'Complete both pre-assessment and post-assessment for all three topics (Malayan Tiger, Malayan Tapir, and Green Sea Turtle) to unlock your certificate.',
+        [{ text: 'OK', style: 'default' }]
+      );
+    }
+  };
   
   const getQuizIdForTopic = (topic) => {
     const quizIds = {
@@ -79,10 +99,11 @@ export function DrawerContent(props) {
     return quizIds[topic];
   };
 
+  // ... existing alert functions (showAlert, showConfirm, showInfo, handleDatabaseReset, performDatabaseReset) ...
+
   // Cross-platform alert function
   const showAlert = (title, message, buttons) => {
     if (Platform.OS === 'web') {
-      // Web browser alert system
       const confirmed = window.confirm(`${title}\n\n${message}`);
       if (confirmed && buttons) {
         const confirmButton = buttons.find(btn => btn.style !== 'cancel');
@@ -91,7 +112,6 @@ export function DrawerContent(props) {
         }
       }
     } else {
-      // React Native Alert system (iOS/Android)
       Alert.alert(title, message, buttons);
     }
   };
@@ -125,7 +145,6 @@ export function DrawerContent(props) {
 
   const handleDatabaseReset = async () => {
     try {
-      // First confirmation
       const firstConfirm = await showConfirm(
         "⚠️ Database Reset",
         "This will PERMANENTLY delete all existing data and recreate the database with fresh quiz content. This action cannot be undone.\n\nAre you sure you want to proceed?"
@@ -133,7 +152,6 @@ export function DrawerContent(props) {
       
       if (!firstConfirm) return;
 
-      // Second confirmation
       const secondConfirm = await showConfirm(
         "⚠️ Final Confirmation",
         "Last chance! This will delete ALL user data, quiz results, and content.\n\nThis action is irreversible. Continue?"
@@ -141,9 +159,7 @@ export function DrawerContent(props) {
       
       if (!secondConfirm) return;
 
-      // If both confirmations passed, proceed with reset
       await performDatabaseReset();
-
     } catch (error) {
       console.error('Error in handleDatabaseReset:', error);
       showInfo("❌ Error", "An error occurred while handling the database reset request.");
@@ -158,7 +174,6 @@ export function DrawerContent(props) {
     try {
       console.log('🚀 Starting database reset process...');
       
-      // Get current database status first
       const statusBefore = await getDatabaseStatus();
       console.log('📊 Database status before reset:', statusBefore);
 
@@ -167,7 +182,6 @@ export function DrawerContent(props) {
         "Resetting database and populating with quiz data. Please wait..."
       );
 
-      // Perform the reset and population
       const result = await resetAndPopulateDatabase(user.sub);
       
       if (result.success) {
@@ -179,7 +193,6 @@ export function DrawerContent(props) {
           `❓ Questions: ${result.data.questionsCreated}\n\n` +
           `The app will now refresh to load the new data.`,
           () => {
-            // Refresh the app or navigate to home
             router.replace('/');
             props.navigation.closeDrawer();
           }
@@ -190,7 +203,6 @@ export function DrawerContent(props) {
           result.message || "An error occurred while resetting the database. Please check the console for details."
         );
       }
-
     } catch (error) {
       console.error('💥 Database reset error:', error);
       showInfo(
@@ -202,29 +214,37 @@ export function DrawerContent(props) {
     }
   };
 
-  // Get user display data (prioritize supabaseData, fallback to Auth0 user)
+  // Get user display data
   const userData = supabaseData || user;
   const userDisplayName = userData?.name || userData?.email || 'User';
   const userEmail = userData?.email || user?.email;
   const userPicture = userData?.picture || user?.picture;
   const isAdmin = userData?.role === 'admin';
   
-  // Load pre-assessment status
+  // Load pre-assessment status and INITIAL certificate check ONLY
   useEffect(() => {
-    const loadPreAssessmentStatus = async () => {
+    const loadUserStatus = async () => {
       if (user?.sub) {
         try {
+          // Load pre-assessment status
           const status = await getPreAssessmentStatus(user.sub);
           setPreAssessmentStatus(status || { tiger: false, tapir: false, turtle: false });
+
+          // Check certificate eligibility ONLY if not already initialized
+          if (!initialized) {
+            console.log('🎓 Initial certificate eligibility check');
+            await checkCertificateEligibility(user.sub);
+          }
+          
         } catch (error) {
-          console.error('Error loading pre-assessment status:', error);
+          console.error('Error loading user status:', error);
           setPreAssessmentStatus({ tiger: false, tapir: false, turtle: false });
         }
       }
     };
     
-    loadPreAssessmentStatus();
-  }, [user?.sub, supabaseData]);
+    loadUserStatus();
+  }, [user?.sub, supabaseData, initialized, checkCertificateEligibility]);
 
   // Define dynamic colors based on theme
   const iconColor = isDark ? '#ffffff' : '#000000';
@@ -303,6 +323,22 @@ export function DrawerContent(props) {
                 descriptionStyle={styles.listItemDescription}
                 style={styles.listItem}
               />
+
+              {/* 🎓 Certificate Download Section - Shows when eligible */}
+              {certificateEligible && (
+                <>
+                  <Divider style={styles.sectionDivider} />
+                  <List.Item
+                    title="🎓 Download Certificate"
+                    description="Get your completion certificate"
+                    left={props => <List.Icon {...props} icon="certificate" color="#4CAF50" />}
+                    onPress={handleCertificateDownload}
+                    titleStyle={[styles.listItemTitle, styles.certificateItemTitle]}
+                    descriptionStyle={[styles.listItemDescription, styles.certificateItemDescription]}
+                    style={[styles.listItem, styles.certificateItem]}
+                  />
+                </>
+              )}
               
               <Divider style={styles.sectionDivider} />
               <List.Subheader style={styles.subheader}>
@@ -342,6 +378,7 @@ export function DrawerContent(props) {
                 style={styles.listItem}
               />
               
+              {/* Admin section remains the same... */}
               {isAdmin && (
                 <>
                   <Divider style={styles.sectionDivider} />
@@ -445,9 +482,8 @@ export function DrawerContent(props) {
   );
 }
 
-// Dynamic style creation function
+// ... existing styles remain the same ...
 const createStyles = (isDark) => {
-  // Define color schemes
   const colors = {
     light: {
       background: '#ffffff',
@@ -569,6 +605,19 @@ const createStyles = (isDark) => {
     disabledItemDescription: {
       opacity: 0.5,
       color: '#999999',
+    },
+    certificateItem: {
+      backgroundColor: isDark ? '#1a3d1a' : '#f0f8f0',
+      borderLeftWidth: 4,
+      borderLeftColor: '#4CAF50',
+    },
+    certificateItemTitle: {
+      color: '#4CAF50',
+      fontWeight: '600',
+    },
+    certificateItemDescription: {
+      color: '#4CAF50',
+      opacity: 0.8,
     },
   });
 };

@@ -51,7 +51,10 @@ export {
   getTopicAccessStatus,
   getTopicQuizSummary,
   checkFeatureAccess,
-  getCategoryIdBySlug
+  getCategoryIdBySlug,
+
+  isCertificateEligible,
+  getCertificateEligibilityDetails
 } from './utilityService';
 
 // Storage operations (Supabase)

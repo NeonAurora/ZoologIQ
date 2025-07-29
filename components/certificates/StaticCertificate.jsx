@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   Dimensions,
   Platform,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import { uploadFile } from '@/services/supabase/storage';
@@ -20,51 +21,54 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const { width, height } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-// 🎨 FONT & STYLING CONFIGURATION - Adjust these for easy customization
+// Calculate responsive landscape certificate dimensions
+const calculateCertificateDimensions = () => {
+  const maxWidth = Math.min(screenWidth - 40, 842);
+  const aspectRatio = 842 / 595; // Landscape aspect ratio
+  const calculatedHeight = maxWidth / aspectRatio;
+  
+  return {
+    width: maxWidth,
+    height: calculatedHeight
+  };
+};
+
+// 🎨 FONT & STYLING CONFIGURATION - LANDSCAPE ORIENTATION
 const CERTIFICATE_CONFIG = {
-  // User Name Text Configuration
   userName: {
-    // Position Controls (adjust these for micro-tweaking)
-    topPosition: '43.25%',        // Vertical position from top (45% means 45% down from top)
-    leftMargin: 0,             // Left margin in pixels
-    rightMargin: 0,            // Right margin in pixels
+    topPosition: '43.25%',
+    leftMargin: 0,
+    rightMargin: 0,
     
-    // Font Styling
-    fontSize: 28,              // Font size
-    fontWeight: 'normal',        // Font weight: 'normal', 'bold', '100'-'900'
+    fontSize: Math.min(screenWidth * 0.035, 28),
+    fontWeight: 'normal',
     fontFamily: Platform.select({
-      ios: 'Lucida Calligraphy',
-      android: 'LucidaCalligraphy',
-      web: 'Lucida Calligraphy',
+      ios: 'Lucida Unicode Calligraphy',
+      android: 'LucidaCalligraphy', 
+      web: 'LucidaCalligraphy, "Lucida Unicode Calligraphy", "Brush Script MT", cursive',
       default: 'cursive'
     }),
-    color: '#2c3e50',          // Text color (hex, rgb, or color name)
+    color: '#2c3e50',
     
-    // Text Effects
-    textAlign: 'center',       // Text alignment: 'left', 'center', 'right'
-    letterSpacing: 1,          // Letter spacing in pixels
-    lineHeight: 34,            // Line height (usually fontSize + 4-8)
-    textTransform: 'none',     // 'none', 'uppercase', 'lowercase', 'capitalize'
+    textAlign: 'center',
+    letterSpacing: 1,
+    lineHeight: Math.min(screenWidth * 0.035, 28) + 6,
+    textTransform: 'none',
     
-    // Text Shadow (optional)
     textShadowColor: 'rgba(0,0,0,0.1)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
     
-    // Background (if you want background behind text)
     backgroundColor: 'transparent',
     paddingHorizontal: 20,
     paddingVertical: 5,
     borderRadius: 0,
   },
   
-  // Certificate Container Size
-  container: {
-    width: 595,   // A4 width in pixels
-    height: 842,  // A4 height in pixels
-  }
+  // Landscape container dimensions
+  container: calculateCertificateDimensions()
 };
 
 export default function StaticCertificate({ 
@@ -78,6 +82,7 @@ export default function StaticCertificate({
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState(null);
   const [certificatePdfUri, setCertificatePdfUri] = useState(null);
+  const [localPdfBlob, setLocalPdfBlob] = useState(null); // For web download
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -85,22 +90,24 @@ export default function StaticCertificate({
     try {
       setIsGenerating(true);
       
-      // First capture the certificate view as an image
+      // Capture certificate with landscape dimensions
       const imageUri = await captureRef(certificateRef, {
         format: 'png',
         quality: 1.0,
         result: 'tmpfile',
-        height: CERTIFICATE_CONFIG.container.height,
-        width: CERTIFICATE_CONFIG.container.width
+        width: CERTIFICATE_CONFIG.container.width,
+        height: CERTIFICATE_CONFIG.container.height
       });
       
       console.log('Certificate captured:', imageUri);
       
-      // Convert to PDF
-      const pdfUri = await convertToPDF(imageUri);
+      // Convert to PDF with landscape orientation
+      const pdfResult = await convertToPDF(imageUri);
       
-      if (pdfUri) {
+      if (pdfResult) {
+        const { uri: pdfUri, blob: pdfBlob } = pdfResult;
         setCertificatePdfUri(pdfUri);
+        if (pdfBlob) setLocalPdfBlob(pdfBlob);
         
         // Upload PDF to Supabase
         const uploadedUrl = await uploadFile(pdfUri, 'pdf');
@@ -109,7 +116,6 @@ export default function StaticCertificate({
           setGeneratedUrl(uploadedUrl);
           console.log('Certificate PDF uploaded successfully:', uploadedUrl);
           
-          // Call the callback if provided
           if (onCertificateGenerated) {
             onCertificateGenerated(uploadedUrl, {
               recipientName,
@@ -119,16 +125,25 @@ export default function StaticCertificate({
             });
           }
           
+          // For web, auto-download after generation
+          if (Platform.OS === 'web') {
+            await handleDownloadCertificate(pdfBlob || pdfUri);
+          }
+          
           Alert.alert(
             '🎉 Success!', 
-            'Certificate generated as PDF and ready to download!',
+            Platform.OS === 'web' ? 
+              'Certificate generated and downloaded!' : 
+              'Certificate generated as PDF and ready to download!',
             [
               { text: 'OK', style: 'default' },
-              { 
-                text: 'Download', 
-                onPress: () => handleDownloadCertificate(),
-                style: 'default'
-              },
+              ...(Platform.OS !== 'web' ? [
+                { 
+                  text: 'Download', 
+                  onPress: () => handleDownloadCertificate(),
+                  style: 'default'
+                }
+              ] : []),
               { 
                 text: 'Share', 
                 onPress: () => handleShareCertificate(pdfUri),
@@ -157,12 +172,11 @@ export default function StaticCertificate({
 
   const convertToPDF = async (imageUri) => {
     try {
-      // Read the image as base64
       const base64Image = await FileSystem.readAsStringAsync(imageUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
       
-      // Create HTML content with the captured image
+      // HTML with landscape orientation
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -171,7 +185,7 @@ export default function StaticCertificate({
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
               @page {
-                size: A4;
+                size: A4 landscape;
                 margin: 0;
               }
               body {
@@ -204,19 +218,131 @@ export default function StaticCertificate({
         </html>
       `;
       
-      // Generate PDF
-      const { uri } = await Print.printToFileAsync({
+      // Generate PDF with landscape dimensions
+      const result = await Print.printToFileAsync({
         html: htmlContent,
         base64: false,
-        width: CERTIFICATE_CONFIG.container.width,
-        height: CERTIFICATE_CONFIG.container.height,
+        width: 842,  // A4 landscape width
+        height: 595, // A4 landscape height
       });
       
-      console.log('PDF generated:', uri);
-      return uri;
+      console.log('PDF generated:', result.uri);
+      
+      // For web, also create a blob for direct download
+      if (Platform.OS === 'web') {
+        try {
+          const response = await fetch(result.uri);
+          const blob = await response.blob();
+          return { uri: result.uri, blob };
+        } catch (blobError) {
+          console.warn('Could not create blob, using URI only:', blobError);
+          return { uri: result.uri, blob: null };
+        }
+      }
+      
+      return { uri: result.uri, blob: null };
     } catch (error) {
       console.error('PDF conversion failed:', error);
       return null;
+    }
+  };
+
+  const handleDownloadCertificate = async (customFileSource = null) => {
+    try {
+      const fileSource = customFileSource || certificatePdfUri || generatedUrl;
+      if (!fileSource) {
+        Alert.alert('Error', 'No certificate available. Please generate one first.');
+        return;
+      }
+
+      const fileName = `certificate_${recipientName.replace(/\s+/g, '_')}.pdf`;
+
+      if (Platform.OS === 'web') {
+        // Web download with improved blob handling
+        try {
+          let downloadUrl;
+          
+          if (fileSource instanceof Blob) {
+            // If we have a blob (from PDF generation), use it directly
+            downloadUrl = URL.createObjectURL(fileSource);
+          } else if (localPdfBlob) {
+            // Use stored blob if available
+            downloadUrl = URL.createObjectURL(localPdfBlob);
+          } else if (typeof fileSource === 'string') {
+            // Handle different types of URIs
+            if (fileSource.startsWith('http')) {
+              // Remote URL - fetch and create blob
+              const response = await fetch(fileSource);
+              const blob = await response.blob();
+              downloadUrl = URL.createObjectURL(blob);
+            } else if (fileSource.startsWith('data:')) {
+              // Data URI - use directly
+              downloadUrl = fileSource;
+            } else {
+              // Local file URI - try to fetch
+              try {
+                const response = await fetch(fileSource);
+                const blob = await response.blob();
+                downloadUrl = URL.createObjectURL(blob);
+              } catch (fetchError) {
+                console.warn('Could not fetch local file, using URI directly:', fetchError);
+                downloadUrl = fileSource;
+              }
+            }
+          }
+          
+          // Create and trigger download
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = fileName;
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Clean up object URL if we created one
+          if (downloadUrl.startsWith('blob:')) {
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 100);
+          }
+          
+          console.log('Web download initiated for:', fileName);
+          
+        } catch (webError) {
+          console.error('Web download failed:', webError);
+          Alert.alert('Download Error', 'Failed to download certificate on web. Please try again.');
+        }
+      } else {
+        // Mobile download (existing logic)
+        const downloadPath = FileSystem.documentDirectory + fileName;
+        
+        if (typeof fileSource === 'string' && fileSource.startsWith('http')) {
+          // Download from URL
+          const downloadResumable = FileSystem.createDownloadResumable(
+            fileSource,
+            downloadPath
+          );
+          const { uri } = await downloadResumable.downloadAsync();
+          
+          Alert.alert(
+            'Download Complete',
+            'Certificate downloaded successfully!',
+            [
+              { text: 'OK', style: 'default' },
+              { 
+                text: 'Share', 
+                onPress: () => handleShareCertificate(uri),
+                style: 'default'
+              }
+            ]
+          );
+        } else {
+          // Local file, just share it
+          await handleShareCertificate(fileSource);
+        }
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+      Alert.alert('Error', 'Failed to download certificate.');
     }
   };
 
@@ -244,61 +370,13 @@ export default function StaticCertificate({
     }
   };
 
-  const handleDownloadCertificate = async () => {
-    try {
-      const fileUri = certificatePdfUri || generatedUrl;
-      if (!fileUri) {
-        Alert.alert('Error', 'No certificate available. Please generate one first.');
-        return;
-      }
-
-      if (Platform.OS === 'web') {
-        // Web download
-        const link = document.createElement('a');
-        link.href = fileUri;
-        link.download = `certificate_${recipientName.replace(/\s+/g, '_')}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        // Mobile download
-        const fileName = `certificate_${recipientName.replace(/\s+/g, '_')}.pdf`;
-        const downloadPath = FileSystem.documentDirectory + fileName;
-        
-        if (fileUri.startsWith('http')) {
-          // Download from URL
-          const downloadResumable = FileSystem.createDownloadResumable(
-            fileUri,
-            downloadPath
-          );
-          const { uri } = await downloadResumable.downloadAsync();
-          
-          Alert.alert(
-            'Download Complete',
-            'Certificate downloaded successfully!',
-            [
-              { text: 'OK', style: 'default' },
-              { 
-                text: 'Share', 
-                onPress: () => handleShareCertificate(uri),
-                style: 'default'
-              }
-            ]
-          );
-        } else {
-          // Local file, just share it
-          await handleShareCertificate(fileUri);
-        }
-      }
-    } catch (error) {
-      console.error('Download failed:', error);
-      Alert.alert('Error', 'Failed to download certificate.');
-    }
-  };
-
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }]}>
-      {/* Certificate Design with Background Image */}
+    <ScrollView 
+      style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }]}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Certificate Design with Background Image - LANDSCAPE */}
       <View 
         ref={certificateRef} 
         style={styles.certificateContainer}
@@ -310,9 +388,8 @@ export default function StaticCertificate({
           resizeMode="contain"
         />
         
-        {/* Overlay Text - Positioned absolutely over the background */}
+        {/* Overlay Text */}
         <View style={styles.textOverlay}>
-          {/* Participant Name - positioned using config variables */}
           <Text style={styles.participantName}>
             {recipientName}
           </Text>
@@ -335,7 +412,9 @@ export default function StaticCertificate({
           ) : (
             <>
               <MaterialIcons name="picture-as-pdf" size={20} color="white" />
-              <Text style={styles.buttonText}>Generate PDF Certificate</Text>
+              <Text style={styles.buttonText}>
+                {Platform.OS === 'web' ? 'Generate & Download PDF' : 'Generate PDF Certificate'}
+              </Text>
             </>
           )}
         </TouchableOpacity>
@@ -346,10 +425,10 @@ export default function StaticCertificate({
               styles.downloadButton,
               { backgroundColor: isDark ? '#27ae60' : '#2ecc71' }
             ]} 
-            onPress={handleDownloadCertificate}
+            onPress={() => handleDownloadCertificate()}
           >
             <MaterialIcons name="download" size={20} color="white" />
-            <Text style={styles.buttonText}>Download PDF</Text>
+            <Text style={styles.buttonText}>Download Again</Text>
           </TouchableOpacity>
         )}
 
@@ -379,26 +458,35 @@ export default function StaticCertificate({
           </Text>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
+    alignItems: 'center',
   },
   certificateContainer: {
     width: CERTIFICATE_CONFIG.container.width,
     height: CERTIFICATE_CONFIG.container.height,
-    alignSelf: 'center',
     position: 'relative',
     backgroundColor: 'white',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   backgroundImage: {
     width: '100%',
     height: '100%',
     position: 'absolute',
+    borderRadius: 8,
   },
   textOverlay: {
     position: 'absolute',
@@ -409,33 +497,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // 👤 USER NAME STYLING - Uses config variables
   participantName: {
-    // Position
     position: 'absolute',
     top: CERTIFICATE_CONFIG.userName.topPosition,
     left: CERTIFICATE_CONFIG.userName.leftMargin,
     right: CERTIFICATE_CONFIG.userName.rightMargin,
     zIndex: 2,
     
-    // Font Properties
     fontSize: CERTIFICATE_CONFIG.userName.fontSize,
     fontWeight: CERTIFICATE_CONFIG.userName.fontWeight,
     fontFamily: CERTIFICATE_CONFIG.userName.fontFamily,
     color: CERTIFICATE_CONFIG.userName.color,
     
-    // Text Styling
     textAlign: CERTIFICATE_CONFIG.userName.textAlign,
     letterSpacing: CERTIFICATE_CONFIG.userName.letterSpacing,
     lineHeight: CERTIFICATE_CONFIG.userName.lineHeight,
     textTransform: CERTIFICATE_CONFIG.userName.textTransform,
     
-    // Text Shadow
     textShadowColor: CERTIFICATE_CONFIG.userName.textShadowColor,
     textShadowOffset: CERTIFICATE_CONFIG.userName.textShadowOffset,
     textShadowRadius: CERTIFICATE_CONFIG.userName.textShadowRadius,
     
-    // Background
     backgroundColor: CERTIFICATE_CONFIG.userName.backgroundColor,
     paddingHorizontal: CERTIFICATE_CONFIG.userName.paddingHorizontal,
     paddingVertical: CERTIFICATE_CONFIG.userName.paddingVertical,
@@ -445,6 +527,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 30,
     gap: 15,
+    width: '100%',
+    maxWidth: 400,
   },
   generateButton: {
     flexDirection: 'row',

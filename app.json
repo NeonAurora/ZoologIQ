@@ -21,8 +21,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/zoologiq_icon.png",
-      "css": ["./assets/fonts/fonts.css"]
+      "favicon": "./assets/images/zoologiq_icon.png"
     },
     "plugins": [
       "expo-router",

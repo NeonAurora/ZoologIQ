@@ -307,3 +307,140 @@ export const getCategoryIdBySlug = async (topicSlug) => {
     return null;
   }
 };
+
+/**
+ * Check if user is eligible for certificate download
+ * User must have completed both pre-assessment and post-assessment for all 3 topics
+ * @param {string} userId - Auth0 user ID
+ * @returns {Promise<boolean>} True if eligible for certificate
+ */
+export const isCertificateEligible = async (userId) => {
+  try {
+    console.log('Checking certificate eligibility for user:', userId);
+    
+    const requiredTopics = ['Malayan Tiger', 'Malayan Tapir', 'Green Sea Turtle'];
+    
+    // Get all quiz results for the user
+    const { data: results, error } = await supabase
+      .from('quiz_results')
+      .select('category_name, session_type, completed_at')
+      .eq('user_id', userId)
+      .in('session_type', ['pre-lesson', 'post-lesson'])
+      .in('category_name', requiredTopics);
+
+    if (error) {
+      console.error('Error fetching quiz results for certificate check:', error);
+      return false;
+    }
+
+    console.log('Quiz results found:', results);
+
+    // Group results by category
+    const resultsByCategory = results.reduce((acc, result) => {
+      if (!acc[result.category_name]) {
+        acc[result.category_name] = {
+          hasPreAssessment: false,
+          hasPostAssessment: false
+        };
+      }
+      
+      if (result.session_type === 'pre-lesson') {
+        acc[result.category_name].hasPreAssessment = true;
+      } else if (result.session_type === 'post-lesson') {
+        acc[result.category_name].hasPostAssessment = true;
+      }
+      
+      return acc;
+    }, {});
+
+    console.log('Results grouped by category:', resultsByCategory);
+
+    // Check if all required topics have both pre and post assessments
+    const eligibilityStatus = requiredTopics.every(topic => {
+      const categoryData = resultsByCategory[topic];
+      const hasCompleted = categoryData?.hasPreAssessment && categoryData?.hasPostAssessment;
+      console.log(`${topic}: Pre=${categoryData?.hasPreAssessment}, Post=${categoryData?.hasPostAssessment}, Eligible=${hasCompleted}`);
+      return hasCompleted;
+    });
+
+    console.log('Certificate eligibility result:', eligibilityStatus);
+    return eligibilityStatus;
+
+  } catch (error) {
+    console.error('Error checking certificate eligibility:', error);
+    return false;
+  }
+};
+
+/**
+ * Get detailed certificate eligibility status with progress breakdown
+ * @param {string} userId - Auth0 user ID
+ * @returns {Promise<object>} Detailed eligibility status
+ */
+export const getCertificateEligibilityDetails = async (userId) => {
+  try {
+    const requiredTopics = ['Malayan Tiger', 'Malayan Tapir', 'Green Sea Turtle'];
+    
+    const { data: results, error } = await supabase
+      .from('quiz_results')
+      .select('category_name, session_type, completed_at, percentage')
+      .eq('user_id', userId)
+      .in('session_type', ['pre-lesson', 'post-lesson'])
+      .in('category_name', requiredTopics)
+      .order('completed_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching detailed eligibility status:', error);
+      return null;
+    }
+
+    const topicStatus = {};
+    
+    // Initialize all topics
+    requiredTopics.forEach(topic => {
+      topicStatus[topic] = {
+        name: topic,
+        hasPreAssessment: false,
+        hasPostAssessment: false,
+        preAssessmentScore: null,
+        postAssessmentScore: null,
+        completed: false
+      };
+    });
+
+    // Fill in actual data
+    results.forEach(result => {
+      const topic = result.category_name;
+      if (!topicStatus[topic]) return;
+
+      if (result.session_type === 'pre-lesson' && !topicStatus[topic].hasPreAssessment) {
+        topicStatus[topic].hasPreAssessment = true;
+        topicStatus[topic].preAssessmentScore = result.percentage;
+      } else if (result.session_type === 'post-lesson' && !topicStatus[topic].hasPostAssessment) {
+        topicStatus[topic].hasPostAssessment = true;
+        topicStatus[topic].postAssessmentScore = result.percentage;
+      }
+    });
+
+    // Check completion status
+    Object.keys(topicStatus).forEach(topic => {
+      topicStatus[topic].completed = 
+        topicStatus[topic].hasPreAssessment && topicStatus[topic].hasPostAssessment;
+    });
+
+    const completedTopics = Object.values(topicStatus).filter(topic => topic.completed).length;
+    const isEligible = completedTopics === requiredTopics.length;
+
+    return {
+      isEligible,
+      completedTopics,
+      totalTopics: requiredTopics.length,
+      topicStatus,
+      progressPercentage: (completedTopics / requiredTopics.length) * 100
+    };
+
+  } catch (error) {
+    console.error('Error getting certificate eligibility details:', error);
+    return null;
+  }
+};

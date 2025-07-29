@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Lucida Calligraphy';
-  src: url('./LucidaCalligraphy.ttf') format('truetype');
+  font-family: 'Lucida Unicode Calligraphy';
+  src: url('LucidaCalligraphy.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

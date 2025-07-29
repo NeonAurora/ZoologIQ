@@ -4,6 +4,7 @@ import { StyleSheet, ActivityIndicator, Alert, View, TouchableOpacity } from 're
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCertificate } from '@/contexts/CertificateContext';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useQuiz } from '@/hooks/useQuiz';
@@ -25,6 +26,7 @@ export default function QuizPlayPage() {
   const { quizId, topic, type, fresh, t } = useLocalSearchParams();
   const router = useRouter();
   const { user, supabaseData } = useAuth();
+  const { updateCertificateStatus } = useCertificate();
   const { quiz, loading, error } = useQuiz(quizId);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -377,7 +379,7 @@ export default function QuizPlayPage() {
         max_score: stats.max_possible_score,
         answers: stats.detailed_answers,
         time_taken_seconds: timeTakenSeconds,
-        session_type: type, // 🔥 DIRECT USE - NO MORE MAPPING!
+        session_type: type,
         category_id: categoryId,
         completed_at: quizEndTime.toISOString(),
         started_at: quizStartTime.toISOString()
@@ -386,7 +388,7 @@ export default function QuizPlayPage() {
       console.log('💾 Saving quiz result:', {
         score: stats.total_score,
         maxScore: stats.max_possible_score,
-        sessionType: type, // Direct session type - no mapping
+        sessionType: type,
         quizType: type
       });
       
@@ -402,6 +404,18 @@ export default function QuizPlayPage() {
       } else if (type === 'post-lesson') {
         // For post-tests, save with improvement calculation
         savedResult = await savePostTestResult(resultData);
+        
+        // 🎓 UPDATE CERTIFICATE STATUS AFTER POST-ASSESSMENT COMPLETION
+        if (savedResult) {
+          console.log('🎓 Post-assessment completed - updating certificate eligibility...');
+          try {
+            const certificateEligible = await updateCertificateStatus(user.sub);
+            console.log('🎓 Certificate eligibility updated:', certificateEligible);
+          } catch (certError) {
+            console.error('❌ Error updating certificate status:', certError);
+            // Don't throw error here, as quiz result was saved successfully
+          }
+        }
         
         // Get pre-test score for comparison
         if (categoryId) {
@@ -441,7 +455,6 @@ export default function QuizPlayPage() {
       }
     } catch (error) {
       console.error('❌ Error saving quiz result:', error);
-      // 🔥 LET ERRORS SURFACE - No more hiding session_type mismatches!
       Alert.alert('Database Error', `Session type error: ${error.message}`);
     } finally {
       if (mountedRef.current) {

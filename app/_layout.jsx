@@ -5,8 +5,10 @@ import { useFonts } from 'expo-font';
 import { DefaultTheme as NavigationDefaultTheme, DarkTheme as NavigationDarkTheme } from '@react-navigation/native';
 import { MD3LightTheme, MD3DarkTheme, Provider as PaperProvider } from 'react-native-paper';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { CertificateProvider } from '@/contexts/CertificateContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Colors } from '@/constants/Colors'; // Import your Colors
+import { Colors } from '@/constants/Colors';
+import { loadWebFonts } from './web-fonts';
 
 // Prevent splash screen from auto-hiding until assets are ready
 SplashScreen.preventAutoHideAsync();
@@ -60,9 +62,11 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <PaperProvider theme={theme}>
-        <Slot />
-      </PaperProvider>
+      <CertificateProvider>
+        <PaperProvider theme={theme}>
+          <Slot />
+        </PaperProvider>
+      </CertificateProvider>
     </AuthProvider>
   );
 }
