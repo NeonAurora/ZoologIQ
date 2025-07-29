@@ -218,6 +218,7 @@ export default function RootLayout() {
   
   const [loaded] = useFonts({
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
+    LucidaCalligraphy: require('../../assets/fonts/LucidaCalligraphy.ttf'),
   });
 
   useEffect(() => {

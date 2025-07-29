@@ -8,29 +8,76 @@ import {
   Alert,
   ActivityIndicator,
   Dimensions,
-  Platform
+  Platform,
+  Image
 } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
-import { uploadCertificate } from '@/services/supabase';
+import { uploadFile } from '@/services/supabase/storage';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import * as Print from 'expo-print';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+// 🎨 FONT & STYLING CONFIGURATION - Adjust these for easy customization
+const CERTIFICATE_CONFIG = {
+  // User Name Text Configuration
+  userName: {
+    // Position Controls (adjust these for micro-tweaking)
+    topPosition: '43.25%',        // Vertical position from top (45% means 45% down from top)
+    leftMargin: 0,             // Left margin in pixels
+    rightMargin: 0,            // Right margin in pixels
+    
+    // Font Styling
+    fontSize: 28,              // Font size
+    fontWeight: 'normal',        // Font weight: 'normal', 'bold', '100'-'900'
+    fontFamily: Platform.select({
+      ios: 'Lucida Calligraphy',
+      android: 'LucidaCalligraphy',
+      web: 'Lucida Calligraphy',
+      default: 'cursive'
+    }),
+    color: '#2c3e50',          // Text color (hex, rgb, or color name)
+    
+    // Text Effects
+    textAlign: 'center',       // Text alignment: 'left', 'center', 'right'
+    letterSpacing: 1,          // Letter spacing in pixels
+    lineHeight: 34,            // Line height (usually fontSize + 4-8)
+    textTransform: 'none',     // 'none', 'uppercase', 'lowercase', 'capitalize'
+    
+    // Text Shadow (optional)
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+    
+    // Background (if you want background behind text)
+    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 0,
+  },
+  
+  // Certificate Container Size
+  container: {
+    width: 595,   // A4 width in pixels
+    height: 842,  // A4 height in pixels
+  }
+};
 
 export default function StaticCertificate({ 
   recipientName = "John Doe",
-  courseTitle = "React Native Development",
   completionDate = new Date().toLocaleDateString(),
-  instructorName = "ZoologIQ Team",
+  instructorName = "ZoologIQ Education Team",
   certificateId = `CERT-${Date.now()}`,
-  onCertificateGenerated = null // Callback when certificate is successfully generated
+  onCertificateGenerated = null
 }) {
   const certificateRef = useRef();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState(null);
+  const [certificatePdfUri, setCertificatePdfUri] = useState(null);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -38,51 +85,62 @@ export default function StaticCertificate({
     try {
       setIsGenerating(true);
       
-      // Capture the certificate view as an image
+      // First capture the certificate view as an image
       const imageUri = await captureRef(certificateRef, {
         format: 'png',
         quality: 1.0,
         result: 'tmpfile',
-        height: 800, // Fixed height for consistency
-        width: 600   // Fixed width for consistency
+        height: CERTIFICATE_CONFIG.container.height,
+        width: CERTIFICATE_CONFIG.container.width
       });
       
       console.log('Certificate captured:', imageUri);
       
-      // Upload to Supabase certificates bucket
-      const uploadedUrl = await uploadCertificate(imageUri, recipientName);
+      // Convert to PDF
+      const pdfUri = await convertToPDF(imageUri);
       
-      if (uploadedUrl) {
-        setGeneratedUrl(uploadedUrl);
-        console.log('Certificate uploaded successfully:', uploadedUrl);
+      if (pdfUri) {
+        setCertificatePdfUri(pdfUri);
         
-        // Call the callback if provided
-        if (onCertificateGenerated) {
-          onCertificateGenerated(uploadedUrl, {
-            recipientName,
-            courseTitle,
-            completionDate,
-            certificateId
-          });
+        // Upload PDF to Supabase
+        const uploadedUrl = await uploadFile(pdfUri, 'pdf');
+        
+        if (uploadedUrl) {
+          setGeneratedUrl(uploadedUrl);
+          console.log('Certificate PDF uploaded successfully:', uploadedUrl);
+          
+          // Call the callback if provided
+          if (onCertificateGenerated) {
+            onCertificateGenerated(uploadedUrl, {
+              recipientName,
+              completionDate,
+              certificateId,
+              type: 'pdf'
+            });
+          }
+          
+          Alert.alert(
+            '🎉 Success!', 
+            'Certificate generated as PDF and ready to download!',
+            [
+              { text: 'OK', style: 'default' },
+              { 
+                text: 'Download', 
+                onPress: () => handleDownloadCertificate(),
+                style: 'default'
+              },
+              { 
+                text: 'Share', 
+                onPress: () => handleShareCertificate(pdfUri),
+                style: 'default'
+              }
+            ]
+          );
+        } else {
+          throw new Error('Failed to upload certificate');
         }
-        
-        // Share the certificate
-        await handleShareCertificate(imageUri);
-        
-        Alert.alert(
-          '🎉 Success!', 
-          'Certificate generated and ready to share!',
-          [
-            { text: 'OK', style: 'default' },
-            { 
-              text: 'Share Again', 
-              onPress: () => handleShareCertificate(imageUri),
-              style: 'default'
-            }
-          ]
-        );
       } else {
-        throw new Error('Failed to upload certificate');
+        throw new Error('Failed to convert to PDF');
       }
       
     } catch (error) {
@@ -97,28 +155,88 @@ export default function StaticCertificate({
     }
   };
 
-  const handleShareCertificate = async (imageUri) => {
+  const convertToPDF = async (imageUri) => {
     try {
+      // Read the image as base64
+      const base64Image = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      
+      // Create HTML content with the captured image
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+              @page {
+                size: A4;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+              }
+              .certificate-container {
+                width: 100%;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
+              .certificate-image {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="certificate-container">
+              <img src="data:image/png;base64,${base64Image}" class="certificate-image" />
+            </div>
+          </body>
+        </html>
+      `;
+      
+      // Generate PDF
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        base64: false,
+        width: CERTIFICATE_CONFIG.container.width,
+        height: CERTIFICATE_CONFIG.container.height,
+      });
+      
+      console.log('PDF generated:', uri);
+      return uri;
+    } catch (error) {
+      console.error('PDF conversion failed:', error);
+      return null;
+    }
+  };
+
+  const handleShareCertificate = async (pdfUri) => {
+    try {
+      const fileUri = pdfUri || certificatePdfUri;
+      if (!fileUri) {
+        Alert.alert('Error', 'No certificate available to share.');
+        return;
+      }
+
       const isAvailable = await Sharing.isAvailableAsync();
       
       if (isAvailable) {
-        await Sharing.shareAsync(imageUri, {
-          mimeType: 'image/png',
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'application/pdf',
           dialogTitle: 'Share Your Certificate'
         });
       } else {
-        // Fallback for platforms where sharing isn't available
-        if (Platform.OS === 'web') {
-          // For web, we can trigger a download
-          const link = document.createElement('a');
-          link.href = imageUri;
-          link.download = `certificate_${recipientName.replace(/\s+/g, '_')}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        } else {
-          Alert.alert('Info', 'Certificate saved to your device.');
-        }
+        Alert.alert('Info', 'Sharing not available on this platform.');
       }
     } catch (error) {
       console.error('Sharing failed:', error);
@@ -127,41 +245,50 @@ export default function StaticCertificate({
   };
 
   const handleDownloadCertificate = async () => {
-    if (!generatedUrl) {
-      Alert.alert('Error', 'No certificate available. Please generate one first.');
-      return;
-    }
-
     try {
+      const fileUri = certificatePdfUri || generatedUrl;
+      if (!fileUri) {
+        Alert.alert('Error', 'No certificate available. Please generate one first.');
+        return;
+      }
+
       if (Platform.OS === 'web') {
         // Web download
         const link = document.createElement('a');
-        link.href = generatedUrl;
-        link.download = `certificate_${recipientName.replace(/\s+/g, '_')}.png`;
+        link.href = fileUri;
+        link.download = `certificate_${recipientName.replace(/\s+/g, '_')}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       } else {
         // Mobile download
-        const downloadResumable = FileSystem.createDownloadResumable(
-          generatedUrl,
-          FileSystem.documentDirectory + `certificate_${recipientName.replace(/\s+/g, '_')}.png`
-        );
-
-        const { uri } = await downloadResumable.downloadAsync();
+        const fileName = `certificate_${recipientName.replace(/\s+/g, '_')}.pdf`;
+        const downloadPath = FileSystem.documentDirectory + fileName;
         
-        Alert.alert(
-          'Download Complete',
-          'Certificate downloaded successfully!',
-          [
-            { text: 'OK', style: 'default' },
-            { 
-              text: 'Share', 
-              onPress: () => handleShareCertificate(uri),
-              style: 'default'
-            }
-          ]
-        );
+        if (fileUri.startsWith('http')) {
+          // Download from URL
+          const downloadResumable = FileSystem.createDownloadResumable(
+            fileUri,
+            downloadPath
+          );
+          const { uri } = await downloadResumable.downloadAsync();
+          
+          Alert.alert(
+            'Download Complete',
+            'Certificate downloaded successfully!',
+            [
+              { text: 'OK', style: 'default' },
+              { 
+                text: 'Share', 
+                onPress: () => handleShareCertificate(uri),
+                style: 'default'
+              }
+            ]
+          );
+        } else {
+          // Local file, just share it
+          await handleShareCertificate(fileUri);
+        }
       }
     } catch (error) {
       console.error('Download failed:', error);
@@ -171,71 +298,25 @@ export default function StaticCertificate({
 
   return (
     <View style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }]}>
-      {/* Certificate Design */}
+      {/* Certificate Design with Background Image */}
       <View 
         ref={certificateRef} 
-        style={[
-          styles.certificate,
-          { 
-            backgroundColor: isDark ? '#2c3e50' : '#ffffff',
-            borderColor: isDark ? '#f39c12' : '#e67e22'
-          }
-        ]}
+        style={styles.certificateContainer}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: isDark ? '#f39c12' : '#e67e22' }]}>
-            🏆 CERTIFICATE OF ACHIEVEMENT 🏆
-          </Text>
-          <View style={[styles.divider, { backgroundColor: isDark ? '#f39c12' : '#e67e22' }]} />
-        </View>
-
-        {/* Main Content */}
-        <View style={styles.content}>
-          <Text style={[styles.subtitle, { color: isDark ? '#bdc3c7' : '#7f8c8d' }]}>
-            This is to certify that
-          </Text>
-          
-          <Text style={[styles.recipient, { color: isDark ? '#e74c3c' : '#c0392b' }]}>
+        {/* Background Certificate Template */}
+        <Image 
+          source={require('@/assets/images/certificate_template.png')} 
+          style={styles.backgroundImage}
+          resizeMode="contain"
+        />
+        
+        {/* Overlay Text - Positioned absolutely over the background */}
+        <View style={styles.textOverlay}>
+          {/* Participant Name - positioned using config variables */}
+          <Text style={styles.participantName}>
             {recipientName}
           </Text>
-          
-          <Text style={[styles.description, { color: isDark ? '#ecf0f1' : '#2c3e50' }]}>
-            has successfully completed the course
-          </Text>
-          
-          <Text style={[styles.course, { color: isDark ? '#3498db' : '#2980b9' }]}>
-            "{courseTitle}"
-          </Text>
-          
-          <Text style={[styles.message, { color: isDark ? '#95a5a6' : '#7f8c8d' }]}>
-            Hello world. This is my first certificate.
-          </Text>
         </View>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <View style={styles.footerSection}>
-            <Text style={[styles.label, { color: isDark ? '#bdc3c7' : '#7f8c8d' }]}>Date</Text>
-            <View style={[styles.line, { backgroundColor: isDark ? '#bdc3c7' : '#bdc3c7' }]} />
-            <Text style={[styles.footerText, { color: isDark ? '#ecf0f1' : '#2c3e50' }]}>
-              {completionDate}
-            </Text>
-          </View>
-          
-          <View style={styles.footerSection}>
-            <Text style={[styles.label, { color: isDark ? '#bdc3c7' : '#7f8c8d' }]}>Instructor</Text>
-            <View style={[styles.line, { backgroundColor: isDark ? '#bdc3c7' : '#bdc3c7' }]} />
-            <Text style={[styles.footerText, { color: isDark ? '#ecf0f1' : '#2c3e50' }]}>
-              {instructorName}
-            </Text>
-          </View>
-        </View>
-
-        {/* Certificate ID */}
-        <Text style={[styles.certificateId, { color: isDark ? '#95a5a6' : '#bdc3c7' }]}>
-          Certificate ID: {certificateId}
-        </Text>
       </View>
       
       {/* Action Buttons */}
@@ -253,8 +334,8 @@ export default function StaticCertificate({
             <ActivityIndicator color="white" />
           ) : (
             <>
-              <MaterialIcons name="create" size={20} color="white" />
-              <Text style={styles.buttonText}>Generate Certificate</Text>
+              <MaterialIcons name="picture-as-pdf" size={20} color="white" />
+              <Text style={styles.buttonText}>Generate PDF Certificate</Text>
             </>
           )}
         </TouchableOpacity>
@@ -268,7 +349,20 @@ export default function StaticCertificate({
             onPress={handleDownloadCertificate}
           >
             <MaterialIcons name="download" size={20} color="white" />
-            <Text style={styles.buttonText}>Download Again</Text>
+            <Text style={styles.buttonText}>Download PDF</Text>
+          </TouchableOpacity>
+        )}
+
+        {certificatePdfUri && (
+          <TouchableOpacity 
+            style={[
+              styles.shareButton,
+              { backgroundColor: isDark ? '#3498db' : '#2980b9' }
+            ]} 
+            onPress={() => handleShareCertificate()}
+          >
+            <MaterialIcons name="share" size={20} color="white" />
+            <Text style={styles.buttonText}>Share Certificate</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -281,7 +375,7 @@ export default function StaticCertificate({
             color={isDark ? '#2ecc71' : '#27ae60'} 
           />
           <Text style={[styles.successText, { color: isDark ? '#2ecc71' : '#27ae60' }]}>
-            Certificate generated successfully!
+            PDF Certificate generated successfully!
           </Text>
         </View>
       )}
@@ -294,101 +388,60 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  certificate: {
-    padding: 40,
-    margin: 10,
-    borderRadius: 15,
-    borderWidth: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 12,
-    minHeight: 500,
+  certificateContainer: {
+    width: CERTIFICATE_CONFIG.container.width,
+    height: CERTIFICATE_CONFIG.container.height,
+    alignSelf: 'center',
+    position: 'relative',
+    backgroundColor: 'white',
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 30,
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
-  title: {
-    fontSize: Math.min(width * 0.06, 24),
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 15,
-    letterSpacing: 1,
-  },
-  divider: {
-    height: 3,
-    width: '60%',
-    borderRadius: 2,
-  },
-  content: {
-    alignItems: 'center',
-    flex: 1,
+  textOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  recipient: {
-    fontSize: Math.min(width * 0.08, 32),
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-    textDecorationLine: 'underline',
-    textDecorationColor: 'currentColor',
-  },
-  description: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  course: {
-    fontSize: Math.min(width * 0.05, 20),
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 25,
-    fontStyle: 'italic',
-  },
-  message: {
-    fontSize: 14,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    marginBottom: 30,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 40,
-  },
-  footerSection: {
     alignItems: 'center',
-    flex: 1,
   },
-  label: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  // 👤 USER NAME STYLING - Uses config variables
+  participantName: {
+    // Position
+    position: 'absolute',
+    top: CERTIFICATE_CONFIG.userName.topPosition,
+    left: CERTIFICATE_CONFIG.userName.leftMargin,
+    right: CERTIFICATE_CONFIG.userName.rightMargin,
+    zIndex: 2,
+    
+    // Font Properties
+    fontSize: CERTIFICATE_CONFIG.userName.fontSize,
+    fontWeight: CERTIFICATE_CONFIG.userName.fontWeight,
+    fontFamily: CERTIFICATE_CONFIG.userName.fontFamily,
+    color: CERTIFICATE_CONFIG.userName.color,
+    
+    // Text Styling
+    textAlign: CERTIFICATE_CONFIG.userName.textAlign,
+    letterSpacing: CERTIFICATE_CONFIG.userName.letterSpacing,
+    lineHeight: CERTIFICATE_CONFIG.userName.lineHeight,
+    textTransform: CERTIFICATE_CONFIG.userName.textTransform,
+    
+    // Text Shadow
+    textShadowColor: CERTIFICATE_CONFIG.userName.textShadowColor,
+    textShadowOffset: CERTIFICATE_CONFIG.userName.textShadowOffset,
+    textShadowRadius: CERTIFICATE_CONFIG.userName.textShadowRadius,
+    
+    // Background
+    backgroundColor: CERTIFICATE_CONFIG.userName.backgroundColor,
+    paddingHorizontal: CERTIFICATE_CONFIG.userName.paddingHorizontal,
+    paddingVertical: CERTIFICATE_CONFIG.userName.paddingVertical,
+    borderRadius: CERTIFICATE_CONFIG.userName.borderRadius,
   },
-  line: {
-    height: 1,
-    width: '80%',
-    marginBottom: 5,
-  },
-  footerText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  certificateId: {
-    fontSize: 10,
-    textAlign: 'center',
-    marginTop: 20,
-    fontFamily: 'monospace',
-  },
+  
   buttonContainer: {
     marginTop: 30,
     gap: 15,
@@ -402,6 +455,14 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    borderRadius: 10,
+    gap: 10,
+  },
+  shareButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
