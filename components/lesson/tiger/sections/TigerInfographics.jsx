@@ -1,19 +1,36 @@
+// components/lesson/tiger/sections/TigerInfographics.jsx
 import React from 'react';
-import { StyleSheet, ScrollView, Image, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  Image,
+  View,
+  useWindowDimensions
+} from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-const { width: screenWidth } = Dimensions.get('window');
-
 export default function TigerInfographics() {
+  const { width } = useWindowDimensions();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
-  
-  // Tiger infographics data
+
+  // theme colors
+  const bgSurface   = isDark ? Colors.dark.surface   : Colors.light.surface;
+  const bdColor     = isDark ? Colors.dark.border    : Colors.light.border;
+  const bgSecondary = isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary;
+  const tint        = isDark ? Colors.dark.tint     : Colors.light.tint;
+  const txtPrimary  = isDark ? Colors.dark.text     : Colors.light.text;
+  const txtSecondary= isDark ? Colors.dark.textSecondary : Colors.light.textSecondary;
+  const txtMuted    = isDark ? Colors.dark.textMuted : Colors.light.textMuted;
+
+  // layout
+  const cardMaxWidth = Math.min(width * 0.9, 600);
+  const imageHeight  = cardMaxWidth * 0.75; // maintain 4:3 aspect
+
   const infographics = [
     {
       id: 1,
@@ -40,178 +57,110 @@ export default function TigerInfographics() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={[
-        styles.headerSection,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderBottomColor: isDark ? Colors.dark.border : Colors.light.border 
-        }
-      ]}>
-        <MaterialIcons name="auto-awesome" size={24} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-        <ThemedText style={[
-          styles.sectionTitle,
-          { color: isDark ? Colors.dark.text : Colors.light.text }
-        ]}>
-          Infographics
-        </ThemedText>
+      {/* Header */}
+      <ThemedView style={[styles.header, { backgroundColor: bgSurface, borderBottomColor: bdColor }]}>
+        <MaterialIcons name="auto-awesome" size={24} color={tint} />
+        <ThemedText style={[styles.title, { color: txtPrimary }]}>Infographics</ThemedText>
       </ThemedView>
-      
-      <ThemedView style={[
-        styles.introCard,
-        { 
-          backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
-          borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint 
-        }
-      ]}>
-        <MaterialIcons name="info" size={20} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-        <ThemedText style={[
-          styles.introText,
-          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-        ]}>
-          Explore these detailed visual guides that illustrate key concepts about the Malayan Tiger. 
+
+      {/* Intro */}
+      <ThemedView style={[styles.intro, { backgroundColor: bgSecondary, borderLeftColor: tint }]}>
+        <MaterialIcons name="info" size={20} color={tint} />
+        <ThemedText style={[styles.introText, { color: txtSecondary }]}>
+          Explore these detailed visual guides that illustrate key concepts about the Malayan Tiger.
           Each infographic provides comprehensive information in an easy-to-understand format.
         </ThemedText>
       </ThemedView>
 
-      <ScrollView 
-        style={styles.scrollView}
+      {/* Cards */}
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {infographics.map((infographic) => (
-          <ThemedView
-            key={infographic.id}
+        {infographics.map(item => (
+          <View
+            key={item.id}
             style={[
-              styles.infographicCard,
-              { 
-                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor: isDark ? Colors.dark.border : Colors.light.border,
-                shadowColor: isDark ? Colors.dark.text : Colors.light.text,
+              styles.card,
+              {
+                width: cardMaxWidth,
+                backgroundColor: bgSurface,
+                borderColor: bdColor,
+                shadowColor: txtPrimary
               }
             ]}
           >
-            <ThemedView style={styles.cardHeader}>
-              <ThemedView style={styles.numberBadge}>
-                <ThemedText style={[
-                  styles.numberText,
-                  { color: isDark ? Colors.dark.background : Colors.light.background }
-                ]}>
-                  {infographic.id}
+            <View style={styles.cardHeader}>
+              <View style={[styles.numberBadge, { backgroundColor: tint }]}>
+                <ThemedText style={[styles.numberText, { color: bgSurface }]}>
+                  {item.id}
                 </ThemedText>
-              </ThemedView>
-              
-              <ThemedView style={styles.headerTextContainer}>
-                <ThemedText style={[
-                  styles.infographicTitle,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
-                ]}>
-                  {infographic.title}
+              </View>
+              <View style={styles.headerText}>
+                <ThemedText style={[styles.cardTitle, { color: txtPrimary }]}>
+                  {item.title}
                 </ThemedText>
-                
-                <ThemedText style={[
-                  styles.infographicDescription,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}>
-                  {infographic.description}
+                <ThemedText style={[styles.cardDesc, { color: txtSecondary }]}>
+                  {item.description}
                 </ThemedText>
-              </ThemedView>
-            </ThemedView>
-            
-            <ThemedView style={styles.imageContainer}>
-              <Image
-                source={infographic.image}
-                style={[
-                  styles.infographicImage,
-                  { 
-                    borderColor: isDark ? Colors.dark.border : Colors.light.border,
-                  }
-                ]}
-                resizeMode="contain"
-              />
-            </ThemedView>
-            
-            <ThemedView style={[
-              styles.captionContainer,
-              { backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary }
-            ]}>
-              <MaterialIcons 
-                name="image" 
-                size={16} 
-                color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
-              />
-              <ThemedText style={[
-                styles.captionText,
-                { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
-              ]}>
-                {infographic.caption}
+              </View>
+            </View>
+
+            <Image
+              source={item.image}
+              style={[
+                styles.image,
+                {
+                  width: cardMaxWidth - 32,  // account for padding
+                  height: imageHeight,
+                  borderColor: bdColor
+                }
+              ]}
+              resizeMode="contain"
+            />
+
+            <View style={[styles.caption, { backgroundColor: bgSecondary }]}>
+              <MaterialIcons name="image" size={16} color={txtMuted} />
+              <ThemedText style={[styles.captionText, { color: txtMuted }]}>
+                {item.caption}
               </ThemedText>
-            </ThemedView>
-          </ThemedView>
+            </View>
+          </View>
         ))}
-        
-        <ThemedView style={[
-          styles.completionCard,
-          { 
-            backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
-            borderColor: isDark ? Colors.dark.border : Colors.light.border 
-          }
-        ]}>
+
+        {/* Completion */}
+        <View
+          style={[
+            styles.card,
+            styles.completion,
+            {
+              width: cardMaxWidth,
+              backgroundColor: bgSecondary,
+              borderColor: bdColor
+            }
+          ]}
+        >
           <MaterialIcons name="check-circle" size={24} color="#4CAF50" />
-          <ThemedText style={[
-            styles.completionText,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            You've viewed all tiger infographics! These visual guides complement the detailed information 
-            covered in the previous sections. Continue to the references section for additional reading materials.
+          <ThemedText style={[styles.completionText, { color: txtPrimary }]}>
+            You’ve viewed all tiger infographics! These visual guides complement the
+            detailed information covered in the previous sections. Continue to the
+            references section for additional reading materials.
           </ThemedText>
-        </ThemedView>
+        </View>
       </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    gap: 12,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '600',
-  },
-  
-  introCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    margin: 16,
-    padding: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    gap: 12,
-  },
-  introText: {
-    flex: 1,
-    fontSize: 14,
-    lineHeight: 20,
-    fontStyle: 'italic',
-  },
-  
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingTop: 0,
-    gap: 20,
-  },
-  
-  infographicCard: {
+  container:    { flex: 1 },
+  header:       { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 1, gap: 12 },
+  title:        { fontSize: 22, fontWeight: '600' },
+  intro:        { flexDirection: 'row', alignItems: 'flex-start', margin: 16, padding: 16, borderRadius: 12, borderLeftWidth: 4, gap: 12 },
+  introText:    { flex: 1, fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
+  scrollContent:{ alignItems: 'center', paddingVertical: 20, gap: 20 },
+
+  card:         {
     borderRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
@@ -219,78 +168,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    marginBottom: 20,
+    paddingBottom: 16
   },
-  
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 20,
-    gap: 16,
-  },
-  numberBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#FF9800',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  numberText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  infographicTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 8,
-    lineHeight: 24,
-  },
-  infographicDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  
-  imageContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  infographicImage: {
-    width: screenWidth - 64,
-    height: (screenWidth - 64) * 0.75, // 4:3 aspect ratio
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  
-  captionContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 16,
-    gap: 8,
-  },
-  captionText: {
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-    fontStyle: 'italic',
-  },
-  
-  completionCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 12,
-    marginTop: 8,
-  },
-  completionText: {
-    flex: 1,
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: '500',
-  },
+  cardHeader:   { flexDirection: 'row', alignItems: 'flex-start', padding: 20, gap: 16 },
+  numberBadge:  { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  numberText:   { fontSize: 16, fontWeight: 'bold' },
+  headerText:   { flex: 1 },
+  cardTitle:    { fontSize: 18, fontWeight: '700', marginBottom: 8, lineHeight: 24 },
+  cardDesc:     { fontSize: 14, lineHeight: 20 },
+
+  image:        { borderRadius: 12, borderWidth: 1, marginHorizontal: 16, marginBottom: 16 },
+  caption:      { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 16, paddingVertical: 12, gap: 8 },
+  captionText:  { flex: 1, fontSize: 13, lineHeight: 18, fontStyle: 'italic' },
+
+  completion:   { flexDirection: 'row', alignItems: 'flex-start', padding: 20, borderRadius: 12, borderWidth: 1, gap: 12, marginTop: 8 },
+  completionText:{ flex: 1, fontSize: 15, lineHeight: 22, fontWeight: '500' }
 });

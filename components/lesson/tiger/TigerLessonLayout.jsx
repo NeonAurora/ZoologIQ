@@ -12,10 +12,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAudio } from '@/hooks/useAudio';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/contexts/AuthContext';
-import TigerIntroduction from './sections/TigerIntroduction';
-import TigerBiology from './sections/TigerBiology';
-import TigerEcology from './sections/TigerEcology';
-import TigerConservation from './sections/TigerConservation';
+import TigerIntroduction from './sections/TigerIntroduction'; // Merged: Introduction + Biology
+import TigerEcology from './sections/TigerEcology'; // Merged: Ecology + Importance
+import TigerThreats from './sections/TigerThreats'; // Merged: Threats + Conservation
+import TigerBehavior from './sections/TigerBehavior'; // Behavior & Fun Facts only
+import TigerPopulation from './sections/TigerPopulation'; // Standalone: Population data
 import TigerInfographics from './sections/TigerInfographics';
 import TigerReferences from './sections/TigerReferences';
 import TigerSidebar from './TigerSidebar';
@@ -53,10 +54,11 @@ export default function TigerLessonLayout() {
       lessonName: 'Malayan Tiger',
       unableToLoadContent: 'Unable to load lesson content',
       sections: [
-        { id: 'introduction', title: 'Introduction' },
-        { id: 'biology', title: 'Biology & Classification' },
-        { id: 'ecology', title: 'Ecology & Behavior' },
-        { id: 'conservation', title: 'Conservation' },
+        { id: 'introduction', title: 'Introduction & Biology' },
+        { id: 'ecology', title: 'Ecology & Importance' },
+        { id: 'threats', title: 'Threats & Conservation' },
+        { id: 'behavior', title: 'Behavior & Fun Facts' },
+        { id: 'population', title: 'Population & Status' },
         { id: 'infographics', title: 'Infographics' },
         { id: 'references', title: 'References' },
       ]
@@ -65,10 +67,11 @@ export default function TigerLessonLayout() {
       lessonName: 'Harimau Malaya',
       unableToLoadContent: 'Tidak dapat memuatkan kandungan pelajaran',
       sections: [
-        { id: 'introduction', title: 'Pengenalan' },
-        { id: 'biology', title: 'Biologi & Klasifikasi' },
-        { id: 'ecology', title: 'Ekologi & Tingkah Laku' },
-        { id: 'conservation', title: 'Pemuliharaan' },
+        { id: 'introduction', title: 'Pengenalan & Biologi' },
+        { id: 'ecology', title: 'Ekologi & Kepentingan' },
+        { id: 'threats', title: 'Ancaman & Pemuliharaan' },
+        { id: 'behavior', title: 'Tingkah Laku & Fakta Menarik' },
+        { id: 'population', title: 'Populasi & Status' },
         { id: 'infographics', title: 'Infografik' },
         { id: 'references', title: 'References' },
       ]
@@ -80,10 +83,11 @@ export default function TigerLessonLayout() {
   // 🔥 UPDATED: Sections with bilingual titles and references
   const sections = text.sections.map((section, index) => {
     const components = [
-      TigerIntroduction,
-      TigerBiology,
-      TigerEcology,
-      TigerConservation,
+      TigerIntroduction, // Merged: Introduction + Biology
+      TigerEcology, // Merged: Ecology + Importance
+      TigerThreats, // Merged: Threats + Conservation
+      TigerBehavior, // Behavior & Fun Facts only
+      TigerPopulation, // Standalone: Population data
       TigerInfographics,
       TigerReferences
     ];

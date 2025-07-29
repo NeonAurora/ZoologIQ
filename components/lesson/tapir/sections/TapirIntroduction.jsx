@@ -1,193 +1,230 @@
 // components/lesson/tapir/sections/TapirIntroduction.jsx
+
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+// Lookup for category icons
+const getCategoryIcon = (category) => {
+  switch (category.toLowerCase()) {
+    case 'scientific name':
+    case 'nama saintifik':           return 'science';
+    case 'common name':
+    case 'nama biasa':               return 'label';
+    case 'appearance':
+    case 'penampilan':               return 'palette';
+    case 'habitat':                  return 'forest';
+    case 'conservation status':
+    case 'status pemuliharaan':      return 'warning';
+    case 'ecological role':
+    case 'peranan ekologi':          return 'eco';
+    case 'diet':                     return 'restaurant';
+    case 'lifespan':
+    case 'jangka hayat':             return 'schedule';
+    case 'behavior':
+    case 'tingkah laku':             return 'pets';
+    case 'threats':
+    case 'ancaman':                  return 'dangerous';
+    case 'human-wildlife conflict':
+    case 'konflik manusia-hidupan liar': return 'warning';
+    case 'conservation efforts':
+    case 'usaha pemuliharaan':       return 'security';
+    case 'interesting fact':
+    case 'fakta menarik':            return 'lightbulb';
+    default:                         return 'info';
+  }
+};
+
 export default function TapirIntroduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // 🔥 BILINGUAL CONTENT - Structured from your provided content
   const content = {
     en: {
-      // Hero Section
-      heroTitle: "Malaysia's Gentle Forest Guardian",
-      heroSubtitle: "The Malayan Tapir (Tapirus indicus)",
-      heroDescription: "With its striking black-and-white \"panda-like\" coloring and shy personality, the Malayan tapir is one of Southeast Asia's most unique and ancient mammals. Often called the \"forest gardener\", this elusive creature plays a crucial role in maintaining healthy rainforests.",
-      criticalStatus: "**Critical Status:** Fewer than 2,500 individuals remain in the wild, with Malaysia being their last stronghold.",
-      
-      // Section Headers
-      quickFacts: "Quick Facts",
-      whatMakesSpecial: "What Makes Tapirs Special",
-      whyMatters: "Why the Malayan Tapir Matters",
-      scientificClassification: "Scientific Classification",
-      bePartOfSolution: "Be Part of the Solution",
-      
-      // Basic Info
-      basicInfo: [
-        { label: 'Scientific Name', value: 'Tapirus indicus', icon: 'science' },
-        { label: 'Conservation Status', value: 'Endangered (IUCN)', icon: 'warning' },
-        { label: 'Population', value: '< 2,500 in wild', icon: 'groups' },
-        { label: 'Lifespan', value: '25-30 years', icon: 'schedule' },
-      ],
-      
-      // Key Features
-      keyFeatures: [
+      // Hero
+      heroTitle: "Meet the Malayan Tapir: Malaysia's Gentle Forest Guardian:",
+      heroDescription:
+        "With its striking black-and-white \"panda-like\" coloring and shy personality, the Malayan tapir (Tapirus indicus) is one of Southeast Asia's most unique and ancient mammals. Often called the \"forest gardener\", this elusive creature plays a crucial role in maintaining healthy rainforests by spreading seeds as it roams quietly through the night.",
+      criticalStatus:
+        "Sadly, fewer than 2,500 individuals remain in the wild, with Malaysia being its stronghold. Habitat destruction, roadkills, and human encroachment are pushing this endangered species closer to extinction every year (Ng et al., 2022; IUCN, 2023).",
+      goodNews:
+        "But here's the good news: knowing more about the Malayan tapir can help save it. By learning and sharing, you're already part of the solution.",
+
+      // Basic Information cards
+      basicInfoTitle: "Basic Information on the Malayan Tapir (Tapirus indicus):",
+      basicInfoData: [
+        { category: "Scientific Name", info: "Tapirus indicus" },
+        { category: "Common Name", info: "Malayan Tapir" },
         {
-          icon: 'palette',
-          title: 'Distinctive Coloring',
-          description: 'Black and white "panda-like" pattern for camouflage',
-          color: '#9C27B0'
+          category: "Appearance",
+          info:
+            "Distinctive black and white coloration (black front and back, white midsection).\n\n" +
+            "Long, flexible snout (used like a short trunk).\n\n" +
+            "Largest among the tapir species."
         },
         {
-          icon: 'nature',
-          title: 'Forest Gardener',
-          description: 'Spreads thousands of seeds daily, maintaining forest diversity',
-          color: '#4CAF50'
+          category: "Habitat",
+          info:
+            "Dense tropical rainforests of Peninsular Malaysia, southern Thailand, and Sumatra.\n\n" +
+            "Prefers lowland forests near water sources."
         },
         {
-          icon: 'location-on',
-          title: 'Asian Endemic',
-          description: 'Only tapir species in Asia, found in Malaysia, Thailand, and Sumatra',
-          color: '#FF9800'
+          category: "Conservation Status",
+          info:
+            "Endangered (IUCN Red List)\n\n" +
+            "Fewer than 2,500 individuals are estimated in the wild"
         },
         {
-          icon: 'visibility-off',
-          title: 'Nocturnal & Shy',
-          description: 'Active at night, avoiding human contact',
-          color: '#3F51B5'
+          category: "Ecological Role",
+          info:
+            "Key seed disperser in tropical forests\n\n" +
+            "Helps maintain forest regeneration and biodiversity"
+        },
+        {
+          category: "Diet",
+          info: "Herbivorous: eats leaves, twigs, fruits, and aquatic plants"
+        },
+        { category: "Lifespan", info: "About 25–30 years in the wild" },
+        {
+          category: "Behavior",
+          info:
+            "Solitary and shy\n\n" +
+            "Nocturnal: most active at night\n\n" +
+            "Excellent swimmer"
+        },
+        {
+          category: "Threats",
+          info:
+            "Habitat Loss & Fragmentation: Due to deforestation for agriculture, logging, and infrastructure development\n\n" +
+            "Roadkill: Frequently killed while crossing roads and highways\n\n" +
+            "Human Encroachment: Development pushes them closer to settlements\n\n" +
+            "Poaching: Although less common than with tigers, it is still a threat."
+        },
+        {
+          category: "Human-Wildlife Conflict",
+          info:
+            "As natural habitats shrink, tapirs wander into human areas, causing unintentional conflicts."
+        },
+        {
+          category: "Conservation Efforts",
+          info:
+            "Protected under Malaysian law.\n\n" +
+            "Conservation programs focus on habitat preservation, road-crossing mitigation, and public education."
+        },
+        {
+          category: "Interesting Fact",
+          info:
+            "Despite its pig-like body, the tapir is more closely related to horses and rhinoceroses!"
         }
       ],
-      
-      // Why It Matters
-      whyItMatters: [
-        {
-          icon: 'eco',
-          title: 'Ecosystem Engineer',
-          description: 'Controls plant growth and maintains forest balance through selective browsing'
-        },
-        {
-          icon: 'health-and-safety',
-          title: 'Biodiversity Indicator',
-          description: 'Healthy tapir populations signal well-functioning ecosystems'
-        },
-        {
-          icon: 'history',
-          title: 'Living Fossil',
-          description: 'Survived 20+ million years, representing ancient evolutionary lineage'
-        },
-        {
-          icon: 'public',
-          title: 'Cultural Symbol',
-          description: 'Featured on Malaysia\'s 50-ringgit banknote as conservation icon'
-        }
-      ],
-      
+
       // Taxonomy
-      taxonomy: [
-        { rank: 'Kingdom', name: 'Animalia' },
-        { rank: 'Phylum', name: 'Chordata' },
-        { rank: 'Class', name: 'Mammalia' },
-        { rank: 'Order', name: 'Perissodactyla' },
-        { rank: 'Family', name: 'Tapiridae' },
-        { rank: 'Genus', name: 'Tapirus' },
-        { rank: 'Species', name: 'T. indicus' }
-      ],
-      
-      // Call to Action
-      ctaText: "By learning about the Malayan tapir, you're already contributing to conservation efforts. Knowledge leads to awareness, and awareness leads to action that can help save this remarkable species."
+      taxonomyTitle: "Taxonomic Classification of the Malayan Tapir:",
+      taxonomyData: [
+        { rank: "Kingdom", classification: "Animalia" },
+        { rank: "Phylum", classification: "Chordata" },
+        { rank: "Class", classification: "Mammalia" },
+        { rank: "Order", classification: "Perissodactyla" },
+        { rank: "Family", classification: "Tapiridae" },
+        { rank: "Genus", classification: "Tapirus" },
+        { rank: "Species", classification: "Tapirus indicus" },
+        { rank: "Common Name", classification: "Malayan Tapir" }
+      ]
     },
-    
     ms: {
-      // Hero Section
-      heroTitle: "Penjaga Hutan Malaysia yang Lembut",
-      heroSubtitle: "Tapir Malaya (Tapirus indicus)",
-      heroDescription: "Dengan warna hitam-putihnya yang mencolok seperti panda dan sifat pemalu, tapir Malaya adalah salah satu mamalia paling unik dan purba di Asia Tenggara. Sering dijuluki \"tukang kebun hutan\", makhluk misterius ini memainkan peranan penting dalam mengekalkan kesihatan hutan hujan.",
-      criticalStatus: "**Status Kritikal:** Kurang daripada 2,500 ekor masih tinggal di alam liar, dengan Malaysia menjadi kubu terakhirnya.",
-      
-      // Section Headers
-      quickFacts: "Fakta Pantas",
-      whatMakesSpecial: "Apa yang Menjadikan Tapir Istimewa",
-      whyMatters: "Mengapa Tapir Malaya Penting",
-      scientificClassification: "Klasifikasi Saintifik",
-      bePartOfSolution: "Menjadi Sebahagian Penyelesaian",
-      
-      // Basic Info
-      basicInfo: [
-        { label: 'Nama Saintifik', value: 'Tapirus indicus', icon: 'science' },
-        { label: 'Status Pemuliharaan', value: 'Terancam (IUCN)', icon: 'warning' },
-        { label: 'Populasi', value: '< 2,500 di alam liar', icon: 'groups' },
-        { label: 'Jangka Hayat', value: '25-30 tahun', icon: 'schedule' },
-      ],
-      
-      // Key Features
-      keyFeatures: [
+      // Hero (Malay)
+      heroTitle:
+        "Temuilah Tapir Malaya: Sang Penjaga Hutan Malaysia yang Lembut",
+      heroDescription:
+        "Dengan warna hitam-putihnya yang mencolok seperti panda dan sifat pemalu, tapir Malaya (Tapirus indicus) adalah salah satu mamalia paling unik dan purba di Asia Tenggara. Sering dijuluki \"tukang kebun hutan\", makhluk misterius ini memainkan peranan penting dalam mengekalkan kesihatan hutan hujan dengan menyebarkan biji benih ketika ia menjelajah sunyi pada waktu malam.",
+      criticalStatus:
+        "Malangnya, kurang daripada 2,500 ekor tapir Malaya masih tinggal di alam liar, dengan Malaysia menjadi kubu terakhirnya. Kemusnahan habitat, kemalangan jalan raya, dan pencerobohan manusia semakin mendorong spesies terancam ini ke ambang kepupusan setiap tahun (Ng et al., 2022; IUCN, 2023).",
+      goodNews:
+        "Namun, ada berita baik: memahami tapir Malaya dengan lebih mendalam boleh membantu menyelamatkannya. Dengan belajar dan berkongsi pengetahuan, anda sudah menjadi sebahagian daripada penyelesaian.",
+
+      // Basic Information (Malay)
+      basicInfoTitle: "MAKLUMAT ASAS TAPIR MALAYA (Tapirus indicus)",
+      basicInfoData: [
+        { category: "Nama Saintifik", info: "Tapirus indicus" },
+        { category: "Nama Biasa", info: "Tapir Malaya" },
         {
-          icon: 'palette',
-          title: 'Warna Tersendiri',
-          description: 'Corak hitam-putih seperti "panda" untuk penyamaran',
-          color: '#9C27B0'
+          category: "Penampilan",
+          info:
+            "Warna hitam-putih tersendiri (bahagian depan & belakang hitam, bahagian tengah putih)\n\n" +
+            "Muncung panjang dan fleksibel (digunakan seperti belalai pendek)\n\n" +
+            "Spesies tapir terbesar"
         },
         {
-          icon: 'nature',
-          title: 'Tukang Kebun Hutan',
-          description: 'Menyebarkan beribu-ribu biji benih setiap hari, mengekalkan kepelbagaian hutan',
-          color: '#4CAF50'
+          category: "Habitat",
+          info:
+            "Hutan hujan tropika tebal di Semenanjung Malaysia, selatan Thailand dan Sumatera\n\n" +
+            "Lebih gemar hutan tanah rendah berhampiran sumber air"
         },
         {
-          icon: 'location-on',
-          title: 'Endemik Asia',
-          description: 'Satu-satunya spesies tapir di Asia, ditemui di Malaysia, Thailand, dan Sumatera',
-          color: '#FF9800'
+          category: "Status Pemuliharaan",
+          info:
+            "Terancam (Senarai Merah IUCN)\n\n" +
+            "Dianggarkan kurang daripada 2,500 ekor di alam liar"
         },
         {
-          icon: 'visibility-off',
-          title: 'Nokturnal & Pemalu',
-          description: 'Aktif pada waktu malam, mengelakkan hubungan dengan manusia',
-          color: '#3F51B5'
+          category: "Peranan Ekologi",
+          info:
+            "Penyebar biji benih utama dalam hutan tropika\n\n" +
+            "Membantu mengekalkan pertumbuhan semula hutan dan biodiversiti"
+        },
+        {
+          category: "Diet",
+          info: "Herbivor: memakan daun, ranting, buah, dan tumbuhan akuatik"
+        },
+        { category: "Jangka Hayat", info: "Kira-kira 25–30 tahun di alam liar" },
+        {
+          category: "Tingkah Laku",
+          info:
+            "Bersendirian dan pemalu\n\n" +
+            "Nokturnal: paling aktif pada waktu malam\n\n" +
+            "Perenang yang handal"
+        },
+        {
+          category: "Ancaman",
+          info:
+            "Kehilangan Habitat & Fragmentasi: Disebabkan pembukaan hutan untuk pertanian, pembalakan dan pembangunan infrastruktur\n\n" +
+            "Kemalangan Jalan Raya: Sering terbunuh ketika melintas jalan\n\n" +
+            "Pencerobohan Manusia: Pembangunan mendorong mereka lebih dekat ke kawasan penempatan\n\n" +
+            "Pemburuan Haram: Walaupun kurang berbanding harimau, ia tetap menjadi ancaman"
+        },
+        {
+          category: "Konflik Manusia-Hidupan Liar",
+          info:
+            "Apabila habitat semula jadi mengecil, tapir berkeliaran ke kawasan manusia menyebabkan konflik tidak sengaja"
+        },
+        {
+          category: "Usaha Pemuliharaan",
+          info:
+            "Dilindungi di bawah undang-undang Malaysia\n\n" +
+            "Program pemuliharaan memberi tumpuan kepada pemeliharaan habitat, mitigasi lintasan jalan, dan pendidikan awam"
+        },
+        {
+          category: "Fakta Menarik",
+          info:
+            "Walaupun badannya seperti babi, tapir sebenarnya lebih rapat hubungannya dengan kuda dan badak!"
         }
       ],
-      
-      // Why It Matters
-      whyItMatters: [
-        {
-          icon: 'eco',
-          title: 'Jurutera Ekosistem',
-          description: 'Mengawal pertumbuhan tumbuhan dan mengekalkan keseimbangan hutan melalui pemakanan terpilih'
-        },
-        {
-          icon: 'health-and-safety',
-          title: 'Petunjuk Biodiversiti',
-          description: 'Populasi tapir yang sihat menandakan ekosistem yang berfungsi dengan baik'
-        },
-        {
-          icon: 'history',
-          title: 'Fosil Hidup',
-          description: 'Bertahan selama 20+ juta tahun, mewakili keturunan evolusi purba'
-        },
-        {
-          icon: 'public',
-          title: 'Simbol Budaya',
-          description: 'Dipaparkan pada wang kertas 50-ringgit Malaysia sebagai ikon pemuliharaan'
-        }
-      ],
-      
-      // Taxonomy
-      taxonomy: [
-        { rank: 'Kingdom', name: 'Animalia' },
-        { rank: 'Filum', name: 'Chordata' },
-        { rank: 'Kelas', name: 'Mammalia' },
-        { rank: 'Order', name: 'Perissodactyla' },
-        { rank: 'Keluarga', name: 'Tapiridae' },
-        { rank: 'Genus', name: 'Tapirus' },
-        { rank: 'Spesies', name: 'T. indicus' }
-      ],
-      
-      // Call to Action
-      ctaText: "Dengan mempelajari tentang tapir Malaya, anda sudah menyumbang kepada usaha pemuliharaan. Pengetahuan membawa kepada kesedaran, dan kesedaran membawa kepada tindakan yang boleh membantu menyelamatkan spesies luar biasa ini."
+
+      // Taxonomy (Malay)
+      taxonomyTitle: "Klasifikasi Taksonomi Tapir Malaya:",
+      taxonomyData: [
+        { rank: "Kingdom", classification: "Animalia" },
+        { rank: "Filum", classification: "Chordata" },
+        { rank: "Kelas", classification: "Mammalia" },
+        { rank: "Order", classification: "Perissodactyla" },
+        { rank: "Keluarga", classification: "Tapiridae" },
+        { rank: "Genus", classification: "Tapirus" },
+        { rank: "Spesies", classification: "Tapirus indicus" },
+        { rank: "Nama Biasa", classification: "Tapir Malaya" }
+      ]
     }
   };
 
@@ -195,212 +232,124 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Hero Introduction */}
-      <View style={[
-        styles.heroCard,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderColor: isDark ? Colors.dark.border : Colors.light.border
-        }
-      ]}>
+      {/* Hero Section */}
+      <View
+        style={[
+          styles.heroCard,
+          {
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}>
         <View style={styles.heroHeader}>
           <ThemedText style={styles.heroEmoji}>🦌</ThemedText>
           <View style={styles.heroTitleContainer}>
-            <ThemedText style={[
-              styles.heroTitle,
-              { color: isDark ? Colors.dark.text : Colors.light.text }
-            ]}>
+            <ThemedText
+              style={[
+                styles.heroTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
               {text.heroTitle}
-            </ThemedText>
-            <ThemedText style={[
-              styles.heroSubtitle,
-              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-            ]}>
-              {text.heroSubtitle}
             </ThemedText>
           </View>
         </View>
-        
-        <ThemedText style={[
-          styles.heroDescription,
-          { color: isDark ? Colors.dark.text : Colors.light.text }
-        ]}>
-          {text.heroDescription}
-        </ThemedText>
-
-        <View style={[
-          styles.alertBox,
-          { 
-            backgroundColor: isDark ? '#B71C1C20' : '#FFEBEE',
-            borderLeftColor: '#F44336'
-          }
-        ]}>
-          <MaterialIcons name="warning" size={20} color="#F44336" />
-          <ThemedText style={[
-            styles.alertText,
+        <ThemedText
+          style={[
+            styles.heroDescription,
             { color: isDark ? Colors.dark.text : Colors.light.text }
           ]}>
+          {text.heroDescription}
+        </ThemedText>
+        <View
+          style={[
+            styles.alertBox,
+            {
+              backgroundColor: isDark ? '#B71C1C20' : '#FFEBEE',
+              borderLeftColor: '#F44336'
+            }
+          ]}>
+          <MaterialIcons name="warning" size={20} color="#F44336" />
+          <ThemedText
+            style={[
+              styles.alertText,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
             {text.criticalStatus}
           </ThemedText>
         </View>
-      </View>
-
-      {/* Basic Information */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <MaterialIcons 
-            name="info" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
-          />
-          <ThemedText style={[
-            styles.sectionTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
+        <View
+          style={[
+            styles.goodNewsBox,
+            {
+              backgroundColor: isDark ? '#1B5E2020' : '#E8F5E8',
+              borderLeftColor: '#4CAF50'
+            }
           ]}>
-            {text.quickFacts}
-          </ThemedText>
-        </View>
-        
-        <View style={styles.infoGrid}>
-          {text.basicInfo.map((info, index) => (
-            <View key={index} style={[
-              styles.infoCard,
-              { 
-                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor: isDark ? Colors.dark.border : Colors.light.border
-              }
+          <MaterialIcons name="lightbulb" size={20} color="#4CAF50" />
+          <ThemedText
+            style={[
+              styles.goodNewsText,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
             ]}>
-              <View style={[
-                styles.infoIcon,
-                { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
-              ]}>
-                <MaterialIcons 
-                  name={info.icon} 
-                  size={20} 
-                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
-                />
-              </View>
-              <View style={styles.infoContent}>
-                <ThemedText style={[
-                  styles.infoLabel,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}>
-                  {info.label}
-                </ThemedText>
-                <ThemedText style={[
-                  styles.infoValue,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
-                ]}>
-                  {info.value}
-                </ThemedText>
-              </View>
-            </View>
-          ))}
+            {text.goodNews}
+          </ThemedText>
         </View>
       </View>
 
-      {/* Key Features */}
+      {/* Basic Information Cards */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialIcons 
-            name="star" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          <MaterialIcons
+            name="biotech"
+            size={20}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
-          <ThemedText style={[
-            styles.sectionTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.whatMakesSpecial}
+          <ThemedText
+            style={[
+              styles.sectionTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+            {text.basicInfoTitle}
           </ThemedText>
         </View>
-        
-        <View style={styles.featuresGrid}>
-          {text.keyFeatures.map((feature, index) => (
-            <View key={index} style={[
-              styles.featureCard,
-              { 
-                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor: isDark ? Colors.dark.border : Colors.light.border
-              }
-            ]}>
-              <View style={[
-                styles.featureIcon,
-                { backgroundColor: feature.color + '20' }
+        <View style={styles.cardsGrid}>
+          {text.basicInfoData.map((item, idx) => (
+            <View
+              key={idx}
+              style={[
+                styles.card,
+                {
+                  backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border
+                }
               ]}>
-                <MaterialIcons 
-                  name={feature.icon} 
-                  size={20} 
-                  color={feature.color} 
-                />
-              </View>
-              <View style={styles.featureContent}>
-                <ThemedText style={[
-                  styles.featureTitle,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
-                ]}>
-                  {feature.title}
+              <MaterialIcons
+                name={getCategoryIcon(item.category)}
+                size={24}
+                color={isDark ? Colors.dark.tint : Colors.light.tint}
+                style={styles.cardIcon}
+              />
+              <View style={styles.cardContent}>
+                <ThemedText
+                  style={[
+                    styles.cardTitle,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}>
+                  {item.category}
                 </ThemedText>
-                <ThemedText style={[
-                  styles.featureDesc,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}>
-                  {feature.description}
-                </ThemedText>
-              </View>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Why Tapirs Matter */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <MaterialIcons 
-            name="favorite" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
-          />
-          <ThemedText style={[
-            styles.sectionTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.whyMatters}
-          </ThemedText>
-        </View>
-        
-        <View style={styles.importanceList}>
-          {text.whyItMatters.map((item, index) => (
-            <View key={index} style={[
-              styles.importanceItem,
-              { 
-                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor: isDark ? Colors.dark.border : Colors.light.border
-              }
-            ]}>
-              <View style={[
-                styles.importanceIcon,
-                { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
-              ]}>
-                <MaterialIcons 
-                  name={item.icon} 
-                  size={18} 
-                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
-                />
-              </View>
-              <View style={styles.importanceContent}>
-                <ThemedText style={[
-                  styles.importanceTitle,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
-                ]}>
-                  {item.title}
-                </ThemedText>
-                <ThemedText style={[
-                  styles.importanceDesc,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}>
-                  {item.description}
-                </ThemedText>
+                {item.info
+                  .split('\n\n')
+                  .filter(line => line.trim())
+                  .map((line, bIdx) => (
+                    <ThemedText
+                      key={bIdx}
+                      style={[
+                        styles.cardDescription,
+                        { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                      ]}>
+                      • {line.replace(/^•\s*/, '')}
+                    </ThemedText>
+                  ))}
               </View>
             </View>
           ))}
@@ -410,88 +359,64 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
       {/* Taxonomic Classification */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialIcons 
-            name="account-tree" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
+          <MaterialIcons
+            name="account-tree"
+            size={20}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
-          <ThemedText style={[
-            styles.sectionTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.scientificClassification}
+          <ThemedText
+            style={[
+              styles.sectionTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+            {text.taxonomyTitle}
           </ThemedText>
         </View>
-        
-        <View style={[
-          styles.taxonomyCard,
-          { 
-            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-            borderColor: isDark ? Colors.dark.border : Colors.light.border
-          }
-        ]}>
-          {text.taxonomy.map((item, index) => (
-            <View key={index} style={styles.taxonomyRow}>
-              <ThemedText style={[
-                styles.taxonomyRank,
-                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+        <View
+          style={[
+            styles.taxonomyTable,
+            {
+              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+              borderColor: isDark ? Colors.dark.border : Colors.light.border
+            }
+          ]}>
+          {text.taxonomyData.map((tax, tIdx) => (
+            <View
+              key={tIdx}
+              style={[
+                styles.taxonomyRow,
+                tIdx !== text.taxonomyData.length - 1 && {
+                  borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
+                  borderBottomWidth: 1
+                }
               ]}>
-                {item.rank}:
+              <ThemedText
+                style={[
+                  styles.taxonomyRank,
+                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                ]}>
+                {tax.rank}
               </ThemedText>
-              <ThemedText style={[
-                styles.taxonomyName,
-                { color: isDark ? Colors.dark.text : Colors.light.text }
-              ]}>
-                {item.name}
+              <ThemedText
+                style={[
+                  styles.taxonomyName,
+                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                ]}>
+                {tax.classification}
               </ThemedText>
             </View>
           ))}
         </View>
-      </View>
-
-      {/* Call to Action */}
-      <View style={[
-        styles.ctaCard,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderColor: isDark ? Colors.dark.border : Colors.light.border,
-          borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
-        }
-      ]}>
-        <View style={styles.ctaHeader}>
-          <MaterialIcons 
-            name="lightbulb" 
-            size={20} 
-            color={isDark ? Colors.dark.tint : Colors.light.tint} 
-          />
-          <ThemedText style={[
-            styles.ctaTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.bePartOfSolution}
-          </ThemedText>
-        </View>
-        <ThemedText style={[
-          styles.ctaText,
-          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-        ]}>
-          {text.ctaText}
-        </ThemedText>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-    paddingBottom: 32,
-  },
+  container: { flex: 1 },
+  content: { padding: 16, paddingBottom: 32 },
 
-  // Hero Section
+  // Hero styles
   heroCard: {
     borderRadius: 16,
     padding: 20,
@@ -501,141 +426,39 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
-  heroHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  heroEmoji: {
-    fontSize: 32,
-    marginRight: 16,
-  },
-  heroTitleContainer: {
-    flex: 1,
-  },
-  heroTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
-  heroDescription: {
-    fontSize: 16,
-    lineHeight: 24,
-    marginBottom: 16,
-  },
+  heroHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
+  heroEmoji: { fontSize: 32, marginRight: 16 },
+  heroTitleContainer: { flex: 1 },
+  heroTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
+  heroDescription: { fontSize: 16, lineHeight: 24, marginBottom: 16 },
   alertBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: 12,
     borderRadius: 8,
     borderLeftWidth: 4,
+    marginBottom: 12
   },
-  alertText: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginLeft: 8,
-    flex: 1,
-  },
-
-  // Section Structure
-  section: {
-    marginBottom: 24,
-  },
-  sectionHeader: {
+  alertText: { fontSize: 14, lineHeight: 20, marginLeft: 8, flex: 1 },
+  goodNewsBox: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 16,
+    alignItems: 'flex-start',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 4
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
+  goodNewsText: { fontSize: 14, lineHeight: 20, marginLeft: 8, flex: 1 },
 
-  // Info Grid
-  infoGrid: {
-    gap: 12,
-  },
-  infoCard: {
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  infoIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  infoContent: {
-    flex: 1,
-  },
-  infoLabel: {
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  infoValue: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  // Section styles
+  section: { marginBottom: 24 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  sectionTitle: { fontSize: 18, fontWeight: '600' },
 
-  // Features Grid
-  featuresGrid: {
-    gap: 12,
-  },
-  featureCard: {
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  featureIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  featureDesc: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-
-  // Importance List
-  importanceList: {
-    gap: 12,
-  },
-  importanceItem: {
+  // CardsGrid & Card
+  cardsGrid: { gap: 12 },
+  card: {
     flexDirection: 'row',
     padding: 16,
     borderRadius: 12,
@@ -645,79 +468,30 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: 2
   },
-  importanceIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-    marginTop: 2,
-  },
-  importanceContent: {
-    flex: 1,
-  },
-  importanceTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  importanceDesc: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
+  cardIcon: { marginRight: 16, marginTop: 4 },
+  cardContent: { flex: 1 },
+  cardTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  cardDescription: { fontSize: 14, lineHeight: 20, marginBottom: 4 },
 
-  // Taxonomy
-  taxonomyCard: {
+  // Taxonomy styles
+  taxonomyTable: {
     borderRadius: 12,
-    padding: 16,
     borderWidth: 1,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: 2
   },
   taxonomyRow: {
     flexDirection: 'row',
-    paddingVertical: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center'
   },
-  taxonomyRank: {
-    fontSize: 14,
-    width: 80,
-  },
-  taxonomyName: {
-    fontSize: 14,
-    fontWeight: '500',
-    flex: 1,
-  },
-
-  // Call to Action
-  ctaCard: {
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  ctaHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  ctaTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  ctaText: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
+  taxonomyRank: { fontSize: 13, fontWeight: '600', flex: 1 },
+  taxonomyName: { fontSize: 13, fontStyle: 'italic', flex: 1.5 }
 });

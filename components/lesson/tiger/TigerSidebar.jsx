@@ -1,125 +1,158 @@
 // components/lesson/tiger/TigerSidebar.jsx
+
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  ScrollView
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export default function TigerSidebar({ 
-  sections, 
-  currentSection, 
+// Bilingual labels
+const TIGER_LABELS = {
+  en: {
+    header: 'Lesson Sections',
+    subheader: 'Malayan Tiger',
+    progress: 'Progress',
+    completed: 'completed'
+  },
+  ms: {
+    header: 'Bahagian Pelajaran',
+    subheader: 'Harimau Malaya',
+    progress: 'Kemajuan',
+    completed: 'selesai'
+  }
+};
+
+export default function TigerSidebar({
+  sections,
+  currentSection,
   completedSections,
-  currentLanguage = 'en', // 🔥 NEW: Language prop
+  currentLanguage = 'en',
   onSectionSelect,
   onClose,
   slideAnim
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const {
+    header,
+    subheader,
+    progress: progressLabel,
+    completed: completedLabel
+  } = TIGER_LABELS[currentLanguage] || TIGER_LABELS.en;
 
-  // 🔥 NEW: Bilingual content
-  const content = {
-    en: {
-      lessonSections: 'Lesson Sections',
-      progress: 'Progress',
-      completed: 'completed'
-    },
-    ms: {
-      lessonSections: 'Bahagian Pelajaran',
-      progress: 'Kemajuan',
-      completed: 'selesai'
-    }
-  };
-
-  const text = content[currentLanguage] || content.en;
+  const bgSurface = isDark ? Colors.dark.surface : Colors.light.surface;
+  const bdColor   = isDark ? Colors.dark.border  : Colors.light.border;
+  const text      = isDark ? Colors.dark.text    : Colors.light.text;
+  const textSec   = isDark ? Colors.dark.textSecondary : Colors.light.textSecondary;
+  const tint      = isDark ? Colors.dark.tint    : Colors.light.tint;
 
   return (
-    <Animated.View style={[
-      styles.sidebarOverlay,
-      {
-        transform: [{ translateX: slideAnim }]
-      }
-    ]}>
-      <View style={[
-        styles.sidebar,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderRightColor: isDark ? Colors.dark.border : Colors.light.border
+    <Animated.View
+      style={[
+        styles.overlay,
+        {
+          transform:      [{ translateX: slideAnim }],
+          backgroundColor: bgSurface,
+          borderRightColor: bdColor
         }
-      ]}>
-        {/* Close Button */}
-        <View style={styles.sidebarHeader}>
-          <ThemedText style={[
-            styles.sidebarTitle,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-            {text.lessonSections}
+      ]}
+    >
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { borderBottomColor: bdColor }]}>
+          <ThemedText style={[styles.title, { color: text }]}>
+            {header}
           </ThemedText>
-          <TouchableOpacity 
-            style={styles.closeButton}
-            onPress={onClose}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <MaterialIcons 
-              name="chevron-left" 
-              size={24} 
-              color={isDark ? Colors.dark.textSecondary : Colors.light.textSecondary} 
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <MaterialIcons
+              name="chevron-left"
+              size={24}
+              color={textSec}
             />
           </TouchableOpacity>
         </View>
-        
-        {/* Section Items */}
-        <View style={styles.sectionsContainer}>
-          {sections.map((section, index) => (
-            <TouchableOpacity
-              key={section.id}
-              style={[
-                styles.sectionItem,
-                currentSection === index && {
-                  backgroundColor: isDark 
-                    ? `${Colors.dark.tint}25` // 25% opacity
-                    : `${Colors.light.tint}15` // 15% opacity
-                }
-              ]}
-              onPress={() => onSectionSelect(index)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.sectionContent}>
-                {/* Progress Dot */}
-                <View style={[
-                  styles.progressDot,
-                  {
-                    backgroundColor: completedSections.has(index)
-                      ? (isDark ? Colors.dark.tint : Colors.light.tint)
-                      : (isDark ? Colors.dark.backgroundTertiary : '#E0E0E0')
-                  }
-                ]} />
-                
-                <ThemedText style={[
-                  styles.sectionTitle,
-                  {
-                    color: isDark ? Colors.dark.text : Colors.light.text,
-                    fontWeight: currentSection === index ? '600' : 'normal'
-                  }
-                ]}>
-                  {section.title}
-                </ThemedText>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-        
-        {/* Progress Summary */}
-        <View style={[
-          styles.progressSummary,
-          { borderTopColor: isDark ? Colors.dark.border : Colors.light.border }
-        ]}>
-          <ThemedText style={[
-            styles.progressText,
-            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-          ]}>
-            {text.progress}: {completedSections.size}/{sections.length} {text.completed}
+        <ThemedText style={[styles.subheader, { color: textSec }]}>
+          {subheader}
+        </ThemedText>
+
+        {/* Section List */}
+        <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+          {sections.map((sec, idx) => {
+            const isActive    = idx === currentSection;
+            const isCompleted = completedSections.has(idx);
+
+            return (
+              <TouchableOpacity
+                key={sec.id}
+                style={[
+                  styles.item,
+                  isActive && { backgroundColor: tint + '20' }
+                ]}
+                onPress={() => onSectionSelect(idx)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.itemContent}>
+                  {/* Numbered badge instead of dot */}
+                  <View
+                    style={[
+                      styles.badge,
+                      {
+                        backgroundColor: isCompleted
+                          ? '#4CAF50'
+                          : isActive
+                            ? tint
+                            : bgSurface
+                      }
+                    ]}
+                  >
+                    {isCompleted ? (
+                      <MaterialIcons
+                        name="check"
+                        size={12}
+                        color="#fff"
+                      />
+                    ) : (
+                      <ThemedText
+                        style={[
+                          styles.badgeText,
+                          {
+                            color: isActive
+                              ? '#fff'
+                              : textSec
+                          }
+                        ]}
+                      >
+                        {idx + 1}
+                      </ThemedText>
+                    )}
+                  </View>
+
+                  <ThemedText
+                    style={[
+                      styles.itemText,
+                      { color: isActive ? tint : text },
+                      isActive && styles.itemTextActive
+                    ]}
+                  >
+                    {sec.title}
+                  </ThemedText>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* Footer / Progress */}
+        <View style={[styles.footer, { borderTopColor: bdColor }]}>
+          <ThemedText style={[styles.progressText, { color: textSec }]}>
+            {progressLabel}: {completedSections.size}/{sections.length} {completedLabel}
           </ThemedText>
         </View>
       </View>
@@ -128,72 +161,48 @@ export default function TigerSidebar({
 }
 
 const styles = StyleSheet.create({
-  sidebarOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    width: 240, // Reduced width for Android
-    zIndex: 1000,
+  overlay: {
+    position:    'absolute',
+    top:         0,
+    left:        0,
+    bottom:      0,
+    width:       240,
+    zIndex:      1000,
+    borderRightWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 16,
+    elevation: 16
   },
-  sidebar: {
-    flex: 1,
-    borderRightWidth: 1,
-  },
-  sidebarHeader: {
-    flexDirection: 'row',
+  container:       { flex: 1 },
+  header:          {
+    flexDirection:  'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
+    alignItems:     'center',
+    padding:        16,
+    borderBottomWidth: 1
   },
-  sidebarTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+  title:           { fontSize: 16, fontWeight: '600' },
+  closeBtn:        { padding: 4 },
+  subheader:       { paddingHorizontal: 16, paddingBottom: 8, fontSize: 12 },
+  list:            { flex: 1, paddingVertical: 8 },
+  item:            { marginHorizontal: 12, marginVertical: 2, borderRadius: 8 },
+  itemContent:     { flexDirection: 'row', alignItems: 'center', padding: 12 },
+
+  // numbered badge
+  badge:           {
+    width:        20,
+    height:       20,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems:   'center',
+    marginRight:  12
   },
-  closeButton: {
-    padding: 4,
-  },
-  sectionsContainer: {
-    flex: 1,
-    paddingVertical: 8,
-  },
-  sectionItem: {
-    marginHorizontal: 12,
-    marginVertical: 2,
-    borderRadius: 8,
-  },
-  sectionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  progressDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 12,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    flex: 1,
-    lineHeight: 18,
-  },
-  progressSummary: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-  },
-  progressText: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
+  badgeText:      { fontSize: 10, fontWeight: '600' },
+
+  itemText:       { fontSize: 14, flex: 1, lineHeight: 18 },
+  itemTextActive: { fontWeight: '600' },
+  footer:         { padding: 16, borderTopWidth: 1 },
+  progressText:   { fontSize: 12, textAlign: 'center' }
 });

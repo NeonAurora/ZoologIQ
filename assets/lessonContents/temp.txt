@@ -1,0 +1,73 @@
+TAPIR CONTENT MAPPING - EXACT SECTION BREAKDOWN FROM tapir.txt
+
+====================
+SECTION 1: TapirIntroduction
+Lines 1-17: Hero introduction content
+- Meet the Malayan Tapir: Malaysia's Gentle Forest Guardian (EN: lines 1-8)
+- Temuilah Tapir Malaya: Sang Penjaga Hutan Malaysia yang Lembut (MS: lines 10-13)
+
+====================
+SECTION 2: TapirBiology  
+Lines 20-130: Basic information + Taxonomy
+- Basic Information on the Malayan Tapir table (EN: lines 20-59)
+- MAKLUMAT ASAS TAPIR MALAYA table (MS: lines 71-99)
+- Taxonomic Classification of the Malayan Tapir (EN: lines 104-115)
+- Klasifikasi Taksonomi Tapir Malaya (MS: lines 119-128)
+
+====================
+SECTION 3: TapirConservation
+Lines 132-238: Biodiversity Role + Why Tapirs Matter + Threats
+- Malayan Tapir's Role in Biodiversity table (EN: lines 132-141)
+- Peranan Tapir Malaya dalam Kepelbagaian Biologi table (MS: lines 142-149)
+- Why the Malayan Tapir Matters (EN: lines 152-176)
+- Threats to the Malayan Tapir (EN: lines 178-202)
+- Mengapa Tapir Malaya Penting (MS: lines 204-220)
+- Ancaman terhadap Tapir Malaya (MS: lines 222-238)
+
+====================
+SECTION 4: TapirThreats  
+Lines 241-328: How to Help + Conservation Strategies
+- How You Can Help Save the Malayan Tapir (EN: lines 241-265)
+- Conservation Strategies for the Malayan Tapir in Malaysia (EN: lines 268-295)
+- Cara Anda Boleh Membantu Menyelamatkan Tapir Malaya (MS: lines 298-314)
+- Strategi Pemuliharaan Tapir Malaya di Malaysia (MS: lines 316-328)
+
+====================
+SECTION 5: TapirPopulation  
+Lines 651-686: Population Data Only (Tiger-style focused design)
+- Malayan Tapir Population Trend 2019-2024 table (EN: lines 651-660)
+- Trend populasi Tapir Melayu 2019-2024 table (MS: lines 680-686)
+
+====================
+SECTION 5B: TapirGlobalStrategies (content moved from old Section 5)
+Lines 333-425: Global Strategies + Success Stories + Coexistence
+- Conservation Strategies in Other Parts of the World (EN: lines 333-351)
+- Coexistence Strategies for the Malayan Tapir in Malaysia (EN: lines 353-367)
+- Coexistence Strategies in Other Parts of the World (EN: lines 369-390)
+- Conservation Success Stories in Malaysia (EN: lines 392-405)
+- Conservation Success Stories in Other Parts of the World (EN: lines 408-425)
+- All corresponding Malay versions (MS: lines 468-505)
+
+====================
+SECTION 6: TapirBehavior (UPDATED SEQUENCE)
+Lines 432-527 + 531-644: Fun Facts + Reproduction + Physiology + Behavior
+- Fun Facts About the Malayan Tapir (EN: lines 432-465)
+- Fakta Menarik Tentang Tapir Malaya (MS: lines 507-527)
+- Reproduction & Family Life of the Malayan Tapir (EN: lines 531-560)
+- Reproduksi & Kehidupan Keluarga Tapir Malaya (MS: lines 602-620)
+- Physiology & Adaptations of the Malayan Tapir (EN: lines 565-574)
+- Fisiologi & Adaptasi Tapir Malaya (MS: lines 622-628)
+- Behavior & Intelligence of the Malayan Tapir (EN: lines 576-600)
+- Tingkah Laku & Kecerdasan Tapir Malaya (MS: lines 630-644)
+
+====================
+SECTION 7: TapirFunFacts (NOW EMPTY - content moved to Section 6)
+NOTE: This section is now redundant as fun facts are integrated into TapirBehavior component
+
+====================
+NOTES:
+- Keep TapirInfographics and TapirReferences as-is (per instructions)
+- Use exact line content, no paraphrasing
+- Maintain bilingual structure (en/ms keys)
+- Use valid Material Design icons only
+- Use "Data" suffix for arrays

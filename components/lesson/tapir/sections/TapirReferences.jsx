@@ -1,18 +1,23 @@
+// components/lesson/tapir/sections/TapirReferences.jsx
 import React from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  Alert
+} from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TapirReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
-  
-  // Tapir-specific references from assets/lessonContents/tapir.txt
-  const references = [
+
+const references = [
     {
       authors: 'Adila, N., Ahmad, A. H., & Abdul-Patah, P.',
       year: '2017',
@@ -438,20 +443,19 @@ export default function TapirReferences() {
       source: 'Wildlife Research, 50(2), 118–126'
     }
   ];
-  
-  const handleReferencePress = (reference) => {
-    if (reference.url) {
+
+  const handleReferencePress = (ref) => {
+    if (ref.url) {
       Alert.alert(
         'Open External Link',
-        `This will open "${reference.title}" in your browser. Continue?`,
+        `This will open "${ref.title}" in your browser. Continue?`,
         [
           { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Open', 
+          {
+            text: 'Open',
             onPress: () => {
-              Linking.openURL(reference.url).catch(err => {
-                console.error('Failed to open URL:', err);
-                Alert.alert('Error', 'Unable to open the link. Please try again later.');
+              Linking.openURL(ref.url).catch(() => {
+                Alert.alert('Error', 'Unable to open the link.');
               });
             }
           }
@@ -460,7 +464,7 @@ export default function TapirReferences() {
     } else {
       Alert.alert(
         'Reference Information',
-        `${reference.title}\n\nAuthors: ${reference.authors}\nYear: ${reference.year}\nSource: ${reference.source}`,
+        `${ref.title}\n\nAuthors: ${ref.authors}\nYear: ${ref.year}\nSource: ${ref.source}`,
         [{ text: 'OK' }]
       );
     }
@@ -468,95 +472,119 @@ export default function TapirReferences() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={[
-        styles.headerSection,
-        { 
-          backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-          borderBottomColor: isDark ? Colors.dark.border : Colors.light.border 
-        }
-      ]}>
-        <MaterialIcons name="library-books" size={24} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-        <ThemedText style={[
-          styles.sectionTitle,
-          { color: isDark ? Colors.dark.text : Colors.light.text }
-        ]}>
+      {/* Header */}
+      <ThemedView
+        style={[
+          styles.headerSection,
+          {
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}
+      >
+        <MaterialIcons
+          name="library-books"
+          size={24}
+          color={isDark ? Colors.dark.tint : Colors.light.tint}
+        />
+        <ThemedText
+          style={[
+            styles.sectionTitle,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]}
+        >
           References
         </ThemedText>
       </ThemedView>
-      
-      <ThemedView style={[
-        styles.noticeCard,
-        { 
-          backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
-          borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint 
-        }
-      ]}>
-        <MaterialIcons name="info" size={20} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-        <ThemedText style={[
-          styles.noticeText,
-          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-        ]}>
-          The following scientific references support the information presented in this Malayan Tapir lesson. 
-          Content is displayed in English for academic consistency.
+
+      {/* Notice (now transparent) */}
+      <ThemedView
+        style={[
+          styles.noticeCard,
+          {
+            // switched to page background instead of surface
+            backgroundColor: isDark ? Colors.dark.background : Colors.light.background,
+            borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
+          }
+        ]}
+      >
+        <MaterialIcons
+          name="info"
+          size={20}
+          color={isDark ? Colors.dark.tint : Colors.light.tint}
+        />
+        <ThemedText
+          style={[
+            styles.noticeText,
+            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+          ]}
+        >
+          The following scientific references support the information presented
+          in this Malayan Tapir lesson. Content is displayed in English for academic consistency.
         </ThemedText>
       </ThemedView>
 
-      <ScrollView 
+      {/* List */}
+      <ScrollView
         style={styles.referencesScrollView}
         contentContainerStyle={styles.referencesContent}
         showsVerticalScrollIndicator={false}
       >
-        {references.map((reference, index) => (
+        {references.map((ref, idx) => (
           <TouchableOpacity
-            key={index}
+            key={idx}
             style={[
               styles.referenceCard,
-              { 
+              {
                 backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor: isDark ? Colors.dark.border : Colors.light.border,
-                shadowColor: isDark ? Colors.dark.text : Colors.light.text,
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
               }
             ]}
-            onPress={() => handleReferencePress(reference)}
+            onPress={() => handleReferencePress(ref)}
             activeOpacity={0.7}
           >
             <ThemedView style={styles.referenceHeader}>
               <ThemedView style={styles.referenceIcon}>
-                <MaterialIcons 
-                  name="article" 
-                  size={20} 
-                  color={isDark ? Colors.dark.tint : Colors.light.tint} 
+                <MaterialIcons
+                  name="article"
+                  size={20}
+                  color={isDark ? Colors.dark.tint : Colors.light.tint}
                 />
               </ThemedView>
-              
               <ThemedView style={styles.referenceInfo}>
-                <ThemedText style={[
-                  styles.referenceTitle,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
-                ]} numberOfLines={2}>
-                  {reference.title}
+                <ThemedText
+                  style={[
+                    styles.referenceTitle,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]}
+                  numberOfLines={2}
+                >
+                  {ref.title}
                 </ThemedText>
-                
-                <ThemedText style={[
-                  styles.referenceAuthors,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]} numberOfLines={2}>
-                  {reference.authors} ({reference.year})
+                <ThemedText
+                  style={[
+                    styles.referenceAuthors,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]}
+                  numberOfLines={2}
+                >
+                  {ref.authors} ({ref.year})
                 </ThemedText>
-                
-                <ThemedText style={[
-                  styles.referenceSource,
-                  { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
-                ]} numberOfLines={2}>
-                  {reference.source}
+                <ThemedText
+                  style={[
+                    styles.referenceSource,
+                    { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
+                  ]}
+                  numberOfLines={2}
+                >
+                  {ref.source}
                 </ThemedText>
               </ThemedView>
-              
-              {reference.url && (
-                <MaterialIcons 
-                  name="open-in-new" 
-                  size={18} 
-                  color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
+              {ref.url && (
+                <MaterialIcons
+                  name="open-in-new"
+                  size={18}
+                  color={isDark ? Colors.dark.textMuted : Colors.light.textMuted}
                 />
               )}
             </ThemedView>
@@ -568,21 +596,20 @@ export default function TapirReferences() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+
   headerSection: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    gap: 12,
+    gap: 12
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: '600',
+    fontWeight: '600'
   },
-  
+
   noticeCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -590,24 +617,23 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 4,
-    gap: 12,
+    gap: 12
+    // backgroundColor is now handled dynamically above
   },
   noticeText: {
     flex: 1,
     fontSize: 14,
     lineHeight: 20,
-    fontStyle: 'italic',
+    fontStyle: 'italic'
   },
-  
-  referencesScrollView: {
-    flex: 1,
-  },
+
+  referencesScrollView: { flex: 1 },
   referencesContent: {
     padding: 16,
     paddingTop: 0,
-    gap: 12,
+    gap: 12
   },
-  
+
   referenceCard: {
     borderRadius: 12,
     borderWidth: 1,
@@ -615,12 +641,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   referenceHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
+    backgroundColor: 'transparent'
   },
   referenceIcon: {
     width: 32,
@@ -628,24 +655,22 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(139, 69, 19, 0.1)',
+    backgroundColor: 'rgba(139, 69, 19, 0.1)'
   },
-  referenceInfo: {
-    flex: 1,
-  },
+  referenceInfo: { flex: 1, backgroundColor: 'transparent' },
   referenceTitle: {
     fontSize: 15,
     fontWeight: '600',
     lineHeight: 20,
-    marginBottom: 4,
+    marginBottom: 4
   },
   referenceAuthors: {
     fontSize: 13,
     fontWeight: '500',
-    marginBottom: 2,
+    marginBottom: 2
   },
   referenceSource: {
     fontSize: 12,
-    fontStyle: 'italic',
-  },
+    fontStyle: 'italic'
+  }
 });

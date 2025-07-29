@@ -39,6 +39,7 @@ yarn-error.*
 *.tsbuildinfo
 
 claude.md
+contextBuffer.txt
 
 app-example
 
