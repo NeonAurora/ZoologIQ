@@ -19,9 +19,9 @@ export default function CertificatePage() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <StaticCertificate
           recipientName={supabaseData?.name || user?.name || "Student"}
-          courseTitle="ZoologIQ Animal Learning"
+          courseTitle="WildguardMY Animal Learning"
           completionDate={new Date().toLocaleDateString()}
-          instructorName="ZoologIQ Education Team"
+          instructorName="WildguardMY Education Team"
           onCertificateGenerated={handleCertificateGenerated}
         />
       </ScrollView>

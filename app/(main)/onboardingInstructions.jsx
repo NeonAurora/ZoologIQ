@@ -59,8 +59,8 @@ export default function OnboardingInstructionsScreen() {
       id: 'welcome',
       icon: 'nature-people',
       title: {
-        en: 'Welcome to ZoologIQ',
-        ms: 'Selamat Datang ke ZoologIQ'
+        en: 'Welcome to WildguardMY',
+        ms: 'Selamat Datang ke WildguardMY'
       },
       content: {
         en: 'Embark on an exciting journey to discover Malaysia\'s incredible wildlife. Your learning adventure starts here.',
@@ -153,8 +153,8 @@ export default function OnboardingInstructionsScreen() {
         ms: 'Cara Ia Berfungsi'
       },
       content: {
-        en: 'Follow these simple steps to make the most of your learning experience with ZoologIQ.',
-        ms: 'Ikuti langkah mudah ini untuk memaksimumkan pengalaman pembelajaran anda dengan ZoologIQ.'
+        en: 'Follow these simple steps to make the most of your learning experience with WildguardMY.',
+        ms: 'Ikuti langkah mudah ini untuk memaksimumkan pengalaman pembelajaran anda dengan WildguardMY.'
       },
       instructions: [
         {

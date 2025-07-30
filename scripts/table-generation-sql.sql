@@ -1,5 +1,5 @@
 -- =========================================
--- ZoologIQ Database Schema - Complete Setup
+-- WildguardMY Database Schema - Complete Setup
 -- Auth0 Integration - Public Operations
 -- =========================================
 
@@ -280,7 +280,7 @@ grant all on all functions in schema public to postgres, anon, authenticated;
 
 -- First create a system admin user (replace with actual Auth0 user ID when available)
 insert into public.users (auth0_user_id, email, name, role, onboarding_completed) 
-values ('system-admin', 'admin@zoologiq.com', 'System Admin', 'admin', true)
+values ('system-admin', 'admin@wildguardmy.com', 'System Admin', 'admin', true)
 on conflict (auth0_user_id) do nothing;
 
 -- Insert quiz categories with audio URLs

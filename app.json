@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ZoologIQ",
-    "slug": "ZoologIQ",
+    "name": "WildguardMY",
+    "slug": "WildguardMY",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/zoologiq_icon.png",
+    "icon": "./assets/images/wildguardmy_icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,22 +13,22 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/zoologiq_icon.png",
+        "foregroundImage": "./assets/images/wildguardmy_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.neonaurora.ZoologIQ"
+      "package": "com.neonaurora.WildguardMY"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/zoologiq_icon.png"
+      "favicon": "./assets/images/wildguardmy_icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/zoologiq_icon.png",
+          "image": "./assets/images/wildguardmy_icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -44,7 +44,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "579a83db-be2b-470f-aceb-cd5b57d5be78"
+        "projectId": "c794b9af-61d8-451a-9242-fa0d2c175b24"
       }
     },
     "owner": "neonaurora"

@@ -337,6 +337,14 @@ export default function RootLayout() {
               headerShown: false  // Hide header for onboarding
             }} 
           />
+          <Drawer.Screen 
+            name="help" 
+            options={{ 
+              title: "Help & Support",
+              drawerItemStyle: { display: 'none' },
+              headerShown: true  // Hide header for onboarding
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>

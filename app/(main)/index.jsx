@@ -142,26 +142,6 @@ export default function HomePage() {
               {text.subtitle}
             </ThemedText>
           </View>
-          
-          {user && (
-            <TouchableOpacity 
-              style={[
-                styles.profileButton,
-                { 
-                  backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
-                  borderColor: isDark ? Colors.dark.border : Colors.light.border
-                }
-              ]}
-              onPress={() => router.push('/profile')}
-              activeOpacity={0.7}
-            >
-              <MaterialIcons 
-                name="account-circle" 
-                size={24} 
-                color={isDark ? Colors.dark.text : Colors.light.text} 
-              />
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Learning Topics Section */}

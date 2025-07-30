@@ -475,7 +475,7 @@ export function DrawerContent(props) {
       {/* App Version */}
       <View style={styles.versionSection}>
         <Text variant="bodySmall" style={styles.versionText}>
-          ZoologIQ v1.0.0
+          WildguardMY v1.0.0
         </Text>
       </View>
     </DrawerContentScrollView>

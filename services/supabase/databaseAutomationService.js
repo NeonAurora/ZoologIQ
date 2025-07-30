@@ -483,7 +483,7 @@ export async function resetAndPopulateDatabase(adminUserId) {
       .from('users')
       .upsert({
         auth0_user_id: adminUserId,
-        email: 'admin@zoologiq.app',
+        email: 'admin@wildguardmy.app',
         name: 'System Admin',
         role: 'admin',
         onboarding_completed: true,
