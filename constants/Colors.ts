@@ -44,6 +44,10 @@ export const Colors = {
     text: '#11181C',
     textSecondary: '#687076',
     textMuted: '#9BA1A6',
+
+    // 🆕 Certificate-specific colors
+    certificateText: '#2c3e50',        // Dark blue-gray for certificates
+    certificateTextSecondary: '#34495e', // Slightly lighter for secondary text
     
     // Background colors
     background: '#fff',
@@ -81,6 +85,10 @@ export const Colors = {
     text: '#ECEDEE',
     textSecondary: '#9BA1A6',
     textMuted: '#6E7681',
+
+    // 🆕 Certificate-specific colors
+    certificateText: '#2c3e50',        // Dark blue-gray for certificates
+    certificateTextSecondary: '#34495e', // Slightly lighter for secondary text
     
     // Background colors - using the gray shade system
     background: getGrayShade(grayTestNumber), // Main background - easily testable!

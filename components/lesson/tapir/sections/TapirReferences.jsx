@@ -17,6 +17,48 @@ export default function TapirReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Tapirus indicus" and other binomial names
+    const scientificNamePattern = /(Tapirus\s+indicus|Tapirus\s+\w+)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
 const references = [
     {
       authors: 'Adila, N., Ahmad, A. H., & Abdul-Patah, P.',
@@ -552,15 +594,15 @@ const references = [
                 />
               </ThemedView>
               <ThemedView style={styles.referenceInfo}>
-                <ThemedText
-                  style={[
+                {/* 🔥 UPDATED: Reference title with scientific names in italic */}
+                {renderTextWithScientificNames(
+                  ref.title,
+                  [
                     styles.referenceTitle,
                     { color: isDark ? Colors.dark.text : Colors.light.text }
-                  ]}
-                  numberOfLines={2}
-                >
-                  {ref.title}
-                </ThemedText>
+                  ]
+                )}
+                
                 <ThemedText
                   style={[
                     styles.referenceAuthors,

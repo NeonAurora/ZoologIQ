@@ -42,6 +42,53 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Tapirus indicus" and other binomial names
+    const scientificNamePattern = /(Tapirus\s+indicus|Tapirus\s+\w+)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
+  // 🔥 NEW: Helper function to check if a taxonomy rank should have italic scientific name
+  const shouldItalicizeScientificName = (rank) => {
+    return rank === 'Species' || rank === 'Spesies';
+  };
+
   const content = {
     en: {
       // Hero
@@ -253,13 +300,16 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
             </ThemedText>
           </View>
         </View>
-        <ThemedText
-          style={[
+        
+        {/* 🔥 UPDATED: Hero description with scientific names in italic */}
+        {renderTextWithScientificNames(
+          text.heroDescription,
+          [
             styles.heroDescription,
             { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}>
-          {text.heroDescription}
-        </ThemedText>
+          ]
+        )}
+        
         <View
           style={[
             styles.alertBox,
@@ -304,13 +354,15 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
             size={20}
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
-          <ThemedText
-            style={[
+          
+          {/* 🔥 UPDATED: Section title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            text.basicInfoTitle,
+            [
               styles.sectionTitle,
               { color: isDark ? Colors.dark.text : Colors.light.text }
-            ]}>
-            {text.basicInfoTitle}
-          </ThemedText>
+            ]
+          )}
         </View>
         <View style={styles.cardsGrid}>
           {text.basicInfoData.map((item, idx) => (
@@ -337,19 +389,32 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
                   ]}>
                   {item.category}
                 </ThemedText>
+                
+                {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
                 {item.info
                   .split('\n\n')
                   .filter(line => line.trim())
-                  .map((line, bIdx) => (
-                    <ThemedText
-                      key={bIdx}
-                      style={[
-                        styles.cardDescription,
-                        { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                      ]}>
-                      • {line.replace(/^•\s*/, '')}
-                    </ThemedText>
-                  ))}
+                  .map((line, bIdx) => {
+                    const cleanLine = line.replace(/^•\s*/, '');
+                    // Special handling for Scientific Name field
+                    if (item.category === 'Scientific Name' || item.category === 'Nama Saintifik') {
+                      return renderTextWithScientificNames(
+                        `• ${cleanLine}`,
+                        [
+                          styles.cardDescription,
+                          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                        ]
+                      );
+                    } else {
+                      return renderTextWithScientificNames(
+                        `• ${cleanLine}`,
+                        [
+                          styles.cardDescription,
+                          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                        ]
+                      );
+                    }
+                  })}
               </View>
             </View>
           ))}
@@ -397,10 +462,15 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
                 ]}>
                 {tax.rank}
               </ThemedText>
+              
+              {/* 🔥 UPDATED: Taxonomy classification with conditional italic styling */}
               <ThemedText
                 style={[
                   styles.taxonomyName,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
+                  { 
+                    color: isDark ? Colors.dark.text : Colors.light.text,
+                    fontStyle: shouldItalicizeScientificName(tax.rank) ? 'italic' : 'normal'
+                  }
                 ]}>
                 {tax.classification}
               </ThemedText>
@@ -493,5 +563,5 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   taxonomyRank: { fontSize: 13, fontWeight: '600', flex: 1 },
-  taxonomyName: { fontSize: 13, fontStyle: 'italic', flex: 1.5 }
+  taxonomyName: { fontSize: 13, flex: 1.5 }
 });

@@ -298,7 +298,7 @@ export default function RootLayout() {
             name="editProfile" 
             options={{ 
               title: "Edit Profile",
-              drawerItemStyle: { display: 'none' } 
+              drawerItemStyle: { display: 'none' }
             }} 
           />
           <Drawer.Screen 
@@ -325,7 +325,7 @@ export default function RootLayout() {
           <Drawer.Screen 
             name="acknowledgement" 
             options={{ 
-              title: "Acknowledgement",
+              title: "About",
               drawerItemStyle: { display: 'none' } 
             }} 
           />

@@ -10,6 +10,47 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    const scientificNamePattern = /(Panthera tigris(?:\s+jacksoni)?)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
+  // 🔥 NEW: Helper function to check if a taxonomy rank should have italic scientific name
+  const shouldItalicizeScientificName = (rank) => {
+    return rank === 'Species' || rank === 'Subspecies';
+  };
+
   const content = {
     en: {
       heroTitle: "Malayan Tiger:",
@@ -116,14 +157,15 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
             {text.heroTitle}
           </ThemedText>
         </View>
-        <ThemedText
-          style={[
+        
+        {/* 🔥 UPDATED: Hero description with scientific names in italic */}
+        {renderTextWithScientificNames(
+          text.heroDescription,
+          [
             styles.heroDesc,
             { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}
-        >
-          {text.heroDescription}
-        </ThemedText>
+          ]
+        )}
       </View>
 
       {/* Fact Sheet */}
@@ -156,14 +198,26 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
               >
                 {category}
               </ThemedText>
-              <ThemedText
-                style={[
-                  styles.infoValue,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}
-              >
-                {value}
-              </ThemedText>
+              
+              {/* 🔥 UPDATED: Fact sheet values with scientific names in italic */}
+              {category === 'Scientific Name' || category === 'Nama Saintifik' ? 
+                renderTextWithScientificNames(
+                  value,
+                  [
+                    styles.infoValue,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]
+                ) : (
+                  <ThemedText
+                    style={[
+                      styles.infoValue,
+                      { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                    ]}
+                  >
+                    {value}
+                  </ThemedText>
+                )
+              }
             </View>
           </View>
         ))}
@@ -199,14 +253,20 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
               >
                 {rank}
               </ThemedText>
+              
+              {/* 🔥 UPDATED: Scientific names in italic for Species and Subspecies only */}
               <ThemedText
                 style={[
                   styles.infoValue,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  { 
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary,
+                    fontStyle: shouldItalicizeScientificName(rank) ? 'italic' : 'normal'
+                  }
                 ]}
               >
                 {scientific}
               </ThemedText>
+              
               <ThemedText
                 style={[
                   styles.infoValue,

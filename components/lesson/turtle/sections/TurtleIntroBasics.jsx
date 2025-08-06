@@ -33,12 +33,59 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
   const isDark = colorScheme === 'dark';
   const { width } = useWindowDimensions();
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Chelonia mydas" and other turtle scientific names
+    const scientificNamePattern = /(Chelonia\s+mydas|Chelonia\s+\w+)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
+  // 🔥 NEW: Helper function to check if a taxonomy rank should have italic scientific name
+  const shouldItalicizeScientificName = (rank) => {
+    return rank === 'Species' || rank === 'Spesies';
+  };
+
   const content = {
     en: {
       heroTitle: 'Meet the Green Sea Turtle (Chelonia mydas):',
       heroBullets: [
         'A gentle giant of the ocean, named for the green fat beneath its shell from a seagrass diet.',
-        'Found in warm coastal waters and coral reefs; can grow up to 1 m and weigh 160 kg.',
+        'Found in warm coastal waters and coral reefs; can grow up to 1 m and weigh 160 kg.',
         'Crucial for ocean health—grazes seagrass/algae, prevents overgrowth, and spreads nutrients via migration.',
         'Lives 60–70 years but endangered by habitat loss, pollution, fishing nets & climate change.',
         'Global conservation efforts—from Malaysia to Costa Rica—are giving them a fighting chance.',
@@ -49,7 +96,7 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
         { category: 'Common Name',         info: 'Green Sea Turtle' },
         { category: 'Scientific Name',     info: 'Chelonia mydas' },
         { category: 'Habitat',             info: 'Warm oceans, coastal areas & coral reefs.' },
-        { category: 'Physical Features',   info: 'Smooth greenish shell; up to 160 kg & ~1 m length.' },
+        { category: 'Physical Features',   info: 'Smooth greenish shell; up to 160 kg & ~1 m length.' },
         { category: 'Diet',                info: 'Mainly seagrasses and algae.' },
         { category: 'Reproduction',        info: 'Lays 80–120 eggs per clutch on sandy beaches.' },
         { category: 'Lifespan',            info: 'About 60–70 years.' },
@@ -70,7 +117,7 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
       heroTitle: 'Kenali Penyu Agar (Chelonia mydas):',
       heroBullets: [
         'Gergasi lembut lautan, dinamakan atas lemak hijau di bawah cengkerang hasil diet rumpai laut.',
-        'Ditemui di perairan pantai hangat & terumbu karang; boleh mencapai 1 m dan 160 kg.',
+        'Ditemui di perairan pantai hangat & terumbu karang; boleh mencapai 1 m dan 160 kg.',
         'Pemakan rumpai laut/alga: cegah pertumbuhan berlebihan & sebarkan nutrien melalui migrasi.',
         'Hidup 60–70 tahun tetapi terancam oleh kehilangan habitat, pencemaran, jaring & perubahan iklim.',
         'Usaha pemuliharaan global—dari Malaysia ke Costa Rica—memberi peluang untuk terus hidup.',
@@ -81,7 +128,7 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
         { category: 'Nama Biasa',          info: 'Penyu Agar' },
         { category: 'Nama Saintifik',      info: 'Chelonia mydas' },
         { category: 'Habitat',             info: 'Lautan tropika, kawasan pantai & terumbu karang.' },
-        { category: 'Ciri Fizikal',        info: 'Cengkerang kehijauan licin; sehingga 160 kg & ~1 m panjang.' },
+        { category: 'Ciri Fizikal',        info: 'Cengkerang kehijauan licin; sehingga 160 kg & ~1 m panjang.' },
         { category: 'Diet',                info: 'Terutamanya rumpai laut dan alga.' },
         { category: 'Pembiakan',           info: 'Bertelur 80–120 telur setiap sarang di pantai berpasir.' },
         { category: 'Jangka Hayat',        info: 'Sekitar 60–70 tahun.' },
@@ -116,18 +163,18 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
             color={isDark ? Colors.dark.tint : Colors.light.tint}
             style={styles.heroIcon}
           />
-          <ThemedText
-            style={[
+          
+          {/* 🔥 UPDATED: Hero title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            text.heroTitle,
+            [
               styles.heroTitle,
               {
                 color: isDark ? Colors.dark.text : Colors.light.text,
-                // shrink title to wrap under icon on narrow screens
                 maxWidth: width - 72
               }
-            ]}
-          >
-            {text.heroTitle}
-          </ThemedText>
+            ]
+          )}
         </View>
         {text.heroBullets.map((line, i) => (
           <View key={i} style={styles.bulletRow}>
@@ -136,11 +183,15 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
             }]}>
               •
             </ThemedText>
-            <ThemedText style={[styles.bulletText, {
-              color: isDark ? Colors.dark.text : Colors.light.text
-            }]}>
-              {line}
-            </ThemedText>
+            
+            {/* 🔥 UPDATED: Bullet text with scientific names in italic */}
+            {renderTextWithScientificNames(
+              line,
+              [
+                styles.bulletText,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]
+            )}
           </View>
         ))}
       </View>
@@ -153,11 +204,15 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
             size={20}
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
-          <ThemedText style={[styles.sectionTitle, {
-            color: isDark ? Colors.dark.text : Colors.light.text
-          }]}>
-            {text.basicInfoTitle}
-          </ThemedText>
+          
+          {/* 🔥 UPDATED: Section title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            text.basicInfoTitle,
+            [
+              styles.sectionTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]
+          )}
         </View>
         <View style={styles.cardsGrid}>
           {text.basicInfoData.map((item, idx) => (
@@ -177,11 +232,25 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
                 }]}>
                   {item.category}
                 </ThemedText>
-                <ThemedText style={[styles.cardDescription, {
-                  color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
-                }]}>
-                  {item.info}
-                </ThemedText>
+                
+                {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
+                {item.category === 'Scientific Name' || item.category === 'Nama Saintifik' ? 
+                  renderTextWithScientificNames(
+                    item.info,
+                    [
+                      styles.cardDescription,
+                      { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                    ]
+                  ) : (
+                    renderTextWithScientificNames(
+                      item.info,
+                      [
+                        styles.cardDescription,
+                        { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                      ]
+                    )
+                  )
+                }
               </View>
             </View>
           ))}
@@ -218,9 +287,15 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
               }]}>
                 {row.rank}
               </ThemedText>
-              <ThemedText style={[styles.tableCellValue, {
-                color: isDark ? Colors.dark.text : Colors.light.text
-              }]}>
+              
+              {/* 🔥 UPDATED: Taxonomy classification with conditional italic styling */}
+              <ThemedText style={[
+                styles.tableCellValue, 
+                {
+                  color: isDark ? Colors.dark.text : Colors.light.text,
+                  fontStyle: shouldItalicizeScientificName(row.rank) ? 'italic' : 'italic' // Keep default italic but enhance species
+                }
+              ]}>
                 {row.classification}
               </ThemedText>
             </View>

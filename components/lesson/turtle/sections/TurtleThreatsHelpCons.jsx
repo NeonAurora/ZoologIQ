@@ -75,6 +75,48 @@ export default function TurtleThreatsHelpCons({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Chelonia mydas" and other turtle scientific names
+    const scientificNamePattern = /(Chelonia\s+mydas|Chelonia\s+\w+)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
   const content = {
     en: {
       threatsTitle: 'Threats to Chelonia mydas (Green Sea Turtle)',
@@ -171,12 +213,17 @@ export default function TurtleThreatsHelpCons({ currentLanguage = 'en' }) {
           style={styles.cardIcon}
         />
         <View style={styles.cardContent}>
-          <ThemedText style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
-            {title}
-          </ThemedText>
-          <ThemedText style={[styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]}>
-            {description}
-          </ThemedText>
+          {/* 🔥 UPDATED: Card title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            title,
+            [styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]
+          )}
+          
+          {/* 🔥 UPDATED: Card description with scientific names in italic */}
+          {renderTextWithScientificNames(
+            description,
+            [styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]
+          )}
         </View>
       </View>
     );
@@ -188,9 +235,12 @@ export default function TurtleThreatsHelpCons({ currentLanguage = 'en' }) {
       <View style={styles.section}>
         <View style={styles.header}>
           <MaterialIcons name="dangerous" size={20} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-          <ThemedText style={[styles.title, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
-            {text.threatsTitle}
-          </ThemedText>
+          
+          {/* 🔥 UPDATED: Section title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            text.threatsTitle,
+            [styles.title, { color: isDark ? Colors.dark.text : Colors.light.text }]
+          )}
         </View>
         {text.threatsData.map((line, i) => renderCard(line, 'threats', i))}
       </View>

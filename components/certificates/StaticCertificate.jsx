@@ -20,6 +20,7 @@ import * as Print from 'expo-print';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
+import { ThemedText } from '../ThemedText';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -86,7 +87,6 @@ const CERTIFICATE_CONFIG = {
       web: 'LucidaCalligraphy, "Lucida Unicode Calligraphy", "Brush Script MT", cursive',
       default: 'cursive'
     }),
-    color: '#2c3e50',
     
     textAlign: 'center',
     letterSpacing: 1,
@@ -116,6 +116,9 @@ export default function StaticCertificate({
   const [imageLoaded, setImageLoaded] = useState(false);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  const isCertificateBlocked = Platform.OS === 'android' && isDark;
+  const certificateTextColor = isDark ? Colors.dark.certificateText : Colors.light.certificateText;
 
   const handleImageLoad = useCallback(() => {
     setImageLoaded(true);
@@ -527,7 +530,6 @@ export default function StaticCertificate({
   // Determine which display dimensions to use
   const useResponsiveDisplay = CERTIFICATE_CONFIG.responsiveDisplay.scale < 0.8;
   const displayConfig = useResponsiveDisplay ? CERTIFICATE_CONFIG.responsiveDisplay : CERTIFICATE_CONFIG.display;
-
   return (
     <ScrollView 
       style={[styles.container, { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }]}
@@ -540,7 +542,6 @@ export default function StaticCertificate({
         style={[
           styles.hiddenCertificateContainer,
           {
-            // FIXED DIMENSIONS for actual certificate generation - UNCHANGED
             width: CERTIFICATE_DIMENSIONS.width,
             height: CERTIFICATE_DIMENSIONS.height,
             backgroundColor: 'white',
@@ -549,7 +550,6 @@ export default function StaticCertificate({
         ]}
         collapsable={false}
       >
-        {/* Background Certificate Template */}
         <Image 
           source={require('@/assets/images/certificate_template.png')} 
           style={styles.backgroundImage}
@@ -561,9 +561,11 @@ export default function StaticCertificate({
           }}
         />
         
-        {/* Fixed positioning text overlay */}
         <View style={styles.textOverlay}>
-          <Text style={styles.participantName}>
+          <Text style={[
+            styles.participantName,
+            { color: certificateTextColor } // 🔥 Use theme color
+          ]}>
             {recipientName}
           </Text>
         </View>
@@ -581,21 +583,20 @@ export default function StaticCertificate({
           }
         ]}
       >
-        {/* Background Certificate Template for display */}
         <Image 
           source={require('@/assets/images/certificate_template.png')} 
           style={styles.backgroundImage}
           resizeMode="cover"
         />
         
-        {/* Scaled text overlay for display */}
         <View style={styles.textOverlay}>
-          <Text style={[styles.participantName, {
+          <Text type='link' style={[styles.participantName, {
             fontSize: CERTIFICATE_CONFIG.userName.fontSize * displayConfig.scale,
             lineHeight: CERTIFICATE_CONFIG.userName.lineHeight * displayConfig.scale,
             top: CERTIFICATE_CONFIG.userName.topPosition * displayConfig.scale,
             left: CERTIFICATE_CONFIG.userName.leftPadding * displayConfig.scale,
             right: CERTIFICATE_CONFIG.userName.rightPadding * displayConfig.scale,
+            color: certificateTextColor
           }]}>
             {recipientName}
           </Text>
@@ -609,57 +610,82 @@ export default function StaticCertificate({
         </Text>
       )}
       
-      {/* Action Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={[
-            styles.generateButton,
-            { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint },
-            isGenerating && styles.buttonDisabled
-          ]} 
-          onPress={handleGenerateCertificate}
-          disabled={isGenerating}
-        >
-          {isGenerating ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <>
-              <MaterialIcons name="picture-as-pdf" size={20} color="white" />
-              <Text style={styles.buttonText}>
-                {Platform.OS === 'web' ? 'Generate & Download PDF' : 'Generate PDF Certificate'}
-              </Text>
-            </>
+      {/* 🚨 DARK MODE BLOCKING - Show this instead of action buttons when in dark mode */}
+      {isCertificateBlocked ? (
+        <View style={styles.lightThemeContainer}>
+          <Text style={styles.lightThemeText}>
+            Please switch to light theme before continuing download
+          </Text>
+          
+          <TouchableOpacity 
+            style={styles.lightThemeButton}
+            onPress={() => {
+              Alert.alert(
+                'Switch to Light Theme',
+                'Please switch your device to light theme using the quick settings (swipe down twice), then return to generate your certificate.',
+                [{ text: 'Got it!' }]
+              );
+            }}
+            activeOpacity={0.8}
+          >
+            <MaterialIcons name="refresh" size={16} color="#2563eb" />
+            <Text style={styles.lightThemeButtonText}>I've switched to light theme</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        /* Normal Action Buttons - Only show when NOT in dark mode */
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={[
+              styles.generateButton,
+              { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint },
+              isGenerating && styles.buttonDisabled
+            ]} 
+            onPress={handleGenerateCertificate}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <>
+                <MaterialIcons name="picture-as-pdf" size={20} color="white" />
+                <Text style={styles.buttonText}>
+                  {Platform.OS === 'web' ? 'Generate & Download PDF' : 'Generate PDF Certificate'}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          {generatedUrl && (
+            <TouchableOpacity 
+              style={[
+                styles.downloadButton,
+                { backgroundColor: isDark ? '#27ae60' : '#2ecc71' }
+              ]} 
+              onPress={() => handleDownloadCertificate()}
+            >
+              <MaterialIcons name="download" size={20} color="white" />
+              <Text style={styles.buttonText}>Download Again</Text>
+            </TouchableOpacity>
           )}
-        </TouchableOpacity>
 
-        {generatedUrl && (
-          <TouchableOpacity 
-            style={[
-              styles.downloadButton,
-              { backgroundColor: isDark ? '#27ae60' : '#2ecc71' }
-            ]} 
-            onPress={() => handleDownloadCertificate()}
-          >
-            <MaterialIcons name="download" size={20} color="white" />
-            <Text style={styles.buttonText}>Download Again</Text>
-          </TouchableOpacity>
-        )}
+          {certificatePdfUri && (
+            <TouchableOpacity 
+              style={[
+                styles.shareButton,
+                { backgroundColor: isDark ? '#3498db' : '#2980b9' }
+              ]} 
+              onPress={() => handleShareCertificate()}
+            >
+              <MaterialIcons name="share" size={20} color="white" />
+              <Text style={styles.buttonText}>Share Certificate</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
-        {certificatePdfUri && (
-          <TouchableOpacity 
-            style={[
-              styles.shareButton,
-              { backgroundColor: isDark ? '#3498db' : '#2980b9' }
-            ]} 
-            onPress={() => handleShareCertificate()}
-          >
-            <MaterialIcons name="share" size={20} color="white" />
-            <Text style={styles.buttonText}>Share Certificate</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {generatedUrl && (
+      {/* Success message - only show when certificate is generated and not blocked */}
+      {generatedUrl && !isCertificateBlocked && (
         <View style={styles.successContainer}>
           <MaterialIcons 
             name="check-circle" 
@@ -686,7 +712,7 @@ const styles = StyleSheet.create({
   // HIDDEN container for capture - positioned off-screen
   hiddenCertificateContainer: {
     position: 'absolute',
-    left: -10000, // Position off-screen
+    left: -10000,
     top: -10000,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -723,21 +749,16 @@ const styles = StyleSheet.create({
     left: CERTIFICATE_CONFIG.userName.leftPadding,
     right: CERTIFICATE_CONFIG.userName.rightPadding,
     zIndex: 2,
-    
     fontSize: CERTIFICATE_CONFIG.userName.fontSize,
     fontWeight: CERTIFICATE_CONFIG.userName.fontWeight,
     fontFamily: CERTIFICATE_CONFIG.userName.fontFamily,
-    color: CERTIFICATE_CONFIG.userName.color,
-    
     textAlign: CERTIFICATE_CONFIG.userName.textAlign,
     letterSpacing: CERTIFICATE_CONFIG.userName.letterSpacing,
     lineHeight: CERTIFICATE_CONFIG.userName.lineHeight,
     textTransform: CERTIFICATE_CONFIG.userName.textTransform,
-    
     textShadowColor: CERTIFICATE_CONFIG.userName.textShadowColor,
     textShadowOffset: CERTIFICATE_CONFIG.userName.textShadowOffset,
     textShadowRadius: CERTIFICATE_CONFIG.userName.textShadowRadius,
-    
     backgroundColor: CERTIFICATE_CONFIG.userName.backgroundColor,
   },
   scaleInfo: {
@@ -748,8 +769,104 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
   },
+  
+  // 🚨 NEW: Dark Mode Blocking Styles
+  blockedContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginTop: 20,
+    width: '100%',
+    maxWidth: 400,
+    borderWidth: 2,
+    borderColor: '#dc3545',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  blockedHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  blockedTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#dc3545',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  blockedSection: {
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  sectionText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#555',
+    marginBottom: 12,
+  },
+  instructionsContainer: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2563eb',
+  },
+  instructionStep: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+    gap: 12,
+  },
+  stepNumber: {
+    backgroundColor: '#2563eb',
+    color: '#fff',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    textAlign: 'center',
+    lineHeight: 24,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  stepText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#333',
+  },
+  blockedActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: '#dc3545',
+    borderRadius: 8,
+    padding: 12,
+    gap: 8,
+  },
+  blockedActionText: {
+    color: '#dc3545',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  // Regular button styles
   buttonContainer: {
-    marginTop: 20, // Reduced spacing
+    marginTop: 20,
     gap: 12,
     width: '100%',
     maxWidth: 400,
@@ -795,6 +912,41 @@ const styles = StyleSheet.create({
   },
   successText: {
     fontSize: 16,
+    fontWeight: '600',
+  },
+    lightThemeContainer: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    padding: 16,
+    marginTop: 20,
+    width: '100%',
+    maxWidth: 400,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2563eb',
+    alignItems: 'center',
+    gap: 12,
+  },
+  lightThemeText: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  lightThemeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#2563eb',
+    borderRadius: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  lightThemeButtonText: {
+    color: '#2563eb',
+    fontSize: 14,
     fontWeight: '600',
   },
 });

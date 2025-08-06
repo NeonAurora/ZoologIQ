@@ -17,7 +17,9 @@ export default function TapirNavigation({
   onPrevious,
   onComplete,
   isNavigating = false,
-  topic = 'tapir'
+  topic = 'tapir',
+  onStopAudio, // 🔥 NEW: Audio stop function
+  onPauseAudio // 🔥 NEW: Audio pause function
 }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -32,8 +34,15 @@ export default function TapirNavigation({
   const isFirst = currentIndex === 0;
   const isLast = currentIndex === totalSections - 1;
 
+  // 🔥 UPDATED: Handle finish with audio stop
   const handleFinish = () => {
     if (isNavigating) return;
+    
+    // 🔥 NEW: Stop audio when finishing
+    if (onStopAudio) {
+      onStopAudio();
+    }
+    
     onComplete?.();
     const quizId = QUIZ_IDS[topic];
     router.replace(`/startLearning?topic=${topic}&quizId=${quizId}`);
@@ -125,7 +134,7 @@ export default function TapirNavigation({
       {/* Next or Finish */}
       {isLast ? (
         <TouchableOpacity
-          onPress={handleFinish}
+          onPress={handleFinish} // 🔥 UPDATED: Now stops audio
           disabled={isNavigating}
           style={[
             styles.finishButton,

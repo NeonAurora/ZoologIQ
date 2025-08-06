@@ -92,7 +92,7 @@ export function useColorScheme(): UseColorSchemeReturn {
       return manualScheme || getWebColorScheme();
     } else {
       // For native platforms, use React Native's useColorScheme
-      return (rnColorScheme as ColorScheme) || 'light';
+      return manualScheme || (rnColorScheme as ColorScheme) || 'light';
     }
   }, [hasHydrated, manualScheme, rnColorScheme]);
 

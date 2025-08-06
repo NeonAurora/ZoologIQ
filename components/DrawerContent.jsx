@@ -300,15 +300,17 @@ export function DrawerContent(props) {
             descriptionStyle={styles.listItemDescription}
             style={styles.listItem}
           />
-          <List.Item
-            title="Home"
-            description="Dashboard and overview"
-            left={props => <List.Icon {...props} icon="home" color={iconColor} />}
-            onPress={() => navigateTo('/', 'Home')}
-            titleStyle={styles.listItemTitle}
-            descriptionStyle={styles.listItemDescription}
-            style={styles.listItem}
-          />
+          {supabaseData?.onboarding_completed && (
+           <List.Item
+             title="Home"
+             description="Dashboard and overview"
+             left={props => <List.Icon {...props} icon="home" color={iconColor} />}
+             onPress={() => navigateTo('/', 'Home')}
+             titleStyle={styles.listItemTitle}
+             descriptionStyle={styles.listItemDescription}
+             style={styles.listItem}
+           />
+         )}
           
           {user && (
             <>

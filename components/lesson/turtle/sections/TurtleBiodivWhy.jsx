@@ -19,7 +19,7 @@ const getBiodiversityIcon = (aspect) => {
   return 'eco';
 };
 
-// Icons for the “Why … Matters” cards
+// Icons for the "Why … Matters" cards
 const getWhyIcon = (index) => {
   switch (index) {
     case 0: return 'spa';          // seagrass
@@ -35,6 +35,48 @@ const getWhyIcon = (index) => {
 export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Chelonia mydas" and other turtle scientific names
+    const scientificNamePattern = /(Chelonia\s+mydas|Chelonia\s+\w+)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
 
   const content = {
     en: {
@@ -91,9 +133,12 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
             size={20}
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
-          <ThemedText style={[styles.sectionTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
-            {text.roleTitle}
-          </ThemedText>
+          
+          {/* 🔥 UPDATED: Section title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            text.roleTitle,
+            [styles.sectionTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]
+          )}
         </View>
         {text.roleData.map((item, i) => (
           <View
@@ -116,9 +161,12 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
               <ThemedText style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
                 {item.aspect}
               </ThemedText>
-              <ThemedText style={[styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]}>
-                {item.description}
-              </ThemedText>
+              
+              {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
+              {renderTextWithScientificNames(
+                item.description,
+                [styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]
+              )}
             </View>
           </View>
         ))}
@@ -154,9 +202,11 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
               style={styles.cardIcon}
             />
             <View style={styles.cardContent}>
-              <ThemedText style={[styles.cardDescription, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
-                {line}
-              </ThemedText>
+              {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
+              {renderTextWithScientificNames(
+                line,
+                [styles.cardDescription, { color: isDark ? Colors.dark.text : Colors.light.text }]
+              )}
             </View>
           </View>
         ))}

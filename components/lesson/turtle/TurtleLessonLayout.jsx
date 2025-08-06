@@ -38,6 +38,10 @@ export default function TurtleLessonLayout() {
     supabaseData?.preferred_language || 'en'
   );
   const { currentAudioUrl } = useAudio('turtle', currentLanguage);
+
+  // 🔥 NEW: Audio control ref
+  const audioPlayerRef = useRef(null);
+
   useEffect(() => {
     if (supabaseData?.preferred_language) {
       setCurrentLanguage(supabaseData.preferred_language);
@@ -104,6 +108,19 @@ export default function TurtleLessonLayout() {
 
   const safeIdx = Math.max(0, Math.min(currentIndex, sections.length - 1));
   const Current = sections[safeIdx].component;
+
+  // 🔥 NEW: Audio control functions
+  const handleStopAudio = () => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.stop();
+    }
+  };
+
+  const handlePauseAudio = () => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+    }
+  };
 
   // Sidebar open/close
   const openSidebar  = () => {
@@ -208,11 +225,15 @@ export default function TurtleLessonLayout() {
           </View>
         </View>
         <View style={styles.headerActions}>
+          {/* 🔥 UPDATED: AudioPlayer with ref and loop control */}
           <AudioPlayer
+            ref={audioPlayerRef}
             audioUrl={currentAudioUrl}
             currentLanguage={currentLanguage}
             size="medium"
             style={styles.audioPlayer}
+            loop={false} // 🔥 NEW: Disable looping
+            stopOnComplete={true} // 🔥 NEW: Stop when audio completes
           />
           <LanguageToggle
             currentLanguage={currentLanguage}
@@ -238,6 +259,8 @@ export default function TurtleLessonLayout() {
           onComplete={goNext}
           isNavigating={isNavigating}
           topic="turtle"
+          onStopAudio={handleStopAudio} // 🔥 NEW: Pass stop audio function
+          onPauseAudio={handlePauseAudio} // 🔥 NEW: Pass pause audio function
         />
       </View>
 

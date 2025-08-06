@@ -66,6 +66,48 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Tapirus indicus" and other binomial names
+    const scientificNamePattern = /(Tapirus\s+indicus|Tapirus\s+\w+)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
   const content = {
     en: {
       biodiversityTitle: "Malayan Tapir's Role in Biodiversity:",
@@ -82,7 +124,7 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
         { title: "Forest Gardener",           description: "Tapirs eat fruits and spread seeds through their droppings, fostering forest regeneration." },
         { title: "Balances Nature",           description: "By browsing, they prevent overgrowth and maintain ecosystem health." },
         { title: "Sign of a Healthy Forest",  description: "Thriving tapir populations signal intact, biodiverse forests." },
-        { title: "Ancient and Unique",        description: "As Asia’s only tapir, protecting them preserves a distinct evolutionary lineage." },
+        { title: "Ancient and Unique",        description: "As Asia's only tapir, protecting them preserves a distinct evolutionary lineage." },
         { title: "Threatened by Humans",      description: "Deforestation, roads, and hunting endanger their survival; urgent action is needed." },
         { title: "Cultural Icon",             description: "In Malaysia, they symbolize conservation and appear in public education." },
         { title: "Boosts Ecotourism",         description: "Their rarity attracts tourists, supporting local economies." },
@@ -121,7 +163,7 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
         { title: "Meningkatkan Eko-pelancongan", description: "Menarik pelancong, menyokong ekonomi tempatan." },
         { title: "Inspirasi Pemuliharaan",     description: "Sifat lemah lembut mendorong kesedaran tentang spesies terancam." }
       ],
-      threatsTitle: "Ancaman terhadap Tapir Malaya:",
+      threatsTitle: "Ancaman terhadap Tapir Malaya (Tapirus indicus):",
       threatsData: [
         { threat: "Kehilangan Habitat",      description: "Penebangan hutan untuk pertanian dan infrastruktur merosakkan habitat tapir." },
         { threat: "Kemalangan Jalan Raya",   description: "Tapir yang melintas pada waktu malam sering dilanggar kenderaan." },
@@ -168,9 +210,12 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
                 <ThemedText style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
                   {item.aspect}
                 </ThemedText>
-                <ThemedText style={[styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]}>
-                  {item.description}
-                </ThemedText>
+                
+                {/* 🔥 UPDATED: Description with scientific names in italic */}
+                {renderTextWithScientificNames(
+                  item.description,
+                  [styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]
+                )}
               </View>
             </View>
           ))}
@@ -206,9 +251,12 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
                 <ThemedText style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
                   {item.title}
                 </ThemedText>
-                <ThemedText style={[styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]}>
-                  {item.description}
-                </ThemedText>
+                
+                {/* 🔥 UPDATED: Description with scientific names in italic */}
+                {renderTextWithScientificNames(
+                  item.description,
+                  [styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]
+                )}
               </View>
             </View>
           ))}
@@ -219,9 +267,12 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons name="warning" size={20} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-          <ThemedText style={[styles.sectionTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
-            {text.threatsTitle}
-          </ThemedText>
+          
+          {/* 🔥 UPDATED: Section title with scientific names in italic */}
+          {renderTextWithScientificNames(
+            text.threatsTitle,
+            [styles.sectionTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]
+          )}
         </View>
         <View style={styles.cardsGrid}>
           {text.threatsData.map((item, i) => (
@@ -246,9 +297,12 @@ export default function TapirConservation({ currentLanguage = 'en' }) {
                 <ThemedText style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
                   {item.threat.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}]/u, '').trim()}
                 </ThemedText>
-                <ThemedText style={[styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]}>
-                  {item.description}
-                </ThemedText>
+                
+                {/* 🔥 UPDATED: Description with scientific names in italic */}
+                {renderTextWithScientificNames(
+                  item.description,
+                  [styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]
+                )}
               </View>
             </View>
           ))}

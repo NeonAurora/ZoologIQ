@@ -1,17 +1,19 @@
 // components/audio/AudioPlayer.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 
-export default function AudioPlayer({ 
+const AudioPlayer = forwardRef(({ 
   audioUrl, 
   currentLanguage = 'en',
   size = 'medium', // 'small', 'medium', 'large'
-  style 
-}) {
+  style,
+  loop = false, // 🔥 NEW: Control looping (default: no loop)
+  stopOnComplete = true // 🔥 NEW: Stop when audio completes (default: true)
+}, ref) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   
@@ -19,6 +21,52 @@ export default function AudioPlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const soundRef = useRef(null);
+
+  // 🔥 NEW: Expose control methods to parent component
+  useImperativeHandle(ref, () => ({
+    stop: async () => {
+      try {
+        if (soundRef.current) {
+          await soundRef.current.stopAsync();
+          await soundRef.current.setPositionAsync(0);
+          setIsPlaying(false);
+          console.log('🎵 Audio stopped via parent control');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error stopping audio via ref:', error);
+        }
+      }
+    },
+    pause: async () => {
+      try {
+        if (soundRef.current && isPlaying) {
+          await soundRef.current.pauseAsync();
+          console.log('🎵 Audio paused via parent control');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error pausing audio via ref:', error);
+        }
+      }
+    },
+    play: async () => {
+      try {
+        if (soundRef.current && !isPlaying) {
+          await soundRef.current.playAsync();
+          console.log('🎵 Audio played via parent control');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error playing audio via ref:', error);
+        }
+      }
+    },
+    // 🔥 NEW: Get current playing state
+    isPlaying: () => isPlaying,
+    // 🔥 NEW: Get current sound instance
+    getSound: () => soundRef.current
+  }));
 
   // Bilingual content for accessibility and error messages
   const content = {
@@ -108,19 +156,29 @@ export default function AudioPlayer({
         { 
           shouldPlay: false,
           volume: 1.0,
-          isLooping: false 
+          isLooping: loop // 🔥 UPDATED: Use loop prop
         }
       );
 
-      // Set up playback status listener
+      // 🔥 UPDATED: Enhanced playback status listener
       sound.setOnPlaybackStatusUpdate((status) => {
         if (status.isLoaded) {
           setIsPlaying(status.isPlaying);
           
-          // Auto-reset when audio finishes
+          // 🔥 UPDATED: Handle audio completion based on stopOnComplete prop
           if (status.didJustFinish) {
+            console.log('🎵 Audio finished playing');
             setIsPlaying(false);
-            sound.setPositionAsync(0); // Reset to beginning
+            
+            if (stopOnComplete && !loop) {
+              // Reset to beginning and stop
+              sound.setPositionAsync(0);
+              console.log('🎵 Audio stopped after completion (no loop)');
+            } else if (!loop) {
+              // Reset to beginning but don't auto-replay
+              sound.setPositionAsync(0);
+            }
+            // If loop is true, Expo will handle the looping automatically
           }
         }
       });
@@ -150,8 +208,10 @@ export default function AudioPlayer({
       // Toggle play/pause
       if (isPlaying) {
         await currentSound.pauseAsync();
+        console.log('🎵 Audio paused by user');
       } else {
         await currentSound.playAsync();
+        console.log('🎵 Audio played by user');
       }
     } catch (error) {
       // Only log errors that aren't AbortError (common during navigation)
@@ -168,6 +228,7 @@ export default function AudioPlayer({
         await sound.stopAsync();
         await sound.setPositionAsync(0);
         setIsPlaying(false);
+        console.log('🎵 Audio stopped by user');
       }
     } catch (error) {
       // Only log errors that aren't AbortError (common during navigation)
@@ -216,7 +277,7 @@ export default function AudioPlayer({
       />
     </TouchableOpacity>
   );
-}
+});
 
 const styles = StyleSheet.create({
   audioButton: {
@@ -229,3 +290,5 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 });
+
+export default AudioPlayer;

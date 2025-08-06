@@ -266,46 +266,6 @@ export default function TigerPopulation({ currentLanguage = 'en' }) {
         </View>
       </Section>
 
-      <Section icon="bar_chart" title="Population Statistics">
-        <View style={styles.stats}>
-          {text.populationStats.map((s, i) => (
-            <View
-              key={i}
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                  borderColor:    isDark ? Colors.dark.border  : Colors.light.border
-                }
-              ]}>
-              <View
-                style={[
-                  styles.statIcon,
-                  { backgroundColor: (isDark ? Colors.dark.tint : Colors.light.tint) + '20' }
-                ]}>
-                <MaterialIcons name={s.icon} size={20} color={isDark ? Colors.dark.tint : Colors.light.tint} />
-              </View>
-              <View style={styles.statContent}>
-                <ThemedText
-                  style={[
-                    styles.statLabel,
-                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                  ]}>
-                  {s.label}
-                </ThemedText>
-                <ThemedText
-                  style={[
-                    styles.statValue,
-                    { color: isDark ? Colors.dark.text : Colors.light.text }
-                  ]}>
-                  {s.value}
-                </ThemedText>
-              </View>
-            </View>
-          ))}
-        </View>
-      </Section>
-
       <Section icon="lightbulb" title={text.keyInsights}>
         <View
           style={[

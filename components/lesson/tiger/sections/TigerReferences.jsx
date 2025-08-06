@@ -27,6 +27,48 @@ export default function TigerReferences() {
   const txtSecondary = isDark ? Colors.dark.textSecondary : Colors.light.textSecondary;
   const txtMuted     = isDark ? Colors.dark.textMuted  : Colors.light.textMuted;
 
+  // 🔥 NEW: Helper function to render text with scientific names in italic
+  const renderTextWithScientificNames = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    // Pattern to match scientific names (genus + species format)
+    // This will match "Panthera tigris" and "Panthera tigris jacksoni"
+    const scientificNamePattern = /(Panthera tigris(?:\s+jacksoni)?)/g;
+    const parts = text.split(scientificNamePattern);
+    
+    if (parts.length === 1) {
+      // No scientific names found, return normal text
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => {
+          // Check if this part is a scientific name
+          if (scientificNamePattern.test(part)) {
+            return (
+              <ThemedText
+                key={index}
+                style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                  }
+                ]}
+              >
+                {part}
+              </ThemedText>
+            );
+          }
+          return part;
+        })}
+      </ThemedText>
+    );
+  };
+
   const references = [
     { authors: 'Adnan, M.', year: '2020', title: 'Marine protected areas in Malaysia: Challenges and opportunities', source: 'Marine Policy, 45, 89-97', url: 'https://doi.org/xxxx' },
     { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2021', title: 'National Tiger Conservation Action Plan for Malaysia', source: 'Putrajaya: Ministry of Energy and Natural Resources' },
@@ -109,9 +151,12 @@ export default function TigerReferences() {
                 <MaterialIcons name="article" size={20} color={tint} />
               </View>
               <View style={styles.info}>
-                <ThemedText style={[styles.titleText, { color: txtPrimary }]} numberOfLines={2}>
-                  {ref.title}
-                </ThemedText>
+                {/* 🔥 UPDATED: Title with scientific names in italic */}
+                {renderTextWithScientificNames(
+                  ref.title,
+                  [styles.titleText, { color: txtPrimary }]
+                )}
+                
                 <ThemedText style={[styles.authorsText, { color: txtSecondary }]} numberOfLines={2}>
                   {ref.authors} ({ref.year})
                 </ThemedText>

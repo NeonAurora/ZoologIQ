@@ -41,6 +41,9 @@ export default function TigerLessonLayout() {
   // 🔥 NOW USE IT: Audio hook can access currentLanguage
   const { currentAudioUrl, loading: audioLoading } = useAudio('tiger', currentLanguage);
 
+  // 🔥 NEW: Audio control ref
+  const audioPlayerRef = useRef(null);
+
   // Update language when user's preference changes
   useEffect(() => {
     if (supabaseData?.preferred_language) {
@@ -112,6 +115,19 @@ export default function TigerLessonLayout() {
 
   const safeSectionIndex = Math.max(0, Math.min(currentSectionIndex, sections.length - 1));
   const currentSection = sections[safeSectionIndex];
+
+  // 🔥 NEW: Audio control functions
+  const handleStopAudio = () => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.stop();
+    }
+  };
+
+  const handlePauseAudio = () => {
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+    }
+  };
 
   // 🔥 NEW: Language change handler
   const handleLanguageChange = (newLanguage) => {
@@ -320,14 +336,17 @@ export default function TigerLessonLayout() {
             </View>
           </View>
 
-          {/* 🔥 NEW: Header Actions with Audio Player and Language Toggle */}
+          {/* 🔥 UPDATED: Header Actions with Audio Player and Language Toggle */}
           <View style={styles.headerActions}>
-            {/* Audio Player */}
+            {/* 🔥 UPDATED: AudioPlayer with ref and loop control */}
             <AudioPlayer
+              ref={audioPlayerRef}
               audioUrl={currentAudioUrl}
               currentLanguage={currentLanguage}
               size="medium"
               style={styles.audioPlayer}
+              loop={false} // 🔥 NEW: Disable looping
+              stopOnComplete={true} // 🔥 NEW: Stop when audio completes
             />
             
             {/* Language Toggle */}
@@ -359,6 +378,8 @@ export default function TigerLessonLayout() {
           onComplete={handleLessonComplete}
           isNavigating={isNavigating}
           topic="tiger"
+          onStopAudio={handleStopAudio} // 🔥 NEW: Pass stop audio function
+          onPauseAudio={handlePauseAudio} // 🔥 NEW: Pass pause audio function
         />
       </View>
 
