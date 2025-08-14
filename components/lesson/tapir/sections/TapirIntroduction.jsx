@@ -1,7 +1,7 @@
 // components/lesson/tapir/sections/TapirIntroduction.jsx
 
 import React from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import { ScrollView, View, StyleSheet, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
@@ -43,6 +43,7 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
   const isDark = colorScheme === 'dark';
 
   // 🔥 NEW: Helper function to render text with scientific names in italic
+  // 🔥 UPDATED: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
     if (!text || typeof text !== 'string') {
       return <ThemedText style={style}>{text}</ThemedText>;
@@ -65,7 +66,7 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
           if (scientificNamePattern.test(part)) {
             return (
               <ThemedText
-                key={index}
+                key={`scientific-${index}`}
                 style={[
                   style,
                   { 
@@ -78,7 +79,8 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
               </ThemedText>
             );
           }
-          return part;
+          // 🔥 FIX: Wrap plain text parts in React.Fragment with key
+          return <React.Fragment key={`text-${index}`}>{part}</React.Fragment>;
         })}
       </ThemedText>
     );
@@ -89,38 +91,38 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
     return rank === 'Species' || rank === 'Spesies';
   };
 
-  // 🔥 NEW: Helper function to render species with separate underlines
-    const renderSpeciesWithUnderlines = (text, style) => {
-      if (!shouldItalicizeScientificName) return <ThemedText style={style}>{text}</ThemedText>;
-      
-      // Split "Chelonia mydas" into parts
-      const parts = text.trim().split(/\s+/);
-      
-      if (parts.length < 2) {
-        // Not a proper species format, return as italic
-        return <ThemedText style={[style, { fontStyle: 'italic' }]}>{text}</ThemedText>;
-      }
-      
-      return (
-        <ThemedText style={style}>
-          {parts.map((part, index) => (
-            <React.Fragment key={index}>
-              <ThemedText style={[
-                style,
-                { 
-                  fontStyle: 'italic',
-                  textDecorationLine: 'underline',
-                  textDecorationStyle: 'solid'
-                }
-              ]}>
-                {part}
-              </ThemedText>
-              {index < parts.length - 1 && ' '}
-            </React.Fragment>
-          ))}
-        </ThemedText>
-      );
-    };
+  // 🔥 UPDATED: Helper function to render species with separate underlines
+  const renderSpeciesWithUnderlines = (text, style) => {
+    if (!shouldItalicizeScientificName) return <ThemedText style={style}>{text}</ThemedText>;
+    
+    // Split "Tapirus indicus" into parts
+    const parts = text.trim().split(/\s+/);
+    
+    if (parts.length < 2) {
+      // Not a proper species format, return as italic
+      return <ThemedText style={[style, { fontStyle: 'italic' }]}>{text}</ThemedText>;
+    }
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => (
+          <React.Fragment key={`species-${index}`}>
+            <ThemedText style={[
+              style,
+              { 
+                fontStyle: 'italic',
+                textDecorationLine: 'underline',
+                textDecorationStyle: 'solid'
+              }
+            ]}>
+              {part}
+            </ThemedText>
+            {index < parts.length - 1 && ' '}
+          </React.Fragment>
+        ))}
+      </ThemedText>
+    );
+  };
 
   const content = {
     en: {
@@ -322,7 +324,12 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
           }
         ]}>
         <View style={styles.heroHeader}>
-          <ThemedText style={styles.heroEmoji}>🦌</ThemedText>
+          {/* 🔥 UPDATED: Replace emoji with custom tapir image */}
+          <Image 
+            source={require('@/assets/images/tapir.png')} 
+            style={styles.heroImage}
+            resizeMode="contain"
+          />
           <View style={styles.heroTitleContainer}>
             <ThemedText
               style={[
@@ -431,20 +438,28 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
                     const cleanLine = line.replace(/^•\s*/, '');
                     // Special handling for Scientific Name field
                     if (item.category === 'Scientific Name' || item.category === 'Nama Saintifik') {
-                      return renderTextWithScientificNames(
-                        `• ${cleanLine}`,
-                        [
-                          styles.cardDescription,
-                          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                        ]
+                      return (
+                        <View key={`${idx}-line-${bIdx}`}>
+                          {renderTextWithScientificNames(
+                            `• ${cleanLine}`,
+                            [
+                              styles.cardDescription,
+                              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                            ]
+                          )}
+                        </View>
                       );
                     } else {
-                      return renderTextWithScientificNames(
-                        `• ${cleanLine}`,
-                        [
-                          styles.cardDescription,
-                          { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                        ]
+                      return (
+                        <View key={`${idx}-line-${bIdx}`}>
+                          {renderTextWithScientificNames(
+                            `• ${cleanLine}`,
+                            [
+                              styles.cardDescription,
+                              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                            ]
+                          )}
+                        </View>
                       );
                     }
                   })}
@@ -541,7 +556,11 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   heroHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
-  heroEmoji: { fontSize: 32, marginRight: 16 },
+  heroImage: {
+    width: 32,
+    height: 32,
+    marginRight: 16,
+  },
   heroTitleContainer: { flex: 1 },
   heroTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
   heroDescription: { fontSize: 16, lineHeight: 24, marginBottom: 16 },

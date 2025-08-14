@@ -210,7 +210,6 @@ export default function TurtleLessonLayout() {
           />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <ThemedText style={styles.lessonEmoji}>🐢</ThemedText>
           <View style={styles.headerTitleContainer}>
             <ThemedText style={[styles.headerTitle, {
               color: isDark ? Colors.dark.text : Colors.light.text

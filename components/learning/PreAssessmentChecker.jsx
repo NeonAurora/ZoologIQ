@@ -1,6 +1,6 @@
 // components/learning/PreAssessmentChecker.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
@@ -40,7 +40,7 @@ export default function PreAssessmentChecker({ topic, quizId }) {
       color: '#FF6B35'
     },
     tapir: {
-      emoji: '🦏',
+      icon: require('@/assets/images/tapir.png'),
       title: { en: 'Malayan Tapir', ms: 'Tapir Malaya' },
       color: '#4CAF50'
     },
@@ -224,9 +224,18 @@ export default function PreAssessmentChecker({ topic, quizId }) {
             styles.topicIcon,
             { backgroundColor: `${currentTopicConfig.color}20` }
           ]}>
-            <ThemedText style={styles.topicEmoji}>
-              {currentTopicConfig.emoji}
-            </ThemedText>
+            {/* 🔥 UPDATED: Conditional rendering for emoji vs custom image */}
+            {currentTopicConfig.emoji ? (
+              <ThemedText style={styles.topicEmoji}>
+                {currentTopicConfig.emoji}
+              </ThemedText>
+            ) : (
+              <Image 
+                source={currentTopicConfig.icon} 
+                style={styles.topicImage}
+                resizeMode="contain"
+              />
+            )}
           </View>
           <View style={styles.topicInfo}>
             <ThemedText style={[
@@ -410,6 +419,11 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  topicImage: {
+    width: 24,
+    height: 24,
+    tintColor: undefined, // Remove any tinting to preserve original colors
   },
   topicEmoji: {
     fontSize: 24,

@@ -285,20 +285,6 @@ export default function TigerPopulation({ currentLanguage = 'en' }) {
           ))}
         </View>
       </Section>
-
-      {/* Download PDF Button */}
-      <View style={styles.downloadSection}>
-        <TouchableOpacity
-          style={[
-            styles.simpleDownloadButton,
-            { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
-          ]}
-          onPress={handleDownloadPDF}
-          activeOpacity={0.8}>
-          <MaterialIcons name="file-download" size={18} color="#fff" />
-          <ThemedText style={styles.simpleDownloadText}>Download PDF</ThemedText>
-        </TouchableOpacity>
-      </View>
     </ScrollView>
   );
 }

@@ -319,7 +319,6 @@ export default function TigerLessonLayout() {
           </TouchableOpacity>
           
           <View style={styles.headerContent}>
-            <ThemedText style={styles.lessonEmoji}>🐅</ThemedText>
             <View style={styles.headerTitleContainer}>
               <ThemedText style={[
                 styles.headerTitle,

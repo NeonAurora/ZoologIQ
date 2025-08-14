@@ -208,7 +208,6 @@ export default function TapirLessonLayout() {
           <MaterialIcons name="chevron-right" size={20} color={isDark ? Colors.dark.textSecondary : Colors.light.textSecondary}/>
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <ThemedText style={styles.lessonEmoji}>🌴</ThemedText>
           <View style={styles.headerTitleContainer}>
             <ThemedText style={[styles.headerTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
               {currentSection.title}

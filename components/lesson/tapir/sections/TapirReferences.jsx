@@ -1,21 +1,46 @@
 // components/lesson/tapir/sections/TapirReferences.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Linking,
-  Alert
+  Alert,
+  View,
+  Platform
 } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+const PDF_DOWNLOAD_URL = 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751086346171.pdf';
+
 export default function TapirReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔥 NEW: Notice dismissal state
+  const [showNotice, setShowNotice] = useState(true);
+
+  // 🔥 NEW: Auto-dismiss notice after 5 seconds
+  useEffect(() => {
+    if (showNotice) {
+      const timer = setTimeout(() => {
+        setShowNotice(false);
+      }, 5000); // 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotice]);
+
+  // 🔥 NEW: Manual dismiss function
+  const dismissNotice = () => {
+    setShowNotice(false);
+  };
 
   // 🔥 NEW: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
@@ -57,6 +82,51 @@ export default function TapirReferences() {
         })}
       </ThemedText>
     );
+  };
+
+  // 🔥 NEW: PDF Download Handler (extracted from TapirPopulation)
+  const handleDownloadPDF = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        const link = document.createElement('a');
+        link.href = PDF_DOWNLOAD_URL;
+        link.download = 'tapir-references.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const downloadResumable = FileSystem.createDownloadResumable(
+          PDF_DOWNLOAD_URL,
+          FileSystem.documentDirectory + 'tapir-references.pdf'
+        );
+        const { uri } = await downloadResumable.downloadAsync();
+        const canShare = await Sharing.isAvailableAsync();
+        Alert.alert(
+          'Download complete',
+          '',
+          [
+            { text: 'OK' },
+            ...(canShare
+              ? [{
+                  text: 'Open',
+                  onPress: async () => {
+                    try {
+                      await Sharing.shareAsync(uri, {
+                        mimeType: 'application/pdf',
+                        dialogTitle: 'Open Tapir References PDF'
+                      });
+                    } catch {
+                      Alert.alert('Error', 'Unable to open the file.');
+                    }
+                  }
+                }]
+              : [])
+          ]
+        );
+      }
+    } catch {
+      Alert.alert('Error', 'An unexpected error occurred.');
+    }
   };
 
 const references = [
@@ -539,32 +609,47 @@ const references = [
         </ThemedText>
       </ThemedView>
 
-      {/* Notice (now transparent) */}
-      <ThemedView
-        style={[
-          styles.noticeCard,
-          {
-            // switched to page background instead of surface
-            backgroundColor: isDark ? Colors.dark.background : Colors.light.background,
-            borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
-          }
-        ]}
-      >
-        <MaterialIcons
-          name="info"
-          size={20}
-          color={isDark ? Colors.dark.tint : Colors.light.tint}
-        />
-        <ThemedText
+      {/* 🔥 UPDATED: Dismissible Notice */}
+      {showNotice && (
+        <ThemedView
           style={[
-            styles.noticeText,
-            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            styles.noticeCard,
+            {
+              backgroundColor: isDark ? Colors.dark.background : Colors.light.background,
+              borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
+            }
           ]}
         >
-          The following scientific references support the information presented
-          in this Malayan Tapir lesson. Content is displayed in English for academic consistency.
-        </ThemedText>
-      </ThemedView>
+          <MaterialIcons
+            name="info"
+            size={20}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+          />
+          <ThemedText
+            style={[
+              styles.noticeText,
+              { 
+                color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary,
+                paddingRight: 40 // 🔥 NEW: Add right padding to make room for close button
+              }
+            ]}
+          >
+            The following scientific references support the information presented
+            in this Malayan Tapir lesson. Content is displayed in English for academic consistency.
+          </ThemedText>
+          <TouchableOpacity
+            onPress={dismissNotice}
+            style={styles.dismissButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialIcons 
+              name="close" 
+              size={18} 
+              color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
+            />
+          </TouchableOpacity>
+        </ThemedView>
+      )}
 
       {/* List */}
       <ScrollView
@@ -633,6 +718,21 @@ const references = [
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* 🔥 NEW: Download PDF Section (extracted from TapirPopulation) */}
+      <ThemedView style={styles.downloadSection}>
+        <TouchableOpacity
+          style={[
+            styles.downloadButton,
+            { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+          ]}
+          onPress={handleDownloadPDF}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="file-download" size={18} color="#fff" />
+          <ThemedText style={styles.downloadText}>Download PDF</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -652,6 +752,7 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
 
+  // 🔥 UPDATED: Notice styles with dismiss button
   noticeCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -659,14 +760,21 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 4,
-    gap: 12
-    // backgroundColor is now handled dynamically above
+    gap: 12,
+    position: 'relative'
   },
   noticeText: {
     flex: 1,
     fontSize: 14,
     lineHeight: 20,
     fontStyle: 'italic'
+  },
+  dismissButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    padding: 4,
+    borderRadius: 12,
   },
 
   referencesScrollView: { flex: 1 },
@@ -714,5 +822,30 @@ const styles = StyleSheet.create({
   referenceSource: {
     fontSize: 12,
     fontStyle: 'italic'
+  },
+  
+  // 🔥 NEW: Download styles (extracted from TapirPopulation)
+  downloadSection: { 
+    alignItems: 'center', 
+    marginTop: 16, 
+    marginBottom: 16,
+    paddingHorizontal: 16
+  },
+  downloadButton: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    paddingHorizontal: 20, 
+    paddingVertical: 10,
+    borderRadius: 20, 
+    gap: 6,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2, 
+    shadowRadius: 2,
+    elevation: 2
+  },
+  downloadText: {
+    color: '#fff', 
+    fontSize: 14, 
+    fontWeight: '600'
   }
 });

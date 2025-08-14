@@ -1,22 +1,30 @@
 // components/lesson/tiger/sections/TigerReferences.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Linking,
   Alert,
-  View
+  View,
+  Platform
 } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+const PDF_DOWNLOAD_URL = 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751085268768.pdf';
+
 export default function TigerReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔥 NEW: Notice dismissal state
+  const [showNotice, setShowNotice] = useState(true);
 
   // theme-based colors
   const bgSurface    = isDark ? Colors.dark.surface    : Colors.light.surface;
@@ -26,6 +34,22 @@ export default function TigerReferences() {
   const txtPrimary   = isDark ? Colors.dark.text       : Colors.light.text;
   const txtSecondary = isDark ? Colors.dark.textSecondary : Colors.light.textSecondary;
   const txtMuted     = isDark ? Colors.dark.textMuted  : Colors.light.textMuted;
+
+  // 🔥 NEW: Auto-dismiss notice after 5 seconds
+  useEffect(() => {
+    if (showNotice) {
+      const timer = setTimeout(() => {
+        setShowNotice(false);
+      }, 5000); // 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotice]);
+
+  // 🔥 NEW: Manual dismiss function
+  const dismissNotice = () => {
+    setShowNotice(false);
+  };
 
   // 🔥 NEW: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
@@ -67,6 +91,57 @@ export default function TigerReferences() {
         })}
       </ThemedText>
     );
+  };
+
+  // 🔥 NEW: PDF Download Handler (extracted from TigerPopulation)
+  const handleDownloadPDF = async () => {
+    try {
+      if (Platform.OS === 'web') {
+        const link = document.createElement('a');
+        link.href = PDF_DOWNLOAD_URL;
+        link.download = 'tiger-references.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const downloadResumable = FileSystem.createDownloadResumable(
+          PDF_DOWNLOAD_URL,
+          FileSystem.documentDirectory + 'tiger-references.pdf'
+        );
+        try {
+          const { uri } = await downloadResumable.downloadAsync();
+          const isAvailable = await Sharing.isAvailableAsync();
+          Alert.alert(
+            'Download Complete',
+            '',
+            [
+              { text: 'OK', style: 'cancel' },
+              ...(isAvailable
+                ? [
+                    {
+                      text: 'Open',
+                      onPress: async () => {
+                        try {
+                          await Sharing.shareAsync(uri, {
+                            mimeType: 'application/pdf',
+                            dialogTitle: 'Open Tiger References PDF'
+                          });
+                        } catch {
+                          Alert.alert('Error', 'Unable to open the file.');
+                        }
+                      }
+                    }
+                  ]
+                : [])
+            ]
+          );
+        } catch {
+          Alert.alert('Download Failed', 'Unable to download the file.');
+        }
+      }
+    } catch {
+      Alert.alert('Error', 'An error occurred during download.');
+    }
   };
 
   const references = [
@@ -119,20 +194,35 @@ export default function TigerReferences() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Header */}
-      <ThemedView style={[styles.header, { backgroundColor: bgSurface, borderBottomColor: bdColor }]}>
-        <MaterialIcons name="library-books" size={24} color={tint} />
-        <ThemedText style={[styles.headerText, { color: txtPrimary }]}>References</ThemedText>
-      </ThemedView>
-
-      {/* Notice */}
-      <ThemedView style={[styles.notice, { backgroundColor: bgSecondary, borderLeftColor: tint }]}>
-        <MaterialIcons name="info" size={20} color={tint} />
-        <ThemedText style={[styles.noticeText, { color: txtSecondary }]}>
-          The following scientific references support the information presented in this Malayan Tiger lesson.
-          Content is displayed in English for academic consistency.
-        </ThemedText>
-      </ThemedView>
+      {/* 🔥 UPDATED: Dismissible Notice */}
+      {showNotice && (
+        <ThemedView style={[styles.notice, { backgroundColor: bgSecondary, borderLeftColor: tint }]}>
+          <MaterialIcons name="info" size={20} color={tint} />
+          <ThemedText 
+            style={[
+              styles.noticeText, 
+              { 
+                color: txtSecondary,
+                paddingRight: 40 // 🔥 NEW: Add right padding to make room for close button
+              }
+            ]}
+          >
+            The following scientific references support the information presented in this Malayan Tiger lesson.
+            Content is displayed in English for academic consistency.
+          </ThemedText>
+          <TouchableOpacity
+            onPress={dismissNotice}
+            style={styles.dismissButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialIcons 
+              name="close" 
+              size={18} 
+              color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
+            />
+          </TouchableOpacity>
+        </ThemedView>
+      )}
 
       {/* List */}
       <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
@@ -171,22 +261,81 @@ export default function TigerReferences() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* 🔥 NEW: Download PDF Section (extracted from TigerPopulation) */}
+      <ThemedView style={styles.downloadSection}>
+        <TouchableOpacity
+          style={[
+            styles.downloadButton,
+            { backgroundColor: tint }
+          ]}
+          onPress={handleDownloadPDF}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="file-download" size={18} color="#fff" />
+          <ThemedText style={styles.downloadText}>Download PDF</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container:    { flex: 1 },
-  header:       { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 1, gap: 12 },
-  headerText:   { fontSize: 22, fontWeight: '600' },
-  notice:       { flexDirection: 'row', alignItems: 'flex-start', margin: 16, padding: 16, borderRadius: 12, borderLeftWidth: 4, gap: 12 },
-  noticeText:   { flex: 1, fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
-  list:         { padding: 16, paddingTop: 0, gap: 12 },
-  card:         { borderRadius: 12, borderWidth: 1, padding: 16, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
-  cardRow:      { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  iconContainer:{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  info:         { flex: 1 },
-  titleText:    { fontSize: 15, fontWeight: '600', lineHeight: 20, marginBottom: 4 },
-  authorsText:  { fontSize: 13, fontWeight: '500', marginBottom: 2 },
-  sourceText:   { fontSize: 12, fontStyle: 'italic' }
+  container:      { flex: 1 },
+  header:         { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 1, gap: 12 },
+  headerText:     { fontSize: 22, fontWeight: '600' },
+  
+  // 🔥 UPDATED: Notice styles with dismiss button
+  notice:         { 
+    flexDirection: 'row', 
+    alignItems: 'flex-start', 
+    margin: 16, 
+    padding: 16, 
+    borderRadius: 12, 
+    borderLeftWidth: 4, 
+    gap: 12,
+    position: 'relative'
+  },
+  noticeText:     { flex: 1, fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
+  dismissButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    padding: 4,
+    borderRadius: 12,
+  },
+  
+  list:           { padding: 16, paddingTop: 0, gap: 12 },
+  card:           { borderRadius: 12, borderWidth: 1, padding: 16, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
+  cardRow:        { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  iconContainer:  { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  info:           { flex: 1 },
+  titleText:      { fontSize: 15, fontWeight: '600', lineHeight: 20, marginBottom: 4 },
+  authorsText:    { fontSize: 13, fontWeight: '500', marginBottom: 2 },
+  sourceText:     { fontSize: 12, fontStyle: 'italic' },
+  
+  // 🔥 NEW: Download styles (extracted from TigerPopulation)
+  downloadSection: { 
+    alignItems: 'center', 
+    marginTop: 16, 
+    marginBottom: 16,
+    paddingHorizontal: 16
+  },
+  downloadButton: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    paddingHorizontal: 20, 
+    paddingVertical: 10,
+    borderRadius: 20, 
+    gap: 6,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2, 
+    shadowRadius: 2,
+    elevation: 2
+  },
+  downloadText: {
+    color: '#fff', 
+    fontSize: 14, 
+    fontWeight: '600'
+  }
 });

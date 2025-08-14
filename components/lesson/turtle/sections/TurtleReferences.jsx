@@ -1,13 +1,14 @@
 // components/lesson/turtle/sections/TurtleReferences.jsx
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Linking,
   Alert,
-  View
+  View,
+  Platform
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -15,9 +16,30 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+const PDF_URL = 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751086680717.pdf';
+
 export default function TurtleReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  // 🔥 NEW: Notice dismissal state
+  const [showNotice, setShowNotice] = useState(true);
+
+  // 🔥 NEW: Auto-dismiss notice after 5 seconds
+  useEffect(() => {
+    if (showNotice) {
+      const timer = setTimeout(() => {
+        setShowNotice(false);
+      }, 5000); // 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotice]);
+
+  // 🔥 NEW: Manual dismiss function
+  const dismissNotice = () => {
+    setShowNotice(false);
+  };
 
   // 🔥 NEW: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
@@ -59,6 +81,17 @@ export default function TurtleReferences() {
         })}
       </ThemedText>
     );
+  };
+
+  // 🔥 NEW: PDF Download Handler (extracted from TurtlePopulation)
+  const handleDownload = () => {
+    if (Platform.OS === 'web') {
+      window.open(PDF_URL, '_blank');
+    } else {
+      Linking.openURL(PDF_URL).catch(() =>
+        Alert.alert('Error', 'Unable to open PDF.')
+      );
+    }
   };
 
   const references = [
@@ -198,38 +231,51 @@ export default function TurtleReferences() {
         </ThemedText>
       </ThemedView>
 
-      {/* Notice */}
-      <ThemedView
-        style={[
-          styles.noticeCard,
-          {
-            backgroundColor: isDark
-              ? Colors.dark.background
-              : Colors.light.background,
-            borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
-          }
-        ]}
-      >
-        <MaterialIcons
-          name="info"
-          size={20}
-          color={isDark ? Colors.dark.tint : Colors.light.tint}
-        />
-        <ThemedText
+      {/* 🔥 UPDATED: Dismissible Notice */}
+      {showNotice && (
+        <ThemedView
           style={[
-            styles.noticeText,
+            styles.noticeCard,
             {
-              color: isDark
-                ? Colors.dark.textSecondary
-                : Colors.light.textSecondary
+              backgroundColor: isDark
+                ? Colors.dark.background
+                : Colors.light.background,
+              borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
             }
           ]}
         >
-          The following scientific references support the information presented
-          in this Green Sea Turtle lesson. Content is displayed in English for
-          academic consistency.
-        </ThemedText>
-      </ThemedView>
+          <MaterialIcons
+            name="info"
+            size={20}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+          />
+          <ThemedText
+            style={[
+              styles.noticeText,
+              {
+                color: isDark
+                  ? Colors.dark.textSecondary
+                  : Colors.light.textSecondary
+              }
+            ]}
+          >
+            The following scientific references support the information presented
+            in this Green Sea Turtle lesson. Content is displayed in English for
+            academic consistency.
+          </ThemedText>
+          <TouchableOpacity
+            onPress={dismissNotice}
+            style={styles.dismissButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialIcons 
+              name="close" 
+              size={18} 
+              color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
+            />
+          </TouchableOpacity>
+        </ThemedView>
+      )}
 
       {/* List */}
       <ScrollView
@@ -319,6 +365,21 @@ export default function TurtleReferences() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* 🔥 NEW: Download PDF Section (extracted from TurtlePopulation) */}
+      <ThemedView style={styles.downloadSection}>
+        <TouchableOpacity
+          style={[
+            styles.downloadButton,
+            { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+          ]}
+          onPress={handleDownload}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="file-download" size={18} color="#fff" />
+          <ThemedText style={styles.downloadText}>Download PDF</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -340,13 +401,15 @@ const styles = StyleSheet.create({
     marginLeft: 12
   },
 
+  // 🔥 UPDATED: Notice styles with dismiss button
   noticeCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     margin: 16,
     padding: 12,
     borderRadius: 12,
-    borderLeftWidth: 4
+    borderLeftWidth: 4,
+    position: 'relative'
   },
   noticeText: {
     flex: 1,
@@ -354,6 +417,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontStyle: 'italic',
     marginLeft: 8
+  },
+  dismissButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    padding: 4,
+    borderRadius: 12,
   },
 
   referencesScrollView: {
@@ -403,5 +473,31 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontStyle: 'italic',
     marginTop: 2
+  },
+
+  // 🔥 NEW: Download styles (extracted from TurtlePopulation)
+  downloadSection: { 
+    alignItems: 'center', 
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16
+  },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2
+  },
+  downloadText: { 
+    color: '#fff', 
+    fontSize: 14, 
+    fontWeight: '600' 
   }
 });

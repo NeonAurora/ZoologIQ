@@ -391,21 +391,6 @@ export default function TapirPopulation({ currentLanguage = 'en' }) {
       <Section icon="lightbulb" title={text.keyInsights}>
         <Insights items={text.keyInsightsData} />
       </Section>
-
-      {/* 🔥 Download Button */}
-      <View style={styles.downloadSection}>
-        <TouchableOpacity
-          style={[
-            styles.simpleDownloadButton,
-            { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
-          ]}
-          onPress={handleDownloadPDF}
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="file-download" size={18} color="#fff" />
-          <ThemedText style={styles.simpleDownloadText}>Download PDF</ThemedText>
-        </TouchableOpacity>
-      </View>
     </ScrollView>
   );
 }

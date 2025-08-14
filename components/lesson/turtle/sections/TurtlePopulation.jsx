@@ -221,18 +221,6 @@ export default function TurtlePopulation({ currentLanguage = 'en' }) {
             </View>
           ))}
         </View>
-
-        {/* Download */}
-        <View style={styles.downloadSection}>
-          <TouchableOpacity
-            style={[styles.downloadButton, { backgroundColor: activeColor }]}
-            onPress={handleDownload}
-            activeOpacity={0.8}
-          >
-            <MaterialIcons name="file-download" size={18} color="#fff" />
-            <ThemedText style={styles.downloadText}>{text.downloadText}</ThemedText>
-          </TouchableOpacity>
-        </View>
       </View>
     </ScrollView>
   );
