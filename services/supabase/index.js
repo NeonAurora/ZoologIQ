@@ -82,5 +82,11 @@ export {
   getDatabaseStatus
 } from './databaseAutomationService';
 
+export {
+  exportSingleTable,
+  exportMultipleTables,
+  getAvailableTables,
+} from './export';
+
 // Config
 export { supabase } from './config';

@@ -51,11 +51,110 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
     return rank === 'Species' || rank === 'Subspecies';
   };
 
+  // 🔥 NEW: Helper function to render tiger scientific names with custom formatting
+// 🔥 NEW: Helper function to render tiger scientific names with custom formatting within larger text
+const renderTigerScientificName = (text, style) => {
+  if (!text || typeof text !== 'string') {
+    return <ThemedText style={style}>{text}</ThemedText>;
+  }
+
+  // Check for full subspecies name first
+  const fullSubspeciesPattern = /Panthera tigris jacksoni/g;
+  if (fullSubspeciesPattern.test(text)) {
+    const parts = text.split(fullSubspeciesPattern);
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => (
+          <React.Fragment key={index}>
+            {part}
+            {index < parts.length - 1 && (
+              <ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  Panthera
+                </ThemedText>
+                <ThemedText style={style}> </ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  tigris
+                </ThemedText>
+                <ThemedText style={[
+                  style,
+                  { fontStyle: 'italic' }
+                ]}>
+                  {' (jacksoni)'}
+                </ThemedText>
+              </ThemedText>
+            )}
+          </React.Fragment>
+        ))}
+      </ThemedText>
+    );
+  }
+  
+  // Check for species name only
+  const speciesPattern = /Panthera tigris(?!\s+jacksoni)/g;
+  if (speciesPattern.test(text)) {
+    const parts = text.split(speciesPattern);
+    
+    return (
+      <ThemedText style={style}>
+        {parts.map((part, index) => (
+          <React.Fragment key={index}>
+            {part}
+            {index < parts.length - 1 && (
+              <ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  Panthera
+                </ThemedText>
+                <ThemedText style={style}> </ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  tigris
+                </ThemedText>
+              </ThemedText>
+            )}
+          </React.Fragment>
+        ))}
+      </ThemedText>
+    );
+  }
+
+  // For any other scientific names, use the original function
+  return renderTextWithScientificNames(text, style);
+};
+
   const content = {
     en: {
       heroTitle: "Malayan Tiger:",
       heroDescription: "The Malayan Tiger (Panthera tigris jacksoni) is Malaysia's critically endangered national symbol, with fewer than 150 remaining in the wild. These apex predators maintain healthy forests by controlling prey populations, while their habitats provide clean water and store carbon. Threatened by habitat loss, poaching, and human conflict, their survival depends on immediate conservation action. Everyone in Malaysia can help protect these iconic stripes for future generations.",
-      factSheetTitle: "Malayan Tiger (Panthera tigris jacksoni) Fact Sheet:",
+      factSheetTitle: "Malayan Tiger Fact Sheet:",
       factSheet: [
         { category: 'Scientific Name', value: 'Panthera tigris jacksoni', icon: 'science' },
         { category: 'Conservation Status', value: 'Critically Endangered (IUCN Red List)', icon: 'warning' },
@@ -83,7 +182,7 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
     },
     ms: {
       heroTitle: "Harimau Malaya:",
-      heroDescription: "Harimau Malaya (Panthera tigris jacksoni) adalah simbol kebangsaan Malaysia yang kini berada dalam keadaan kritikal terancam, dengan kurang daripada 150 ekor yang masih tinggal di hutan. Predator puncak ini mengekalkan kesihatan hutan dengan mengawal populasi mangsa, sementara habitat mereka menyediakan air bersih dan menyimpan karbon. Terancam oleh kehilangan habitat, pemburuan haram, dan konflik dengan manusia, kelangsungan hidup mereka bergantung pada tindakan pemuliharaan segera. Setiap rakyat Malaysia boleh membantu melindungi belang ikonik ini untuk generasi akan datang.",
+      heroDescription: "Harimau Malaya adalah simbol kebangsaan Malaysia yang kini berada dalam keadaan kritikal terancam, dengan kurang daripada 150 ekor yang masih tinggal di hutan. Predator puncak ini mengekalkan kesihatan hutan dengan mengawal populasi mangsa, sementara habitat mereka menyediakan air bersih dan menyimpan karbon. Terancam oleh kehilangan habitat, pemburuan haram, dan konflik dengan manusia, kelangsungan hidup mereka bergantung pada tindakan pemuliharaan segera. Setiap rakyat Malaysia boleh membantu melindungi belang ikonik ini untuk generasi akan datang.",
       factSheetTitle: "Borang Fakta Harimau Malaya (Panthera tigris jacksoni):",
       factSheet: [
         { category: 'Nama Saintifik', value: 'Panthera tigris jacksoni', icon: 'science' },
@@ -137,36 +236,37 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
-      <View
-        style={[
-          styles.hero,
-          {
-            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-            borderColor: isDark ? Colors.dark.border : Colors.light.border
-          }
-        ]}
-      >
-        <View style={styles.heroHeader}>
-          <ThemedText style={styles.heroEmoji}>🐅</ThemedText>
-          <ThemedText
-            style={[
-              styles.heroTitle,
-              { color: isDark ? Colors.dark.text : Colors.light.text }
-            ]}
-          >
-            {text.heroTitle}
-          </ThemedText>
-        </View>
-        
-        {/* 🔥 UPDATED: Hero description with scientific names in italic */}
-        {renderTextWithScientificNames(
-          text.heroDescription,
-          [
-            styles.heroDesc,
-            { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]
-        )}
-      </View>
+      {/* Hero */}
+<View
+  style={[
+    styles.hero,
+    {
+      backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+      borderColor: isDark ? Colors.dark.border : Colors.light.border
+    }
+  ]}
+>
+  <View style={styles.heroHeader}>
+    <ThemedText style={styles.heroEmoji}>🐅</ThemedText>
+    <ThemedText
+      style={[
+        styles.heroTitle,
+        { color: isDark ? Colors.dark.text : Colors.light.text }
+      ]}
+    >
+      {text.heroTitle}
+    </ThemedText>
+  </View>
+  
+  {/* 🔥 UPDATED: Hero description with custom tiger scientific names formatting */}
+  {renderTigerScientificName(
+    text.heroDescription,
+    [
+      styles.heroDesc,
+      { color: isDark ? Colors.dark.text : Colors.light.text }
+    ]
+  )}
+</View>
 
       {/* Fact Sheet */}
       <Section icon="info" title={text.factSheetTitle}>
@@ -199,23 +299,22 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
                 {category}
               </ThemedText>
               
-              {/* 🔥 UPDATED: Fact sheet values with scientific names in italic */}
-              {category === 'Scientific Name' || category === 'Nama Saintifik' ? 
-                renderTextWithScientificNames(
+              {/* 🔥 UPDATED: Fact sheet values with tiger scientific names formatting */}
+              {(category === 'Scientific Name' || category === 'Nama Saintifik') ? 
+                renderTigerScientificName(
                   value,
                   [
                     styles.infoValue,
                     { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                   ]
                 ) : (
-                  <ThemedText
-                    style={[
+                  renderTextWithScientificNames(
+                    value,
+                    [
                       styles.infoValue,
                       { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                    ]}
-                  >
-                    {value}
-                  </ThemedText>
+                    ]
+                  )
                 )
               }
             </View>
@@ -254,19 +353,29 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
                 {rank}
               </ThemedText>
               
-              {/* 🔥 UPDATED: Scientific names in italic for Species and Subspecies only */}
-              <ThemedText
-                style={[
-                  styles.infoValue,
-                  { 
-                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary,
-                    fontStyle: shouldItalicizeScientificName(rank) ? 'italic' : 'normal'
-                  }
-                ]}
-              >
-                {scientific}
-              </ThemedText>
-              
+              {/* 🔥 UPDATED: Scientific names with custom tiger formatting */}
+              {shouldItalicizeScientificName(rank) ? 
+                renderTigerScientificName(
+                  scientific,
+                  [
+                    styles.infoValue,
+                    { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                  ]
+                ) : (
+                  <ThemedText
+                    style={[
+                      styles.infoValue,
+                      { 
+                        color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary,
+                        fontStyle: 'normal'
+                      }
+                    ]}
+                  >
+                    {scientific}
+                  </ThemedText>
+                )
+              }
+                            
               <ThemedText
                 style={[
                   styles.infoValue,

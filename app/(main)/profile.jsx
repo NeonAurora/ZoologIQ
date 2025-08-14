@@ -35,7 +35,6 @@ export default function ProfileScreen() {
       malay: 'Malay',
       highestLevel: 'Highest Level',
       cityVillage: 'City/Village',
-      district: 'District',
       stateProvince: 'State/Province',
       notSpecified: 'Not specified',
       editProfile: 'Edit Profile',
@@ -56,7 +55,6 @@ export default function ProfileScreen() {
       malay: 'Bahasa Melayu',
       highestLevel: 'Tahap Tertinggi',
       cityVillage: 'Bandar/Kampung',
-      district: 'Daerah',
       stateProvince: 'Negeri',
       notSpecified: 'Tidak dinyatakan',
       editProfile: 'Edit Profil',
@@ -201,7 +199,6 @@ export default function ProfileScreen() {
           title={text.location}
           data={[
             { label: text.cityVillage, value: supabaseData.city || text.notSpecified },
-            { label: text.district, value: supabaseData.district || text.notSpecified },
             { label: text.stateProvince, value: supabaseData.state_province || text.notSpecified },
           ]}
           isDark={isDark}
@@ -209,7 +206,7 @@ export default function ProfileScreen() {
 
         {/* Action Buttons */}
         <ThemedView style={styles.actionsContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
               styles.primaryButton,
               { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }

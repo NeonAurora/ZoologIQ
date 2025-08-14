@@ -79,6 +79,38 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
   const shouldItalicizeScientificName = (rank) => {
     return rank === 'Species' || rank === 'Spesies';
   };
+  
+  const renderSpeciesWithUnderlines = (text, style) => {
+  if (!shouldItalicizeScientificName) return <ThemedText style={style}>{text}</ThemedText>;
+  
+  // Split "Chelonia mydas" into parts
+  const parts = text.trim().split(/\s+/);
+  
+  if (parts.length < 2) {
+    // Not a proper species format, return as italic
+    return <ThemedText style={[style, { fontStyle: 'italic' }]}>{text}</ThemedText>;
+  }
+  
+  return (
+    <ThemedText style={style}>
+      {parts.map((part, index) => (
+        <React.Fragment key={index}>
+          <ThemedText style={[
+            style,
+            { 
+              fontStyle: 'italic',
+              textDecorationLine: 'underline',
+              textDecorationStyle: 'solid'
+            }
+          ]}>
+            {part}
+          </ThemedText>
+          {index < parts.length - 1 && ' '}
+        </React.Fragment>
+      ))}
+    </ThemedText>
+  );
+};
 
   const content = {
     en: {
@@ -288,16 +320,26 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
                 {row.rank}
               </ThemedText>
               
-              {/* 🔥 UPDATED: Taxonomy classification with conditional italic styling */}
-              <ThemedText style={[
-                styles.tableCellValue, 
-                {
-                  color: isDark ? Colors.dark.text : Colors.light.text,
-                  fontStyle: shouldItalicizeScientificName(row.rank) ? 'italic' : 'italic' // Keep default italic but enhance species
-                }
-              ]}>
-                {row.classification}
-              </ThemedText>
+              {/* 🔥 UPDATED: Conditional rendering for species vs other ranks */}
+              {shouldItalicizeScientificName(row.rank) ? 
+                renderSpeciesWithUnderlines(
+                  row.classification,
+                  [
+                    styles.tableCellValue,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]
+                ) : (
+                  <ThemedText style={[
+                    styles.tableCellValue, 
+                    {
+                      color: isDark ? Colors.dark.text : Colors.light.text,
+                      fontStyle: 'normal'
+                    }
+                  ]}>
+                    {row.classification}
+                  </ThemedText>
+                )
+              }
             </View>
           ))}
         </View>
@@ -418,6 +460,5 @@ const styles = StyleSheet.create({
   tableCellValue: {
     flex:           1.5,
     fontSize:       14,
-    fontStyle:      'italic'
   }
 });

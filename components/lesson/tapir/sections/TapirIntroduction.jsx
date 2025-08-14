@@ -89,6 +89,39 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
     return rank === 'Species' || rank === 'Spesies';
   };
 
+  // 🔥 NEW: Helper function to render species with separate underlines
+    const renderSpeciesWithUnderlines = (text, style) => {
+      if (!shouldItalicizeScientificName) return <ThemedText style={style}>{text}</ThemedText>;
+      
+      // Split "Chelonia mydas" into parts
+      const parts = text.trim().split(/\s+/);
+      
+      if (parts.length < 2) {
+        // Not a proper species format, return as italic
+        return <ThemedText style={[style, { fontStyle: 'italic' }]}>{text}</ThemedText>;
+      }
+      
+      return (
+        <ThemedText style={style}>
+          {parts.map((part, index) => (
+            <React.Fragment key={index}>
+              <ThemedText style={[
+                style,
+                { 
+                  fontStyle: 'italic',
+                  textDecorationLine: 'underline',
+                  textDecorationStyle: 'solid'
+                }
+              ]}>
+                {part}
+              </ThemedText>
+              {index < parts.length - 1 && ' '}
+            </React.Fragment>
+          ))}
+        </ThemedText>
+      );
+    };
+
   const content = {
     en: {
       // Hero
@@ -464,16 +497,25 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
               </ThemedText>
               
               {/* 🔥 UPDATED: Taxonomy classification with conditional italic styling */}
-              <ThemedText
-                style={[
-                  styles.taxonomyName,
-                  { 
-                    color: isDark ? Colors.dark.text : Colors.light.text,
-                    fontStyle: shouldItalicizeScientificName(tax.rank) ? 'italic' : 'normal'
-                  }
-                ]}>
-                {tax.classification}
-              </ThemedText>
+              {shouldItalicizeScientificName(tax.rank) ? 
+                renderSpeciesWithUnderlines(
+                  tax.classification,
+                  [
+                    styles.tableCellValue,
+                    { color: isDark ? Colors.dark.text : Colors.light.text }
+                  ]
+                ) : (
+                  <ThemedText style={[
+                    styles.tableCellValue, 
+                    {
+                      color: isDark ? Colors.dark.text : Colors.light.text,
+                      fontStyle: 'normal'
+                    }
+                  ]}>
+                    {tax.classification}
+                  </ThemedText>
+                )
+              }
             </View>
           ))}
         </View>

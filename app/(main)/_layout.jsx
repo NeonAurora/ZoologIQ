@@ -345,6 +345,14 @@ export default function RootLayout() {
               headerShown: true  // Hide header for onboarding
             }} 
           />
+          <Drawer.Screen 
+            name="(admin)/export" 
+            options={{ 
+              title: "Export Data",
+              drawerItemStyle: { display: 'none' },
+              headerShown: true  // Hide header for onboarding
+            }} 
+          />
         </Drawer>
         <StatusBar style="auto" />
       </PaperProvider>

@@ -58,7 +58,7 @@ export default function LanguageToggle({ currentLanguage, onLanguageChange, size
           isCompact && styles.compactText,
           currentLanguage === 'ms' && styles.activeText
         ]}>
-          MS
+          BM
         </ThemedText>
       </TouchableOpacity>
     </View>

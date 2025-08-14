@@ -6,7 +6,9 @@ import {
   TextInput, 
   TouchableOpacity, 
   Alert,
-  ActivityIndicator 
+  ActivityIndicator,
+  Modal,
+  FlatList
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,6 +20,35 @@ import { updateUserData } from '@/services/supabase';
 import { uploadImage } from '@/services/supabase';
 import * as ExpoImagePicker from 'expo-image-picker';
 import ImagePicker from '@/components/createQuiz/ImagePicker';
+
+// Education levels options
+const EDUCATION_LEVELS = [
+  'High School',
+  'Diploma',
+  'Bachelor\'s',
+  'Master\'s',
+  'PhD'
+];
+
+// Malaysian states options
+const MALAYSIAN_STATES = [
+  'Kuala Lumpur (Capital of Malaysia)',
+  'Putrajaya (Administrative & Judicial Capital)',
+  'Labuan (International Offshore Financial Center)',
+  'Johor',
+  'Kedah',
+  'Kelantan',
+  'Malacca (Melaka)',
+  'Negeri Sembilan',
+  'Pahang',
+  'Penang (Pulau Pinang)',
+  'Perak',
+  'Perlis',
+  'Sabah',
+  'Sarawak',
+  'Selangor',
+  'Terengganu'
+];
 
 export default function EditProfileScreen() {
   const { onboarding } = useLocalSearchParams();
@@ -34,7 +65,6 @@ export default function EditProfileScreen() {
     preferred_language: 'en', // 🔥 NEW: Language preference
     highest_education: '',
     city: '',
-    district: '',
     state_province: '',
     occupation: '',
     age: '',
@@ -54,7 +84,6 @@ export default function EditProfileScreen() {
         preferred_language: supabaseData.preferred_language || 'en', // 🔥 NEW: Set language preference
         highest_education: supabaseData.highest_education || '',
         city: supabaseData.city || '',
-        district: supabaseData.district || '',
         state_province: supabaseData.state_province || '',
         occupation: supabaseData.occupation || '',
         age: supabaseData.age?.toString() || '',
@@ -67,7 +96,7 @@ export default function EditProfileScreen() {
   useEffect(() => {
     const requiredFields = [
       'name', 'email', 'highest_education',
-      'city', 'district', 'state_province', 'occupation', 'age', 'gender'
+      'city', 'state_province', 'occupation', 'age', 'gender'
     ];
     
     const isValid = requiredFields.every(field => {
@@ -204,7 +233,6 @@ export default function EditProfileScreen() {
         occupation: formData.occupation,
         highest_education: formData.highest_education,
         city: formData.city,
-        district: formData.district,
         state_province: formData.state_province,
         preferred_language: formData.preferred_language, // 🔥 Include language preference
         picture: finalImageUrl,
@@ -414,7 +442,7 @@ export default function EditProfileScreen() {
                       : (isDark ? Colors.dark.text : Colors.light.text)
                   }
                 ]}>
-                  🇲🇾 Malay
+                  🇲🇾 Bahasa
                 </ThemedText>
                 {formData.preferred_language === 'ms' && (
                   <ThemedText style={styles.languageCheckmark}>✓</ThemedText>
@@ -480,11 +508,12 @@ export default function EditProfileScreen() {
         </FormSection>
 
         <FormSection title="Education" isDark={isDark}>
-          <FormField
+          <Dropdown
             label="Highest Education"
             value={formData.highest_education}
-            onChangeText={(value) => handleInputChange('highest_education', value)}
-            placeholder="e.g., High School, Bachelor's, Master's, PhD"
+            onSelect={(value) => handleInputChange('highest_education', value)}
+            options={EDUCATION_LEVELS}
+            placeholder="Select your highest education level"
             isDark={isDark}
             required
           />
@@ -499,19 +528,12 @@ export default function EditProfileScreen() {
             isDark={isDark}
             required
           />
-          <FormField
-            label="District"
-            value={formData.district}
-            onChangeText={(value) => handleInputChange('district', value)}
-            placeholder="Enter your district"
-            isDark={isDark}
-            required
-          />
-          <FormField
-            label="State/Province"
+          <Dropdown
+            label="State"
             value={formData.state_province}
-            onChangeText={(value) => handleInputChange('state_province', value)}
-            placeholder="Enter your state or province"
+            onSelect={(value) => handleInputChange('state_province', value)}
+            options={MALAYSIAN_STATES}
+            placeholder="Select your state"
             isDark={isDark}
             required
           />
@@ -652,6 +674,135 @@ function FormField({ label, value, onChangeText, placeholder, keyboardType, isDa
   );
 }
 
+function Dropdown({ label, value, onSelect, options, placeholder, isDark, required }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (selectedValue) => {
+    onSelect(selectedValue);
+    setIsOpen(false);
+  };
+
+  return (
+    <ThemedView style={styles.fieldContainer}>
+      <ThemedText style={[
+        styles.fieldLabel,
+        { color: isDark ? Colors.dark.text : Colors.light.text }
+      ]}>
+        {label}{required && ' *'}
+      </ThemedText>
+      
+      <TouchableOpacity
+        style={[
+          styles.textInput,
+          styles.dropdownButton,
+          { 
+            backgroundColor: isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border,
+          }
+        ]}
+        onPress={() => setIsOpen(true)}
+        activeOpacity={0.8}
+      >
+        <ThemedText style={[
+          styles.dropdownButtonText,
+          { 
+            color: value 
+              ? (isDark ? Colors.dark.text : Colors.light.text)
+              : (isDark ? Colors.dark.textMuted : Colors.light.textMuted)
+          }
+        ]}>
+          {value || placeholder}
+        </ThemedText>
+        <ThemedText style={[
+          styles.dropdownArrow,
+          { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
+        ]}>
+          ▼
+        </ThemedText>
+      </TouchableOpacity>
+
+      <Modal
+        visible={isOpen}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsOpen(false)}
+        >
+          <ThemedView style={[
+            styles.modalContent,
+            { backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface }
+          ]}>
+            <ThemedView style={styles.modalHeader}>
+              <ThemedText style={[
+                styles.modalTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                Select {label}
+              </ThemedText>
+              <TouchableOpacity 
+                onPress={() => setIsOpen(false)}
+                style={styles.closeButton}
+              >
+                <ThemedText style={[
+                  styles.closeButtonText,
+                  { color: isDark ? Colors.dark.textMuted : Colors.light.textMuted }
+                ]}>
+                  ✕
+                </ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+            
+            <FlatList
+              data={options}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.optionItem,
+                    value === item && {
+                      backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20'
+                    },
+                    {
+                      borderBottomColor: isDark ? Colors.dark.border : Colors.light.border
+                    }
+                  ]}
+                  onPress={() => handleSelect(item)}
+                  activeOpacity={0.8}
+                >
+                  <ThemedText style={[
+                    styles.optionText,
+                    { color: isDark ? Colors.dark.text : Colors.light.text },
+                    value === item && {
+                      color: isDark ? Colors.dark.tint : Colors.light.tint,
+                      fontWeight: '600'
+                    }
+                  ]}>
+                    {item}
+                  </ThemedText>
+                  {value === item && (
+                    <ThemedText style={[
+                      styles.selectedIcon,
+                      { color: isDark ? Colors.dark.tint : Colors.light.tint }
+                    ]}>
+                      ✓
+                    </ThemedText>
+                  )}
+                </TouchableOpacity>
+              )}
+              style={styles.optionsList}
+              showsVerticalScrollIndicator={false}
+            />
+          </ThemedView>
+        </TouchableOpacity>
+      </Modal>
+    </ThemedView>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -786,6 +937,76 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     minHeight: 48,
+  },
+
+  // Dropdown Styles
+  dropdownButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dropdownButtonText: {
+    fontSize: 16,
+    flex: 1,
+  },
+  dropdownArrow: {
+    fontSize: 12,
+    marginLeft: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxHeight: '70%',
+    borderRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  optionsList: {
+    maxHeight: 400,
+  },
+  optionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  optionText: {
+    fontSize: 16,
+    flex: 1,
+  },
+  selectedIcon: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 12,
   },
   
   // Validation

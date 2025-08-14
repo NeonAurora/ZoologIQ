@@ -22,7 +22,7 @@ export default function QuestionCard({
     return textObj[currentLanguage] || textObj.en || fallback;
   };
 
-  // 🔥 NEW: Helper function to process question text with italic ranges
+  // 🔥 UPDATED: Enhanced question text parser with scientific name formatting
   const parseQuestionText = (questionText) => {
     if (!questionText || typeof questionText !== 'string') {
       return [{ text: questionText || '', isItalic: false }];
@@ -49,6 +49,7 @@ export default function QuestionCard({
         segments.push({
           text: part,
           isItalic: isItalic,
+          isScientific: isItalic, // If it's italic, treat as scientific name
           key: `segment-${i}` // For React key prop
         });
       }
@@ -56,33 +57,13 @@ export default function QuestionCard({
     
     // If no segments found, return the original text
     if (segments.length === 0) {
-      return [{ text: questionText, isItalic: false, key: 'single' }];
+      return [{ text: questionText, isItalic: false, isScientific: false, key: 'single' }];
     }
     
     return segments;
   };
 
-  // 🔥 NEW: Helper function to process option text (unchanged from before)
-  const processOptionText = (optionText) => {
-    if (!optionText || typeof optionText !== 'string') {
-      return { text: optionText || '', isItalic: false };
-    }
-    
-    // Check if option starts with {i} prefix
-    if (optionText.startsWith('{i}')) {
-      return {
-        text: optionText.substring(3), // Remove {i} prefix
-        isItalic: true
-      };
-    }
-    
-    return {
-      text: optionText,
-      isItalic: false
-    };
-  };
-
-  // 🔥 NEW: Render question text with mixed formatting
+  // 🔥 UPDATED: Enhanced question text renderer
   const renderQuestionText = () => {
     const questionText = getBilingualText(question.question_text || question.question, 'Question text not available');
     const segments = parseQuestionText(questionText);
@@ -93,22 +74,131 @@ export default function QuestionCard({
         { color: isDark ? Colors.dark.text : Colors.light.text }
       ]}>
         {segments.map((segment) => (
-          <ThemedText
-            key={segment.key}
-            style={[
-              {
-                fontStyle: segment.isItalic ? 'italic' : 'normal',
-                color: segment.isItalic 
-                  ? (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
-                  : (isDark ? Colors.dark.text : Colors.light.text)
-              }
-            ]}
-          >
-            {segment.text}
-          </ThemedText>
+          segment.isScientific ? 
+            renderScientificName(
+              segment.text,
+              [{
+                color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+              }]
+            ) : (
+              <ThemedText
+                key={segment.key}
+                style={[
+                  {
+                    fontStyle: segment.isItalic ? 'italic' : 'normal',
+                    color: segment.isItalic 
+                      ? (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
+                      : (isDark ? Colors.dark.text : Colors.light.text)
+                  }
+                ]}
+              >
+                {segment.text}
+              </ThemedText>
+            )
         ))}
       </ThemedText>
     );
+  };
+
+  // 🔥 NEW: Helper function to render scientific names with underlines
+  const renderScientificName = (scientificText, style) => {
+    if (!scientificText || typeof scientificText !== 'string') {
+      return <ThemedText style={style}>{scientificText}</ThemedText>;
+    }
+
+    const words = scientificText.trim().split(/\s+/);
+    
+    if (words.length === 2) {
+      // Two words: both underlined separately (e.g., "Panthera leo")
+      return (
+        <ThemedText style={style}>
+          <ThemedText style={[
+            style,
+            { 
+              fontStyle: 'italic',
+              textDecorationLine: 'underline',
+              textDecorationStyle: 'solid'
+            }
+          ]}>
+            {words[0]}
+          </ThemedText>
+          <ThemedText style={style}> </ThemedText>
+          <ThemedText style={[
+            style,
+            { 
+              fontStyle: 'italic',
+              textDecorationLine: 'underline',
+              textDecorationStyle: 'solid'
+            }
+          ]}>
+            {words[1]}
+          </ThemedText>
+        </ThemedText>
+      );
+    } else if (words.length === 3) {
+      // Three words: first two underlined, third in brackets (e.g., "Panthera tigris (jacksoni)")
+      return (
+        <ThemedText style={style}>
+          <ThemedText style={[
+            style,
+            { 
+              fontStyle: 'italic',
+              textDecorationLine: 'underline',
+              textDecorationStyle: 'solid'
+            }
+          ]}>
+            {words[0]}
+          </ThemedText>
+          <ThemedText style={style}> </ThemedText>
+          <ThemedText style={[
+            style,
+            { 
+              fontStyle: 'italic',
+              textDecorationLine: 'underline',
+              textDecorationStyle: 'solid'
+            }
+          ]}>
+            {words[1]}
+          </ThemedText>
+          <ThemedText style={[
+            style,
+            { fontStyle: 'italic' }
+          ]}>
+            {' (' + words[2] + ')'}
+          </ThemedText>
+        </ThemedText>
+      );
+    } else {
+      // For other cases, just make it italic (fallback)
+      return (
+        <ThemedText style={[
+          style,
+          { fontStyle: 'italic' }
+        ]}>
+          {scientificText}
+        </ThemedText>
+      );
+    }
+  };
+
+  // 🔥 UPDATED: Enhanced option text processor
+  const processOptionText = (optionText) => {
+    if (!optionText || typeof optionText !== 'string') {
+      return { text: optionText || '', isScientific: false };
+    }
+    
+    // Check if option starts with {i} prefix
+    if (optionText.startsWith('{i}')) {
+      return {
+        text: optionText.substring(3), // Remove {i} prefix
+        isScientific: true
+      };
+    }
+    
+    return {
+      text: optionText,
+      isScientific: false
+    };
   };
 
   const options = question.options?.[currentLanguage] || question.options?.en || question.options || [];
@@ -166,89 +256,103 @@ export default function QuestionCard({
       {/* Answer Options */}
       <View style={styles.optionsSection}>
         {Array.isArray(options) && options.map((option, index) => {
-          // Process each option for italic formatting (unchanged)
-          const processedOption = processOptionText(option);
-          
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.optionButton,
+        // Process each option for scientific name detection
+        const processedOption = processOptionText(option);
+        
+        return (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.optionButton,
+              { 
+                borderColor: selectedAnswer === index 
+                  ? quizColor
+                  : (isDark ? Colors.dark.border : Colors.light.border),
+                backgroundColor: selectedAnswer === index 
+                  ? quizColor + '15'
+                  : (isDark ? Colors.dark.surface : Colors.light.surface),
+              }
+            ]}
+            onPress={() => onSelectAnswer(index)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.optionContent}>
+              <View style={[
+                styles.optionLetter,
                 { 
+                  backgroundColor: selectedAnswer === index 
+                    ? quizColor
+                    : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
                   borderColor: selectedAnswer === index 
                     ? quizColor
-                    : (isDark ? Colors.dark.border : Colors.light.border),
-                  backgroundColor: selectedAnswer === index 
-                    ? quizColor + '15'
-                    : (isDark ? Colors.dark.surface : Colors.light.surface),
+                    : 'transparent'
                 }
-              ]}
-              onPress={() => onSelectAnswer(index)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.optionContent}>
-                <View style={[
-                  styles.optionLetter,
-                  { 
-                    backgroundColor: selectedAnswer === index 
-                      ? quizColor
-                      : (isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary),
-                    borderColor: selectedAnswer === index 
-                      ? quizColor
-                      : 'transparent'
-                  }
-                ]}>
-                  <ThemedText style={[
-                    styles.optionLetterText,
-                    { 
-                      color: selectedAnswer === index 
-                        ? '#fff'
-                        : (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
-                    }
-                  ]}>
-                    {String.fromCharCode(65 + index)}
-                  </ThemedText>
-                </View>
-                
-                {/* Option text with conditional italic styling */}
+              ]}>
                 <ThemedText style={[
-                  styles.optionText,
+                  styles.optionLetterText,
                   { 
-                    color: isDark ? Colors.dark.text : Colors.light.text,
-                    fontWeight: selectedAnswer === index ? '500' : 'normal',
-                    fontStyle: processedOption.isItalic ? 'italic' : 'normal',
+                    color: selectedAnswer === index 
+                      ? '#fff'
+                      : (isDark ? Colors.dark.textSecondary : Colors.light.textSecondary)
                   }
                 ]}>
-                  {processedOption.text}
+                  {String.fromCharCode(65 + index)}
                 </ThemedText>
-                
-                {/* Scientific name indicator */}
-                {processedOption.isItalic && (
-                  <View style={[
-                    styles.scientificBadge,
-                    { backgroundColor: quizColor + '15' }
-                  ]}>
+              </View>
+              
+              {/* 🔥 UPDATED: Option text with scientific name formatting */}
+              <View style={{ flex: 1 }}>
+                {processedOption.isScientific ? 
+                  renderScientificName(
+                    processedOption.text,
+                    [
+                      styles.optionText,
+                      { 
+                        color: isDark ? Colors.dark.text : Colors.light.text,
+                        fontWeight: selectedAnswer === index ? '500' : 'normal'
+                      }
+                    ]
+                  ) : (
                     <ThemedText style={[
-                      styles.scientificBadgeText,
-                      { color: quizColor }
+                      styles.optionText,
+                      { 
+                        color: isDark ? Colors.dark.text : Colors.light.text,
+                        fontWeight: selectedAnswer === index ? '500' : 'normal'
+                      }
                     ]}>
-                      Scientific
+                      {processedOption.text}
                     </ThemedText>
-                  </View>
-                )}
-                
-                {selectedAnswer === index && (
+                  )
+                }
+              </View>
+              
+              {/* Scientific name indicator */}
+              {processedOption.isScientific && (
+                <View style={[
+                  styles.scientificBadge,
+                  { backgroundColor: quizColor + '15' }
+                ]}>
                   <ThemedText style={[
-                    styles.selectedIcon,
+                    styles.scientificBadgeText,
                     { color: quizColor }
                   ]}>
-                    ✓
+                    Scientific
                   </ThemedText>
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+                </View>
+              )}
+              
+              {selectedAnswer === index && (
+                <ThemedText style={[
+                  styles.selectedIcon,
+                  { color: quizColor }
+                ]}>
+                  ✓
+                </ThemedText>
+              )}
+            </View>
+          </TouchableOpacity>
+        );
+      })}
       </View>
     </View>
   );

@@ -397,22 +397,12 @@ export function DrawerContent(props) {
                     descriptionStyle={styles.listItemDescription}
                     style={styles.listItem}
                   />
-                  
+
                   <List.Item
-                    title="Manage Content"
-                    description="Edit existing quizzes"
-                    left={props => <List.Icon {...props} icon="pencil" color={iconColor} />}
-                    onPress={() => navigateTo('/admin/manage', 'Manage Content')}
-                    titleStyle={styles.listItemTitle}
-                    descriptionStyle={styles.listItemDescription}
-                    style={styles.listItem}
-                  />
-                  
-                  <List.Item
-                    title="User Analytics"
-                    description="View user progress"
-                    left={props => <List.Icon {...props} icon="chart-line" color={iconColor} />}
-                    onPress={() => navigateTo('/admin/analytics', 'Analytics')}
+                    title="📤 Export Tables"
+                    description="Export database tables as JSON"
+                    left={props => <List.Icon {...props} icon="database-export" color={iconColor} />}
+                    onPress={() => navigateTo('/export', 'Export Tables')}
                     titleStyle={styles.listItemTitle}
                     descriptionStyle={styles.listItemDescription}
                     style={styles.listItem}
