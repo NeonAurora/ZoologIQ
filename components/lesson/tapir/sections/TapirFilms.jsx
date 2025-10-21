@@ -8,9 +8,11 @@ import {
   Image,
   Dimensions,
   Modal,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { Video } from 'expo-av';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
@@ -23,7 +25,7 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
   const isDark = colorScheme === 'dark';
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  // Bilingual content with actual YouTube video IDs
+  // Bilingual content with YouTube videos and local videos
   const content = {
     en: {
       title: 'Tapir Films & Documentaries',
@@ -31,27 +33,53 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
       watchNow: 'Watch Now',
       close: 'Close',
       duration: 'Duration',
+      youtubeSection: 'Documentary Videos',
+      localSection: 'Research Footage',
       videos: [
+        // YouTube Videos
         {
-          id: 'nlrLZJBYp34', // First video ID
-          title: 'The Malayan Tapir: Forest Gardener',
-          description: 'Discover the fascinating world of the Malayan Tapir, known as the forest gardener for its crucial role in seed dispersal and forest regeneration.',
-          duration: '10:25',
-          thumbnail: 'https://img.youtube.com/vi/nlrLZJBYp34/maxresdefault.jpg'
-        },
-        {
-          id: 'h5PZ5Zpk2rc', // Second video ID
-          title: 'Tapir Conservation: Protecting Malaysia\'s Gentle Giants',
-          description: 'Learn about conservation efforts to protect the endangered Malayan Tapir and the challenges they face in the modern world.',
-          duration: '14:18',
-          thumbnail: 'https://img.youtube.com/vi/h5PZ5Zpk2rc/maxresdefault.jpg'
-        },
-        {
-          id: 'gRWA4rWju9A', // Third video ID
+          id: 'gRWA4rWju9A',
+          type: 'youtube',
           title: 'Tapir Behavior and Habitat Studies',
           description: 'An in-depth look at tapir behavior, habitat preferences, and their unique adaptations to life in Southeast Asian rainforests.',
           duration: '12:30',
           thumbnail: 'https://img.youtube.com/vi/gRWA4rWju9A/maxresdefault.jpg'
+        },
+        {
+          id: 'MTBi5RlWt4M',
+          type: 'youtube',
+          title: 'Malayan Tapir Conservation',
+          description: 'Learn about conservation efforts to protect the endangered Malayan Tapir and the challenges they face in the modern world.',
+          duration: '10:15',
+          thumbnail: 'https://img.youtube.com/vi/MTBi5RlWt4M/maxresdefault.jpg'
+        },
+        // Local Videos
+        {
+          id: 'flehmen_on_boys',
+          type: 'local',
+          source: require('@/assets/films/flehmen_on_boys.mp4'),
+          title: 'Flehmen Response Observation',
+          description: 'Field footage showing the Flehmen response behavior in Malayan Tapirs, an important sensory behavior used for chemical communication.',
+          duration: '3:45',
+          thumbnail: require('@/assets/images/tapir.png') // fallback image
+        },
+        {
+          id: 'maulid_tuah_tissy',
+          type: 'local',
+          source: require('@/assets/films/maulid_tuah_tissy.mp4'),
+          title: 'Maulid, Tuah & Tissy',
+          description: 'Documentary footage of three Malayan Tapirs in their natural habitat, showcasing their daily activities and interactions.',
+          duration: '8:20',
+          thumbnail: require('@/assets/images/tapir.png')
+        },
+        {
+          id: 'rain_mate',
+          type: 'local',
+          source: require('@/assets/films/rain_mate.mp4'),
+          title: 'Mating Behavior During Rain',
+          description: 'Rare footage capturing Malayan Tapir mating behavior during the rainy season, an important aspect of their reproductive cycle.',
+          duration: '5:15',
+          thumbnail: require('@/assets/images/tapir.png')
         }
       ]
     },
@@ -61,27 +89,53 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
       watchNow: 'Tonton Sekarang',
       close: 'Tutup',
       duration: 'Tempoh',
+      youtubeSection: 'Video Dokumentari',
+      localSection: 'Rakaman Penyelidikan',
       videos: [
+        // YouTube Videos
         {
-          id: 'nlrLZJBYp34', // First video ID
-          title: 'Tapir Malaya: Tukang Kebun Hutan',
-          description: 'Temui dunia menarik Tapir Malaya, yang dikenali sebagai tukang kebun hutan kerana peranannya yang penting dalam penyebaran benih dan pemulihan hutan.',
-          duration: '10:25',
-          thumbnail: 'https://img.youtube.com/vi/nlrLZJBYp34/maxresdefault.jpg'
-        },
-        {
-          id: 'h5PZ5Zpk2rc', // Second video ID
-          title: 'Pemuliharaan Tapir: Melindungi Gergasi Lembut Malaysia',
-          description: 'Pelajari tentang usaha pemuliharaan untuk melindungi Tapir Malaya yang terancam dan cabaran yang mereka hadapi di dunia moden.',
-          duration: '14:18',
-          thumbnail: 'https://img.youtube.com/vi/h5PZ5Zpk2rc/maxresdefault.jpg'
-        },
-        {
-          id: 'gRWA4rWju9A', // Third video ID
+          id: 'gRWA4rWju9A',
+          type: 'youtube',
           title: 'Kajian Tingkah Laku dan Habitat Tapir',
           description: 'Pandangan mendalam tentang tingkah laku tapir, keutamaan habitat, dan adaptasi unik mereka untuk hidup di hutan hujan Asia Tenggara.',
           duration: '12:30',
           thumbnail: 'https://img.youtube.com/vi/gRWA4rWju9A/maxresdefault.jpg'
+        },
+        {
+          id: 'MTBi5RlWt4M',
+          type: 'youtube',
+          title: 'Pemuliharaan Tapir Malaya',
+          description: 'Pelajari tentang usaha pemuliharaan untuk melindungi Tapir Malaya yang terancam dan cabaran yang mereka hadapi di dunia moden.',
+          duration: '10:15',
+          thumbnail: 'https://img.youtube.com/vi/MTBi5RlWt4M/maxresdefault.jpg'
+        },
+        // Local Videos
+        {
+          id: 'flehmen_on_boys',
+          type: 'local',
+          source: require('@/assets/films/flehmen_on_boys.mp4'),
+          title: 'Pemerhatian Respons Flehmen',
+          description: 'Rakaman lapangan menunjukkan tingkah laku respons Flehmen dalam Tapir Malaya, tingkah laku deria penting untuk komunikasi kimia.',
+          duration: '3:45',
+          thumbnail: require('@/assets/images/tapir.png')
+        },
+        {
+          id: 'maulid_tuah_tissy',
+          type: 'local',
+          source: require('@/assets/films/maulid_tuah_tissy.mp4'),
+          title: 'Maulid, Tuah & Tissy',
+          description: 'Rakaman dokumentari tiga Tapir Malaya dalam habitat semula jadi mereka, mempamerkan aktiviti harian dan interaksi mereka.',
+          duration: '8:20',
+          thumbnail: require('@/assets/images/tapir.png')
+        },
+        {
+          id: 'rain_mate',
+          type: 'local',
+          source: require('@/assets/films/rain_mate.mp4'),
+          title: 'Tingkah Laku Mengawan Semasa Hujan',
+          description: 'Rakaman jarang menangkap tingkah laku mengawan Tapir Malaya semasa musim hujan, aspek penting kitaran pembiakan mereka.',
+          duration: '5:15',
+          thumbnail: require('@/assets/images/tapir.png')
         }
       ]
     }
@@ -96,6 +150,10 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
   const closeVideo = () => {
     setSelectedVideo(null);
   };
+
+  // Separate videos by type
+  const youtubeVideos = text.videos.filter(v => v.type === 'youtube');
+  const localVideos = text.videos.filter(v => v.type === 'local');
 
   const renderVideoCard = (video, index) => (
     <TouchableOpacity
@@ -113,7 +171,7 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
       {/* Video Thumbnail */}
       <View style={styles.thumbnailContainer}>
         <Image
-          source={{ uri: video.thumbnail }}
+          source={video.type === 'youtube' ? { uri: video.thumbnail } : video.thumbnail}
           style={styles.thumbnail}
           resizeMode="cover"
         />
@@ -133,6 +191,13 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
             {video.duration}
           </ThemedText>
         </View>
+        {/* Video Type Badge */}
+        {video.type === 'local' && (
+          <View style={styles.typeBadge}>
+            <MaterialIcons name="videocam" size={12} color="#fff" />
+            <ThemedText style={styles.typeText}>Local</ThemedText>
+          </View>
+        )}
       </View>
 
       {/* Video Info */}
@@ -215,10 +280,49 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
           </View>
         </View>
 
-        {/* Video Cards */}
-        <View style={styles.videosContainer}>
-          {text.videos.map((video, index) => renderVideoCard(video, index))}
-        </View>
+        {/* YouTube Videos Section */}
+        {youtubeVideos.length > 0 && (
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeader}>
+              <MaterialIcons
+                name="video-library"
+                size={20}
+                color={isDark ? Colors.dark.tint : Colors.light.tint}
+              />
+              <ThemedText style={[
+                styles.sectionTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {text.youtubeSection}
+              </ThemedText>
+            </View>
+            <View style={styles.videosContainer}>
+              {youtubeVideos.map((video, index) => renderVideoCard(video, `yt-${index}`))}
+            </View>
+          </View>
+        )}
+
+        {/* Local Videos Section */}
+        {localVideos.length > 0 && (
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeader}>
+              <MaterialIcons
+                name="science"
+                size={20}
+                color={isDark ? Colors.dark.tint : Colors.light.tint}
+              />
+              <ThemedText style={[
+                styles.sectionTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                {text.localSection}
+              </ThemedText>
+            </View>
+            <View style={styles.videosContainer}>
+              {localVideos.map((video, index) => renderVideoCard(video, `local-${index}`))}
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       {/* Video Modal */}
@@ -263,18 +367,29 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
 
           {/* Video Player */}
           {selectedVideo && (
-            <WebView
-              style={styles.webview}
-              source={{
-                uri: `https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&rel=0&showinfo=0&modestbranding=1`
-              }}
-              allowsInlineMediaPlayback={true}
-              mediaPlaybackRequiresUserAction={false}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              startInLoadingState={true}
-              scalesPageToFit={true}
-            />
+            selectedVideo.type === 'youtube' ? (
+              <WebView
+                style={styles.webview}
+                source={{
+                  uri: `https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&rel=0&showinfo=0&modestbranding=1`
+                }}
+                allowsInlineMediaPlayback={true}
+                mediaPlaybackRequiresUserAction={false}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                startInLoadingState={true}
+                scalesPageToFit={true}
+              />
+            ) : (
+              <Video
+                source={selectedVideo.source}
+                style={styles.localVideo}
+                useNativeControls
+                resizeMode="contain"
+                shouldPlay
+                isLooping={false}
+              />
+            )
           )}
         </SafeAreaView>
       </Modal>
@@ -307,6 +422,19 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
+  },
+  sectionContainer: {
+    marginBottom: 32,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
   },
   videosContainer: {
     gap: 20,
@@ -359,6 +487,23 @@ const styles = StyleSheet.create({
   durationText: {
     color: '#fff',
     fontSize: 12,
+    fontWeight: '600',
+  },
+  typeBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(76, 175, 80, 0.9)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    gap: 4,
+  },
+  typeText: {
+    color: '#fff',
+    fontSize: 10,
     fontWeight: '600',
   },
   videoInfo: {
@@ -414,5 +559,9 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  localVideo: {
+    flex: 1,
+    backgroundColor: '#000',
   },
 });

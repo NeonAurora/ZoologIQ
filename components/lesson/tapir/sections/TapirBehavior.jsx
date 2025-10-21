@@ -57,8 +57,56 @@ export default function TapirBehavior({ currentLanguage = 'en' }) {
         { title: "Memory & Navigation", description: "They remember complex forest trails and water sources, showing strong spatial intelligence (Wildlife Research, 2023).",            icon: "psychology" },
         { title: "Shy but Curious",     description: "Naturally wary of humans, captive tapirs show curiosity and recognize caregivers (Zoo Biology, 2021).",                icon: "search" }
       ]
+    },
+    
+    ms: {
+      funFactsTitle: "Fakta Menarik Tentang Tapir Malaya",
+      funFactsData: [
+        { title: "Fosil Hidup", description: "Tapir telah wujud selama lebih 20 juta tahun, melebihi zaman ais dan kepupusan besar (Smithsonian, 2022).", icon: "history" },
+        { title: "Berus Cat Alam", description: "Warna hitam-putih mereka berfungsi sebagai penyamaran yang mengelirukan pemangsa seperti harimau dalam hutan bermandikan cahaya bulan (National Geographic, 2023).", icon: "palette" },
+        { title: "Hidung Snorkel", description: "Muncung fleksibel mereka boleh berfungsi seperti snorkel ketika berenang - ciri yang dikongsi dengan sepupu jauh mereka, gajah (BBC Earth, 2021).", icon: "air" },
+        { title: "Pahlawan Benih", description: "Seekor tapir boleh menyebarkan beribu-ribu biji benih setiap hari, menjadikan mereka digelar \"tukang kebun hutan\" (IUCN, 2023).", icon: "eco" },
+        { title: "Ninja Malam", description: "Mereka benar-benar nokturnal, menggunakan jalan bertuah bintang untuk menavigasi hutan tebal (WWF Malaysia, 2022).", icon: "nightlight" },
+        { title: "Saudara Pelik", description: "Walaupun kelihatan seperti babi, mereka paling rapat dengan kuda dan badak (order Perissodactyla) (San Diego Zoo, 2023).", icon: "pets" },
+        { title: "Belang Bayi", description: "Anak tapir dilahirkan dengan bulu belang dan bertompok untuk penyamaran, pudar menjelang 6 bulan (ScienceDaily, 2021).", icon: "child-care" },
+        { title: "Komunikator Senyap", description: "Mereka \"bercakap\" melalui siulan bernada tinggi - tidak kedengaran oleh manusia tetapi jelas kepada tapir lain (Journal of Zoology, 2022).", icon: "volume-up" },
+        { title: "Akrobat Akuatik", description: "Mereka boleh berjalan di bawah air sepanjang dasar sungai untuk melarikan diri dari pemangsa (Tapir Specialist Group, 2023).", icon: "pool" },
+        { title: "Ikon Budaya", description: "Wang kertas 50 ringgit Malaysia memaparkan tapir, meraikan status pemuliharaan kebangsaannya (Bank Negara, 2021).", icon: "account-balance" }
+      ],
+
+      reproductionTitle: "Reproduksi & Kehidupan Keluarga Tapir Malaya:",
+      reproductionData: [
+        { title: "Kehamilan Panjang", description: "Betina mengandung selama 13-14 bulan, salah satu tempoh kehamilan terpanjang di kalangan mamalia darat (San Diego Zoo, 2023).", icon: "schedule" },
+        { title: "Penyamaran Belang", description: "Anak yang baru lahir mempunyai bulu coklat muda dengan belang/tompok putih untuk penyamaran di hutan, yang akan pudar menjelang usia 6 bulan (National Geographic, 2021).", icon: "palette" },
+        { title: "Pertumbuhan Cepat", description: "Anak tapir menambah berat badan tiga kali ganda dalam beberapa minggu dan mula makan tumbuhan pada usia 2 minggu (Journal of Mammalogy, 2023).", icon: "trending-up" },
+        { title: "Ayah yang Penyendiri", description: "Jantan tidak terlibat dalam penjagaan anak - ibu membesarkan anak sendirian (Animal Behaviour, 2021).", icon: "person" },
+        { title: "Kelahiran Rahsia", description: "Ibu menyembunyikan anak baru lahir dalam tumbuhan tebal untuk beberapa minggu pertama (WWF Malaysia, 2023).", icon: "visibility-off" },
+        { title: "Kematangan Lewat", description: "Betina matang pada usia 3-4 tahun, jantan pada 4-5 tahun (Zoo Biology, 2020).", icon: "hourglass-empty" },
+        { title: "Pacaran Senyap", description: "Pasangan yang mengawan berkomunikasi melalui siulan lembut dan penandaan bau (Tapir Conservation, 2023).", icon: "favorite" },
+        { title: "Kadar Reproduksi Rendah", description: "Betina hanya membiak setiap 2-3 tahun, menyebabkan pemulihan populasi lambat (IUCN Red List, 2023).", icon: "warning" }
+      ],
+      funFact: "Anak tapir boleh berenang dalam beberapa jam selepas dilahirkan - satu sifat penting untuk bertahan di hutan hujan yang sering banjir! (BBC Earth, 2022)",
+
+      physiologyTitle: "Fisiologi & Adaptasi Tapir Malaya",
+      physiologyData: [
+        { title: "Muncung Prehensil", description: "Muncung fleksibel seperti belalai mereka boleh mencengkam daun, buah, dan tumbuhan air - berfungsi seperti \"anggota kelima\" (National Geographic, 2023).", icon: "pets" },
+        { title: "Warna Unik", description: "Corak \"pelana\" hitam-putih memecahkan siluet mereka dalam hutan bermandikan cahaya bulan, menyamarkan mereka dari pemangsa seperti harimau (Journal of Zoology, 2022).", icon: "contrast" },
+        { title: "Reka Bentuk Semi-Akuatik", description: "Jari berselaput dan badan ringkas menjadikan mereka perenang kuat, membolehkan mereka melarikan diri dari ancaman atau mencari makanan di sungai (Smithsonian, 2021).", icon: "pool" }
+      ],
+
+      behaviorTitle: "Tingkah Laku & Kecerdasan Tapir Malaya:",
+      behaviorData: [
+        { title: "Gaya Hidup Bersendirian", description: "Tapir dewasa kebanyakannya bersendirian, hanya berkumpul untuk mengawan (IUCN Tapir Specialist Group, 2023).", icon: "person-outline" },
+        { title: "Tabiat Nokturnal", description: "Mereka aktif terutamanya pada waktu malam untuk mengelak pemangsa dan aktiviti manusia (Journal of Mammalogy, 2022).", icon: "nightlight" },
+        { title: "Perenang Handal", description: "Tapir sering berenang dan menyelam untuk menyejukkan badan, melarikan diri dari ancaman, atau mencari tumbuhan air (Smithsonian, 2021).", icon: "water" },
+        { title: "Penandaan Bau", description: "Mereka menggunakan semburan air kencing dan rembesan kelenjar untuk menanda wilayah dan berkomunikasi (Animal Behaviour, 2023).", icon: "location-on" },
+        { title: "Vokalisasi", description: "Tapir berkomunikasi melalui siulan bernada tinggi dan bunyi klik, terutamanya antara ibu dan anak (Bioacoustics Journal, 2022).", icon: "volume-up" },
+        { title: "Ingatan & Navigasi", description: "Mereka mengingati laluan hutan yang kompleks dan sumber air, menunjukkan kecerdasan spatial yang kuat (Wildlife Research, 2023).", icon: "psychology" },
+        { title: "Pemalu tapi Ingin Tahu", description: "Walaupun secara semula jadi berhati-hati dengan manusia, tapir dalam kurungan menunjukkan sifat ingin tahu dan boleh mengenali penjaga (Zoo Biology, 2021).", icon: "search" }
+      ]
     }
-    // ms: { ... } // Malay translations omitted for brevity
+
+    
   };
 
   const text = content[currentLanguage] || content.en;

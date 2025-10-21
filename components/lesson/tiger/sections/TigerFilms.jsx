@@ -33,24 +33,31 @@ export default function TigerFilms({ currentLanguage = 'en' }) {
       duration: 'Duration',
       videos: [
         {
-          id: 'BOLl295SDa4', // First video ID
+          id: 'SPi_zMe5PZk', // NEW First video ID
           title: 'Malayan Tiger: The Invisible Cat',
           description: 'A comprehensive documentary exploring the elusive Malayan Tiger and its struggle for survival in the Malaysian rainforests.',
           duration: '12:45',
-          thumbnail: 'https://img.youtube.com/vi/BOLl295SDa4/maxresdefault.jpg'
+          thumbnail: 'https://img.youtube.com/vi/SPi_zMe5PZk/maxresdefault.jpg'
         },
         {
-          id: 'PwigLzbjeO4', // Second video ID
+          id: 'BOLl295SDa4', // NEW Second video ID
           title: 'Conservation Heroes: Saving Malaysia\'s Tigers',
           description: 'Meet the dedicated conservationists working tirelessly to protect and preserve the critically endangered Malayan Tiger.',
           duration: '8:32',
-          thumbnail: 'https://img.youtube.com/vi/PwigLzbjeO4/maxresdefault.jpg'
+          thumbnail: 'https://img.youtube.com/vi/BOLl295SDa4/maxresdefault.jpg'
         },
         {
-          id: 'HM7XRcFF_LU', // Third video ID
+          id: 'PwigLzbjeO4', // NEW Third video ID
           title: 'Tiger Tracking: Technology Meets Conservation',
           description: 'Discover how modern technology like camera traps and GPS collars are revolutionizing tiger research and protection.',
           duration: '15:20',
+          thumbnail: 'https://img.youtube.com/vi/PwigLzbjeO4/maxresdefault.jpg'
+        },
+        {
+          id: 'HM7XRcFF_LU', // NEW Fourth video ID
+          title: 'Tiger Conservation in Action',
+          description: 'Explore the latest conservation efforts and technologies being used to protect and monitor Malayan Tigers in their natural habitat.',
+          duration: '10:15',
           thumbnail: 'https://img.youtube.com/vi/HM7XRcFF_LU/maxresdefault.jpg'
         }
       ]
@@ -63,24 +70,31 @@ export default function TigerFilms({ currentLanguage = 'en' }) {
       duration: 'Tempoh',
       videos: [
         {
-          id: 'BOLl295SDa4', // First video ID
+          id: 'SPi_zMe5PZk', // NEW First video ID
           title: 'Harimau Malaya: Kucing Yang Tidak Kelihatan',
           description: 'Dokumentari komprehensif yang meneroka Harimau Malaya yang sukar dilihat dan perjuangannya untuk terus hidup di hutan hujan Malaysia.',
           duration: '12:45',
-          thumbnail: 'https://img.youtube.com/vi/BOLl295SDa4/maxresdefault.jpg'
+          thumbnail: 'https://img.youtube.com/vi/SPi_zMe5PZk/maxresdefault.jpg'
         },
         {
-          id: 'PwigLzbjeO4', // Second video ID
+          id: 'BOLl295SDa4', // NEW Second video ID
           title: 'Wira Pemuliharaan: Menyelamatkan Harimau Malaysia',
           description: 'Temui para pemuliharaan yang berdedikasi bekerja tanpa lelah untuk melindungi dan memelihara Harimau Malaya yang kritikal terancam.',
           duration: '8:32',
-          thumbnail: 'https://img.youtube.com/vi/PwigLzbjeO4/maxresdefault.jpg'
+          thumbnail: 'https://img.youtube.com/vi/BOLl295SDa4/maxresdefault.jpg'
         },
         {
-          id: 'HM7XRcFF_LU', // Third video ID
+          id: 'PwigLzbjeO4', // NEW Third video ID
           title: 'Penjesanan Harimau: Teknologi Bertemu Pemuliharaan',
           description: 'Temui bagaimana teknologi moden seperti perangkap kamera dan kolar GPS merevolusikan penyelidikan dan perlindungan harimau.',
           duration: '15:20',
+          thumbnail: 'https://img.youtube.com/vi/PwigLzbjeO4/maxresdefault.jpg'
+        },
+        {
+          id: 'HM7XRcFF_LU', // NEW Fourth video ID
+          title: 'Pemuliharaan Harimau dalam Tindakan',
+          description: 'Terokai usaha pemuliharaan terkini dan teknologi yang digunakan untuk melindungi dan memantau Harimau Malaya dalam habitat semula jadi mereka.',
+          duration: '10:15',
           thumbnail: 'https://img.youtube.com/vi/HM7XRcFF_LU/maxresdefault.jpg'
         }
       ]

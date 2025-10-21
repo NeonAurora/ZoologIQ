@@ -33,14 +33,14 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
       duration: 'Duration',
       videos: [
         {
-          id: 'qJfAbyz4qS0', // First video ID
+          id: 'qJfAbyz4qS0', // NEW First video ID
           title: 'Sea Turtle Conservation in Malaysia',
           description: 'Discover the incredible journey of sea turtles and the conservation efforts protecting these ancient mariners along Malaysia\'s coastlines.',
           duration: '18:42',
           thumbnail: 'https://img.youtube.com/vi/qJfAbyz4qS0/maxresdefault.jpg'
         },
         {
-          id: 'O79cFlE93_w', // Second video ID
+          id: 'O79cFlE93_w', // NEW Second video ID
           title: 'Protecting Malaysia\'s Sea Turtle Nesting Sites',
           description: 'Learn about the critical nesting sites along Malaysian beaches and the dedicated work to protect sea turtle populations for future generations.',
           duration: '22:15',
@@ -56,14 +56,14 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
       duration: 'Tempoh',
       videos: [
         {
-          id: 'qJfAbyz4qS0', // First video ID
+          id: 'qJfAbyz4qS0', // NEW First video ID
           title: 'Pemuliharaan Penyu Laut di Malaysia',
           description: 'Temui perjalanan luar biasa penyu laut dan usaha pemuliharaan melindungi pelaut purba ini di sepanjang pantai Malaysia.',
           duration: '18:42',
           thumbnail: 'https://img.youtube.com/vi/qJfAbyz4qS0/maxresdefault.jpg'
         },
         {
-          id: 'O79cFlE93_w', // Second video ID
+          id: 'O79cFlE93_w', // NEW Second video ID
           title: 'Melindungi Tapak Bersarang Penyu Laut Malaysia',
           description: 'Pelajari tentang tapak bersarang kritikal di sepanjang pantai Malaysia dan kerja berdedikasi untuk melindungi populasi penyu laut untuk generasi akan datang.',
           duration: '22:15',

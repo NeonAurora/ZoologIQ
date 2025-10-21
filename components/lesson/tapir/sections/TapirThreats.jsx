@@ -211,7 +211,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
   };
 
   //
-  // 2) Malay content
+  // 2) Malay content - CORRECTED WITH PROPER TRANSLATIONS FROM tapir.txt
   //
   const ms = {
     helpTitle: "Cara Anda Boleh Membantu Menyelamatkan Tapir Malaya:",
@@ -219,42 +219,42 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
       {
         action: "Sokong Organisasi Pemuliharaan",
         description:
-          "Sumbang atau jadi sukarelawan dengan pertubuhan seperti WWF atau IUCN yang melindungi habitat tapir dan membiayai penyelidikan (WWF, 2023)."
+          "Sumbang atau jadi sukarelawan dengan pertubuhan seperti WWF atau IUCN yang melindungi habitat tapir dan membiayai penyelidikan (WWF, 2023)."
       },
       {
         action: "Pilih Produk Lestari",
         description:
-          "Elak minyak sawit dari kawasan hutan yang ditebang—cari produk bersijil RSPO untuk kurangkan kemusnahan habitat (Rainforest Alliance, 2022)."
+          "Elak minyak sawit dari kawasan hutan yang ditebang—cari produk bersijil RSPO untuk kurangkan kemusnahan habitat (Rainforest Alliance, 2022)."
       },
       {
         action: "Pandu Berhati-hati di Kawasan Hutan",
         description:
-          "Kurangkan laju berhampiran lintasan hidupan liar, terutamanya pada waktu malam, untuk elak kemalangan (Jabatan Hidupan Liar Malaysia, 2021)."
+          "Kurangkan laju berhampiran lintasan hidupan liar, terutamanya pada waktu malam, untuk elak kemalangan (Jabatan Hidupan Liar Malaysia, 2021)."
       },
       {
         action: "Sebarkan Kesedaran",
         description:
-          "Kongsi fakta tentang tapir di media sosial atau dalam komuniti anda untuk mendidik orang lain (National Geographic, 2023)."
+          "Kongsi fakta tentang tapir di media sosial atau dalam komuniti anda untuk mendidik orang lain (National Geographic, 2023)."
       },
       {
         action: "Kurangkan Jejak Karbon",
         description:
-          "Lawan perubahan iklim dengan kurangkan plastik, jimat tenaga, dan sokong penanaman semula hutan (IPCC, 2022)."
+          "Lawan perubahan iklim dengan kurangkan plastik, jimat tenaga, dan sokong penanaman semula hutan (IPCC, 2022)."
       },
       {
         action: "Laporkan Aktiviti Haram",
         description:
-          "Jika nampak pemburuan haram atau pembalakan haram, maklumkan pihak berkuasa tempatan atau talian hotline hidupan liar (TRAFFIC, 2023)."
+          "Jika nampak pemburuan haram atau pembalakan haram, maklumkan pihak berkuasa tempatan atau talian hotline hidupan liar (TRAFFIC, 2023)."
       },
       {
         action: "Sokong Eko-pelancongan",
         description:
-          "Lawati pusat perlindungan hidupan liar yang beretika—duit pelancongan anda membantu biayai pemuliharaan (UNEP, 2021)."
+          "Lawati pusat perlindungan hidupan liar yang beretika—duit pelancongan anda membantu biayai pemuliharaan (UNEP, 2021)."
       },
       {
         action: "Perjuangkan Undang‑undang Lebih Kuat",
         description:
-          "Tekan kerajaan untuk kuatkuasakan polisi anti-pembalakan dan lindungi habitat tapir (IUCN, 2023)."
+          "Tekan kerajaan untuk kuatkuasakan polisi anti-pembalakan dan lindungi habitat tapir (IUCN, 2023)."
       }
     ],
 
@@ -263,38 +263,84 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
       {
         category: "Kawasan Perlindungan & Koridor",
         strategies: [
-          "Malaysia telah wujudkan santuari hidupan liar seperti Taman Negara dan Kompleks Hutan Belum-Temengor untuk lindungi habitat tapir (DWNP, 2023).",
-          "Pembinaan jejambat hidupan liar di lebuh raya (contoh: Central Forest Spine) kurangkan kematian akibat kemalangan jalan raya (WWF Malaysia, 2022)."
+          "Malaysia telah wujudkan santuari hidupan liar seperti Taman Negara dan Kompleks Hutan Belum-Temengor untuk lindungi habitat tapir (DWNP, 2023).",
+          "Pembinaan jejambat hidupan liar di lebuh raya (contoh: Central Forest Spine) kurangkan kematian akibat kemalangan jalan raya (WWF Malaysia, 2022)."
         ]
       },
       {
         category: "Anti-Pemburuan Haram & Penguatkuasaan",
         strategies: [
-          "PERHILITAN (Jabatan Hidupan Liar Malaysia) menjalankan rondaan untuk cegah pemburuan haram (PERHILITAN, 2021).",
-          "Hukuman lebih berat untuk jenayah hidupan liar di bawah Akta Pemuliharaan Hidupan Liar 2010 (IUCN, 2023)."
+          "PERHILITAN (Jabatan Hidupan Liar Malaysia) menjalankan rondaan untuk cegah pemburuan haram (PERHILITAN, 2021).",
+          "Hukuman lebih berat untuk jenayah hidupan liar di bawah Akta Pemuliharaan Hidupan Liar 2010 (IUCN, 2023)."
         ]
       },
       {
         category: "Penglibatan Komuniti",
         strategies: [
-          "Program seperti MYCAT termasuk perlindungan tapir dalam inisiatif mereka (MYCAT, 2022).",
-          "Pendidikan komuniti orang asal tentang guna tanah lestari kurangkan konflik manusia‑tapir (MNS, 2021)."
+          "Program seperti MYCAT termasuk perlindungan tapir dalam inisiatif mereka (MYCAT, 2022).",
+          "Pendidikan komuniti orang asal tentang guna tanah lestari kurangkan konflik manusia‑tapir (MNS, 2021)."
         ]
       },
       {
         category: "Penyelidikan & Pemantauan",
         strategies: [
-          "Kamera tersembunyi dan pengesan GPS membantu kajian pergerakan tapir (UM, 2023).",
-          "Kerjasama dengan Universiti Malaysia Terengganu tentang genetik tapir (UMT, 2022)."
+          "Kamera tersembunyi dan pengesan GPS membantu kajian pergerakan tapir (UM, 2023).",
+          "Kerjasama dengan Universiti Malaysia Terengganu tentang genetik tapir (UMT, 2022)."
         ]
       }
     ],
 
-    // reuse English for these two, or replace with your own Malay translations:
-    coexistenceTitle: en.coexistenceTitle,
-    coexistenceData:  en.coexistenceData,
-    successTitle:     en.successTitle,
-    successData:      en.successData
+    // 🔥 FIXED: Proper Malay translations for Coexistence Strategies
+    coexistenceTitle: "Strategi Bersama untuk Tapir Malaya di Malaysia:",
+    coexistenceData: [
+      {
+        category: "Infrastruktur Mesra Hidupan Liar",
+        strategies: [
+          "Pemasangan terowong haiwan dan papan tanda jalan di kawasan berisiko tinggi (contoh: Lebuhraya Timur-Barat) mengurangkan kematian tapir (DWNP, 2023).",
+          "Pagar elektrik di sekeliling ladang mengarahkan tapir menjauhi tanaman tanpa membahayakan mereka (PERHILITAN, 2022)."
+        ]
+      },
+      {
+        category: "Pemuliharaan Berasaskan Komuniti",
+        strategies: [
+          "Perkongsian dengan Orang Asli menggalakkan amalan pemakanan lestari yang melindungi habitat tapir (MNS, 2021).",
+          "Skim pampasan untuk petani mengurangkan tindakan balas selepas serangan tanaman (WWF Malaysia, 2023)."
+        ]
+      },
+      {
+        category: "Dasar Perancangan Bandar",
+        strategies: [
+          "Zon penampan antara hutan dan pembangunan meminimumkan konflik (Jabatan Perancangan Bandar dan Desa, 2022).",
+          "Koridor hijau menghubungkan hutan yang terfragmen, membolehkan pergerakan tapir yang selamat (Inisiatif Central Forest Spine, 2023)."
+        ]
+      }
+    ],
+
+    // 🔥 FIXED: Proper Malay translations for Success Stories
+    successTitle: "Kisah Kejayaan Pemuliharaan Tapir Malaya di Malaysia:",
+    successData: [
+      {
+        story: "Penstabilan Populasi di Taman Negara",
+        achievements: [
+          "Perlindungan ketat dan usaha anti-pemburuan haram mengekalkan populasi tapir stabil di taman negara tertua Malaysia (DWNP, 2023).",
+          "Perangkap kamera menunjukkan peningkatan aktiviti tapir di zon terlindung (WWF Malaysia, 2022)."
+        ]
+      },
+      {
+        story: "Pengurangan Kematian Jalan Raya di Semenanjung Malaysia",
+        achievements: [
+          "Lintasan hidupan liar di lebuh raya seperti Lebuhraya Timur-Barat mengurangkan kematian tapir sebanyak 40% (PERHILITAN, 2021).",
+          "Kempen kesedaran awam tentang pemanduan waktu malam di habitat tapir membantu (MYCAT, 2023)."
+        ]
+      },
+      {
+        story: "Pemuliharaan Dipimpin Komuniti di Johor",
+        achievements: [
+          "Komuniti Orang Asli kini menjadi penjaga tapir, melaporkan pemerhatian dan menghalang pemburu haram (MNS, 2022).",
+          "Inisiatif eko-pelancongan (contoh: Taman Negara Endau-Rompin) menjana pendapatan sambil melindungi tapir (Tourism Malaysia, 2023)."
+        ]
+      }
+    ]
   };
 
   //
