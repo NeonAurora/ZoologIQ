@@ -7,10 +7,9 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-  Modal,
-  SafeAreaView
+  Linking,
+  Alert
 } from 'react-native';
-import { WebView } from 'react-native-webview';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
@@ -21,7 +20,6 @@ const { width: screenWidth } = Dimensions.get('window');
 export default function TurtleFilms({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const [selectedVideo, setSelectedVideo] = useState(null);
 
   // Bilingual content with actual YouTube video IDs
   const content = {
@@ -75,12 +73,29 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
 
   const text = content[currentLanguage] || content.en;
 
-  const openVideo = (video) => {
-    setSelectedVideo(video);
-  };
+  const openYouTubeVideo = async (videoId) => {
+    // Try to open in YouTube app first, fallback to browser
+    const youtubeAppUrl = `vnd.youtube://watch?v=${videoId}`;
+    const youtubeWebUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
-  const closeVideo = () => {
-    setSelectedVideo(null);
+    try {
+      const supported = await Linking.canOpenURL(youtubeAppUrl);
+      if (supported) {
+        await Linking.openURL(youtubeAppUrl);
+      } else {
+        await Linking.openURL(youtubeWebUrl);
+      }
+    } catch (error) {
+      // Fallback to web URL if app URL fails
+      try {
+        await Linking.openURL(youtubeWebUrl);
+      } catch (err) {
+        Alert.alert(
+          'Error',
+          'Unable to open YouTube video. Please try again later.'
+        );
+      }
+    }
   };
 
   const renderVideoCard = (video, index) => (
@@ -93,7 +108,7 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
           borderColor: isDark ? Colors.dark.border : Colors.light.border,
         }
       ]}
-      onPress={() => openVideo(video)}
+      onPress={() => openYouTubeVideo(video.id)}
       activeOpacity={0.8}
     >
       {/* Video Thumbnail */}
@@ -118,6 +133,10 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
           <ThemedText style={styles.durationText}>
             {video.duration}
           </ThemedText>
+        </View>
+        {/* YouTube Badge */}
+        <View style={styles.youtubeBadge}>
+          <MaterialIcons name="youtube-searched-for" size={16} color="#fff" />
         </View>
       </View>
 
@@ -148,7 +167,7 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
             styles.watchButton,
             { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
           ]}
-          onPress={() => openVideo(video)}
+          onPress={() => openYouTubeVideo(video.id)}
         >
           <MaterialIcons
             name="play-circle-outline"
@@ -165,106 +184,46 @@ export default function TurtleFilms({ currentLanguage = 'en' }) {
   );
 
   return (
-    <>
-      <ScrollView 
-        style={styles.container} 
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.titleContainer}>
-            <MaterialIcons
-              name="movie"
-              size={24}
-              color={isDark ? Colors.dark.tint : Colors.light.tint}
-              style={styles.headerIcon}
-            />
-            <View>
-              <ThemedText 
-                style={[
-                  styles.title,
-                  { color: isDark ? Colors.dark.text : Colors.light.text }
-                ]}
-              >
-                {text.title}
-              </ThemedText>
-              <ThemedText 
-                style={[
-                  styles.subtitle,
-                  { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                ]}
-              >
-                {text.subtitle}
-              </ThemedText>
-            </View>
-          </View>
-        </View>
-
-        {/* Video Cards */}
-        <View style={styles.videosContainer}>
-          {text.videos.map((video, index) => renderVideoCard(video, index))}
-        </View>
-      </ScrollView>
-
-      {/* Video Modal */}
-      <Modal
-        visible={selectedVideo !== null}
-        animationType="slide"
-        presentationStyle="formSheet"
-        onRequestClose={closeVideo}
-      >
-        <SafeAreaView style={[
-          styles.modalContainer,
-          { backgroundColor: isDark ? Colors.dark.background : Colors.light.background }
-        ]}>
-          {/* Modal Header */}
-          <View style={[
-            styles.modalHeader,
-            {
-              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-              borderBottomColor: isDark ? Colors.dark.border : Colors.light.border,
-            }
-          ]}>
+    <ScrollView 
+      style={styles.container} 
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.titleContainer}>
+          <MaterialIcons
+            name="movie"
+            size={24}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+            style={styles.headerIcon}
+          />
+          <View>
             <ThemedText 
               style={[
-                styles.modalTitle,
+                styles.title,
                 { color: isDark ? Colors.dark.text : Colors.light.text }
               ]}
-              numberOfLines={1}
             >
-              {selectedVideo?.title}
+              {text.title}
             </ThemedText>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={closeVideo}
+            <ThemedText 
+              style={[
+                styles.subtitle,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}
             >
-              <MaterialIcons
-                name="close"
-                size={24}
-                color={isDark ? Colors.dark.text : Colors.light.text}
-              />
-            </TouchableOpacity>
+              {text.subtitle}
+            </ThemedText>
           </View>
+        </View>
+      </View>
 
-          {/* Video Player */}
-          {selectedVideo && (
-            <WebView
-              style={styles.webview}
-              source={{
-                uri: `https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&rel=0&showinfo=0&modestbranding=1`
-              }}
-              allowsInlineMediaPlayback={true}
-              mediaPlaybackRequiresUserAction={false}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              startInLoadingState={true}
-              scalesPageToFit={true}
-            />
-          )}
-        </SafeAreaView>
-      </Modal>
-    </>
+      {/* Video Cards */}
+      <View style={styles.videosContainer}>
+        {text.videos.map((video, index) => renderVideoCard(video, index))}
+      </View>
+    </ScrollView>
   );
 }
 
@@ -347,6 +306,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  youtubeBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#FF0000',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
   videoInfo: {
     padding: 16,
   },
@@ -377,28 +345,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
-  },
-  modalContainer: {
-    flex: 1,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-    marginRight: 16,
-  },
-  closeButton: {
-    padding: 8,
-  },
-  webview: {
-    flex: 1,
   },
 });

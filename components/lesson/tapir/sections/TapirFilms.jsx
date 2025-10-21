@@ -9,9 +9,10 @@ import {
   Dimensions,
   Modal,
   SafeAreaView,
-  Platform
+  Platform,
+  Linking,
+  Alert
 } from 'react-native';
-import { WebView } from 'react-native-webview';
 import { Video } from 'expo-av';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -61,7 +62,7 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
           title: 'Flehmen Response Observation',
           description: 'Field footage showing the Flehmen response behavior in Malayan Tapirs, an important sensory behavior used for chemical communication.',
           duration: '3:45',
-          thumbnail: require('@/assets/images/tapir.png') // fallback image
+          thumbnail: require('@/assets/images/tapir.png')
         },
         {
           id: 'maulid_tuah_tissy',
@@ -143,12 +144,46 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
 
   const text = content[currentLanguage] || content.en;
 
-  const openVideo = (video) => {
+  // Open YouTube video externally
+  const openYouTubeVideo = async (videoId) => {
+    const youtubeAppUrl = `vnd.youtube://watch?v=${videoId}`;
+    const youtubeWebUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+    try {
+      const supported = await Linking.canOpenURL(youtubeAppUrl);
+      if (supported) {
+        await Linking.openURL(youtubeAppUrl);
+      } else {
+        await Linking.openURL(youtubeWebUrl);
+      }
+    } catch (error) {
+      try {
+        await Linking.openURL(youtubeWebUrl);
+      } catch (err) {
+        Alert.alert(
+          'Error',
+          'Unable to open YouTube video. Please try again later.'
+        );
+      }
+    }
+  };
+
+  // Open local video in modal
+  const openLocalVideo = (video) => {
     setSelectedVideo(video);
   };
 
   const closeVideo = () => {
     setSelectedVideo(null);
+  };
+
+  // Handle video click based on type
+  const handleVideoPress = (video) => {
+    if (video.type === 'youtube') {
+      openYouTubeVideo(video.id);
+    } else {
+      openLocalVideo(video);
+    }
   };
 
   // Separate videos by type
@@ -165,7 +200,7 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
           borderColor: isDark ? Colors.dark.border : Colors.light.border,
         }
       ]}
-      onPress={() => openVideo(video)}
+      onPress={() => handleVideoPress(video)}
       activeOpacity={0.8}
     >
       {/* Video Thumbnail */}
@@ -192,8 +227,12 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
           </ThemedText>
         </View>
         {/* Video Type Badge */}
-        {video.type === 'local' && (
-          <View style={styles.typeBadge}>
+        {video.type === 'youtube' ? (
+          <View style={styles.youtubeBadge}>
+            <MaterialIcons name="youtube-searched-for" size={16} color="#fff" />
+          </View>
+        ) : (
+          <View style={styles.localBadge}>
             <MaterialIcons name="videocam" size={12} color="#fff" />
             <ThemedText style={styles.typeText}>Local</ThemedText>
           </View>
@@ -227,7 +266,7 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
             styles.watchButton,
             { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
           ]}
-          onPress={() => openVideo(video)}
+          onPress={() => handleVideoPress(video)}
         >
           <MaterialIcons
             name="play-circle-outline"
@@ -325,9 +364,9 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
         )}
       </ScrollView>
 
-      {/* Video Modal */}
+      {/* Local Video Modal - Only for local videos */}
       <Modal
-        visible={selectedVideo !== null}
+        visible={selectedVideo !== null && selectedVideo?.type === 'local'}
         animationType="slide"
         presentationStyle="formSheet"
         onRequestClose={closeVideo}
@@ -365,31 +404,16 @@ export default function TapirFilms({ currentLanguage = 'en' }) {
             </TouchableOpacity>
           </View>
 
-          {/* Video Player */}
-          {selectedVideo && (
-            selectedVideo.type === 'youtube' ? (
-              <WebView
-                style={styles.webview}
-                source={{
-                  uri: `https://www.youtube.com/embed/${selectedVideo.id}?autoplay=1&rel=0&showinfo=0&modestbranding=1`
-                }}
-                allowsInlineMediaPlayback={true}
-                mediaPlaybackRequiresUserAction={false}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                startInLoadingState={true}
-                scalesPageToFit={true}
-              />
-            ) : (
-              <Video
-                source={selectedVideo.source}
-                style={styles.localVideo}
-                useNativeControls
-                resizeMode="contain"
-                shouldPlay
-                isLooping={false}
-              />
-            )
+          {/* Local Video Player */}
+          {selectedVideo && selectedVideo.type === 'local' && (
+            <Video
+              source={selectedVideo.source}
+              style={styles.localVideo}
+              useNativeControls
+              resizeMode="contain"
+              shouldPlay
+              isLooping={false}
+            />
           )}
         </SafeAreaView>
       </Modal>
@@ -489,7 +513,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  typeBadge: {
+  youtubeBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#FF0000',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  localBadge: {
     position: 'absolute',
     top: 8,
     left: 8,
@@ -556,9 +589,6 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 8,
-  },
-  webview: {
-    flex: 1,
   },
   localVideo: {
     flex: 1,
