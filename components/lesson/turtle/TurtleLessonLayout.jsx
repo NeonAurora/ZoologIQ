@@ -18,7 +18,8 @@ import TurtleBiodivWhy       from './sections/TurtleBiodivWhy';
 import TurtleThreatsHelpCons from './sections/TurtleThreatsHelpCons'; 
 import TurtlePhysioBehavior  from './sections/TurtlePhysioBehavior';  
 import TurtlePopulation      from './sections/TurtlePopulation';      
-import TurtleInfographics    from './sections/TurtleInfographics';    
+import TurtleInfographics    from './sections/TurtleInfographics';
+import TurtleFilms from './sections/TurtleFilms';    
 import TurtleReferences      from './sections/TurtleReferences';      
 
 import TurtleSidebar    from './TurtleSidebar';
@@ -60,6 +61,7 @@ export default function TurtleLessonLayout() {
         { id: 'physioBehavior',  title: 'Physiology & Behavior' },
         { id: 'population',      title: 'Population Trend (2019–2025)' },
         { id: 'infographics',    title: 'Infographics' },
+        { id: 'films',           title: 'Films & Documentaries' },
         { id: 'references',      title: 'References' }
       ]
     },
@@ -73,6 +75,7 @@ export default function TurtleLessonLayout() {
         { id: 'physioBehavior',  title: 'Fisiologi & Tingkah Laku' },
         { id: 'population',      title: 'Trend Populasi (2019–2025)' },
         { id: 'infographics',    title: 'Infografik' },
+        { id: 'films',           title: 'Filem & Dokumentari' },
         { id: 'references',      title: 'Rujukan' }
       ]
     }
@@ -89,6 +92,7 @@ export default function TurtleLessonLayout() {
       case 'physioBehavior':  component = TurtlePhysioBehavior;  break;
       case 'population':      component = TurtlePopulation;      break;
       case 'infographics':    component = TurtleInfographics;    break;
+      case 'films':           component = TurtleFilms;           break;
       case 'references':      component = TurtleReferences;      break;
       default:                component = () => null;
     }

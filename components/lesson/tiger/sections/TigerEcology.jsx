@@ -25,7 +25,7 @@ export default function TigerEcology({ currentLanguage = 'en' }) {
       importanceCards: [
         { title: "Apex Predator Role",      description: "Regulate prey populations, prevent overgrazing, maintain forest health", icon: "restaurant" },
         { title: "Biodiversity Indicator",  description: "Their presence indicates a thriving, biodiverse ecosystem", icon: "nature" },
-        { title: "Cultural Heritage",       description: "Featured on Malaysia's coat of arms and currency, representing strength", icon: "museum" },
+        { title: "Cultural Heritage",       description: "Featured on Malaysia's coat of arms and currency, representing strength and heritage", icon: "museum" },
         { title: "Indigenous Folklore",     description: "Deeply rooted in Indigenous tales of Harimau Jadian—were-tigers", icon: "book" },
         { title: "Economic Value",          description: "Ecotourism generates income for local communities", icon: "payments" },
         { title: "Environmental Services",  description: "Healthy tiger habitats support agriculture and clean water sources", icon: "opacity" },

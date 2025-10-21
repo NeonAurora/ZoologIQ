@@ -18,6 +18,7 @@ import TigerThreats from './sections/TigerThreats'; // Merged: Threats + Conserv
 import TigerBehavior from './sections/TigerBehavior'; // Behavior & Fun Facts only
 import TigerPopulation from './sections/TigerPopulation'; // Standalone: Population data
 import TigerInfographics from './sections/TigerInfographics';
+import TigerFilms from './sections/TigerFilms';
 import TigerReferences from './sections/TigerReferences';
 import TigerSidebar from './TigerSidebar';
 import TigerNavigation from './TigerNavigation';
@@ -63,6 +64,7 @@ export default function TigerLessonLayout() {
         { id: 'behavior', title: 'Behavior & Fun Facts' },
         { id: 'population', title: 'Population & Status' },
         { id: 'infographics', title: 'Infographics' },
+        { id: 'films', title: 'Films & Documentaries' },
         { id: 'references', title: 'References' },
       ]
     },
@@ -76,6 +78,7 @@ export default function TigerLessonLayout() {
         { id: 'behavior', title: 'Tingkah Laku & Fakta Menarik' },
         { id: 'population', title: 'Populasi & Status' },
         { id: 'infographics', title: 'Infografik' },
+        { id: 'films', title: 'Filem & Dokumentari' },
         { id: 'references', title: 'References' },
       ]
     }
@@ -92,6 +95,7 @@ export default function TigerLessonLayout() {
       TigerBehavior, // Behavior & Fun Facts only
       TigerPopulation, // Standalone: Population data
       TigerInfographics,
+      TigerFilms,
       TigerReferences
     ];
     

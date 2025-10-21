@@ -20,6 +20,7 @@ import TapirThreats from './sections/TapirThreats';
 import TapirPopulation from './sections/TapirPopulation';
 import TapirBehavior from './sections/TapirBehavior';
 import TapirInfographics from './sections/TapirInfographics';
+import TapirFilms from './sections/TapirFilms';
 import TapirReferences from './sections/TapirReferences';
 
 import TapirSidebar from './TapirSidebar';
@@ -65,6 +66,7 @@ export default function TapirLessonLayout() {
         { id: 'behavior',      title: 'Behavior & Physiology' },
         { id: 'population',    title: 'Population Data' },
         { id: 'infographics',  title: 'Infographics' },
+        { id: 'films', title: 'Films & Documentaries' },
         { id: 'references',    title: 'References' }
       ]
     },
@@ -78,6 +80,7 @@ export default function TapirLessonLayout() {
         { id: 'behavior',      title: 'Tingkah Laku & Fisiologi' },
         { id: 'population',    title: 'Data Populasi' },
         { id: 'infographics',  title: 'Infografik' },
+        { id: 'films', title: 'Filem & Dokumentari' },
         { id: 'references',    title: 'Rujukan' }
       ]
     }
@@ -93,6 +96,7 @@ export default function TapirLessonLayout() {
     TapirBehavior,
     TapirPopulation,
     TapirInfographics,
+    TapirFilms,
     TapirReferences
   ];
 

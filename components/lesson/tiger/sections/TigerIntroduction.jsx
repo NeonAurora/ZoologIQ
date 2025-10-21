@@ -160,10 +160,10 @@ const renderTigerScientificName = (text, style) => {
         { category: 'Conservation Status', value: 'Critically Endangered (IUCN Red List)', icon: 'warning' },
         { category: 'Population', value: 'Fewer than 150 individuals in the wild (2023 estimate)', icon: 'groups' },
         { category: 'Habitat', value: 'Tropical rainforests of Peninsular Malaysia', icon: 'forest' },
-        { category: 'Size', value: 'Males: 2.5–2.8 m long, 120–130 kg | Females: ~2.3 m, 80–100 kg', icon: 'straighten' },
+        { category: 'Size', value: 'Males: 2.5–2.8 m long, 120–130 kg (265–290 lbs) | Females: ~2.3 m, 80–100 kg (175–220 lbs)', icon: 'straighten' },
         { category: 'Diet', value: 'Carnivorous (deer, wild boar, sun bears, occasionally livestock)', icon: 'restaurant' },
         { category: 'Lifespan', value: '15–20 years in the wild; up to 25 years in captivity', icon: 'schedule' },
-        { category: 'Unique Features', value: 'Darker orange coat with black stripes, smallest mainland tiger subspecies', icon: 'star' },
+        { category: 'Unique Features', value: 'Darker orange coat with black stripes, smallest mainland tiger subspecies, solitary and territorial', icon: 'star' },
         { category: 'Threats', value: 'Habitat loss, poaching, human-wildlife conflict, roadkill incidents', icon: 'warning' },
         { category: 'Conservation Efforts', value: 'Protected areas, anti-poaching patrols, public awareness campaigns', icon: 'security' },
         { category: 'Ecological Role', value: 'Apex predator; maintains ecosystem balance by controlling prey populations', icon: 'nature' }
