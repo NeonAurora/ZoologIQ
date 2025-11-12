@@ -23,28 +23,14 @@ export default function HomePage() {
   const preferredLanguage = supabaseData?.preferred_language || 'en';
   const isEnglish = preferredLanguage === 'en';
 
-  // Check onboarding status
-  useEffect(() => {
-    if (!loading && user && supabaseData) {
-      console.log('🔍 Checking onboarding status:', supabaseData.onboarding_completed);
-      
-      if (!supabaseData.onboarding_completed) {
-        console.log('❌ Onboarding not completed, redirecting to profile');
-        router.replace('/profile');
-        return;
-      }
-    }
-  }, [loading, user, supabaseData, router]);
-
   // INITIAL certificate check ONLY (when user data becomes available)
   useEffect(() => {
-    if (user?.sub && supabaseData && !initialized) {
+    if (user?.sub && supabaseData && !initialized && supabaseData.onboarding_completed) {
       console.log('🎓 Initial certificate eligibility check for homepage');
       checkCertificateEligibility(user.sub);
     }
   }, [user?.sub, supabaseData, initialized, checkCertificateEligibility]);
 
-  // Learning topics and content remain the same...
   const learningTopics = [
     {
       topic: "tiger",
@@ -80,7 +66,11 @@ export default function HomePage() {
       certificateSubtitle: "You've completed all learning topics",
       certificateDescription: "Download your completion certificate to showcase your achievement",
       downloadCertificate: "Download Certificate",
-      certificateProgress: "Complete all topics to unlock your certificate"
+      certificateProgress: "Complete all topics to unlock your certificate",
+      // 🔥 NEW: Onboarding incomplete messages
+      setupRequired: "Profile Setup Required",
+      setupDescription: "Please complete your profile setup before accessing app content.",
+      setupButton: "Setup Profile"
     },
     ms: {
       title: "Topik Pembelajaran",
@@ -92,7 +82,11 @@ export default function HomePage() {
       certificateSubtitle: "Anda telah menyelesaikan semua topik pembelajaran",
       certificateDescription: "Muat turun sijil tamat anda untuk menunjukkan pencapaian anda",
       downloadCertificate: "Muat Turun Sijil",
-      certificateProgress: "Lengkapkan semua topik untuk membuka kunci sijil anda"
+      certificateProgress: "Lengkapkan semua topik untuk membuka kunci sijil anda",
+      // 🔥 NEW: Onboarding incomplete messages
+      setupRequired: "Penetapan Profil Diperlukan",
+      setupDescription: "Sila lengkapkan penetapan profil anda sebelum mengakses kandungan aplikasi.",
+      setupButton: "Tetapkan Profil"
     }
   };
 
@@ -102,7 +96,11 @@ export default function HomePage() {
     router.push('/certificate');
   };
 
-  // Show loading while checking onboarding status
+  const handleSetupProfile = () => {
+    router.push('/editProfile?onboarding=true');
+  };
+
+  // Show loading while checking user data
   if (loading || (user && !supabaseData)) {
     return (
       <ThemedView style={styles.container}>
@@ -114,6 +112,63 @@ export default function HomePage() {
           ]}>
             {text.loading}
           </ThemedText>
+        </View>
+      </ThemedView>
+    );
+  }
+
+  // 🔥 NEW: Show setup required message if onboarding not complete
+  if (user && supabaseData && !supabaseData.onboarding_completed) {
+    return (
+      <ThemedView style={styles.container}>
+        <View style={styles.setupContainer}>
+          <View style={[
+            styles.setupCard,
+            { 
+              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+              borderColor: isDark ? Colors.dark.border : Colors.light.border,
+              borderLeftColor: isDark ? Colors.dark.tint : Colors.light.tint
+            }
+          ]}>
+            <View style={[
+              styles.setupIconContainer,
+              { backgroundColor: isDark ? Colors.dark.tint + '20' : Colors.light.tint + '20' }
+            ]}>
+              <MaterialIcons 
+                name="person-outline" 
+                size={48} 
+                color={isDark ? Colors.dark.tint : Colors.light.tint} 
+              />
+            </View>
+            
+            <ThemedText style={[
+              styles.setupTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}>
+              {text.setupRequired}
+            </ThemedText>
+            
+            <ThemedText style={[
+              styles.setupDescription,
+              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+            ]}>
+              {text.setupDescription}
+            </ThemedText>
+            
+            <TouchableOpacity
+              style={[
+                styles.setupButton,
+                { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+              ]}
+              onPress={handleSetupProfile}
+              activeOpacity={0.8}
+            >
+              <MaterialIcons name="arrow-forward" size={20} color="#fff" />
+              <ThemedText style={styles.setupButtonText}>
+                {text.setupButton}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
         </View>
       </ThemedView>
     );
@@ -187,7 +242,7 @@ export default function HomePage() {
           </View>
         )}
 
-        {/* 🎓 Certificate Download Section - Shows when eligible (cached) */}
+        {/* Certificate Download Section */}
         {user && certificateEligible && (
           <View style={styles.section}>
             <TouchableOpacity
@@ -201,7 +256,6 @@ export default function HomePage() {
               onPress={handleCertificateDownload}
               activeOpacity={0.9}
             >
-              {/* Certificate content remains the same... */}
               <View style={styles.certificateHeader}>
                 <View style={[styles.trophyContainer, { backgroundColor: '#4CAF5020' }]}>
                   <MaterialIcons 
@@ -318,6 +372,65 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
+  // 🔥 NEW: Setup Required Styles
+  setupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  setupCard: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 16,
+    padding: 32,
+    borderWidth: 1,
+    borderLeftWidth: 4,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  setupIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  setupTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  setupDescription: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  setupButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 25,
+    gap: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  setupButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
   // Header Section
   header: {
     flexDirection: 'row',
@@ -336,15 +449,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     lineHeight: 22,
-  },
-  profileButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 16,
   },
 
   // Section Structure
@@ -384,7 +488,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // 🎓 Certificate Card Styles
+  // Certificate Card Styles
   certificateCard: {
     borderRadius: 16,
     padding: 24,
@@ -395,8 +499,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 8,
-    position: 'relative',
-    overflow: 'hidden',
   },
   certificateHeader: {
     flexDirection: 'row',

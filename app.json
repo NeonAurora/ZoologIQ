@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/wildguardmy_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.neonaurora.WildguardMY"
+      "package": "com.neonaurora.WildguardMY",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -47,6 +48,7 @@
         "projectId": "c794b9af-61d8-451a-9242-fa0d2c175b24"
       }
     },
+    "privacyPolicy": "https://yourwebsite.com/privacy-policy",
     "owner": "neonaurora"
   }
 }

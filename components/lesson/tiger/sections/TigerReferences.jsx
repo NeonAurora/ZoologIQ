@@ -144,29 +144,30 @@ export default function TigerReferences() {
     }
   };
 
-  const references = [
-    { authors: 'Adnan, M.', year: '2020', title: 'Marine protected areas in Malaysia: Challenges and opportunities', source: 'Marine Policy, 45, 89-97', url: 'https://doi.org/xxxx' },
-    { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2021', title: 'National Tiger Conservation Action Plan for Malaysia', source: 'Putrajaya: Ministry of Energy and Natural Resources' },
-    { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2022', title: 'Annual wildlife conservation report 2022', source: 'Putrajaya: Ministry of Natural Resources and Environmental Sustainability' },
-    { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2023', title: 'Protected area management report 2023', source: 'Putrajaya: Ministry of Natural Resources and Environmental Sustainability' },
-    { authors: 'Estes, J. A., Terborgh, J., Brashares, J. S., Power, M. E., Berger, J., Bond, W. J., ... & Wardle, D. A.', year: '2011', title: 'Trophic downgrading of planet Earth', source: 'Science, 333(6040), 301-306', url: 'https://doi.org/10.1126/science.1205106' },
-    { authors: 'Global Forest Watch', year: '2023', title: 'Malaysia deforestation data 2001-2022', source: 'World Resources Institute', url: 'https://www.globalforestwatch.org' },
-    { authors: 'International Union for Conservation of Nature [IUCN]', year: '2023', title: 'The IUCN Red List of Threatened Species: Panthera tigris jacksoni', source: 'IUCN Red List', url: 'https://www.iucnredlist.org' },
-    { authors: 'Kawanishi, K., Sunquist, M. E., Eizirik, E., Lynam, A. J., Ngoprasert, D., Shahruddin, W. N. W., ... & Steinmetz, R.', year: '2010', title: 'Near fixation of melanism in leopards of the Malay Peninsula', source: 'Journal of Zoology, 282(3), 201-206', url: 'https://doi.org/10.1111/j.1469-7998.2010.00731.x' },
-    { authors: 'Lynam, A. J., Rabinowitz, A., Myint, T., Maung, M., Latt, K. T., & Po, S. H. T.', year: '2012', title: 'Estimating abundance with sparse data: Tigers in northern Myanmar', source: 'Population Ecology, 54(1), 1-11', url: 'https://doi.org/10.1007/s10144-011-0309-y' },
-    { authors: 'Malaysian Conservation Alliance for Tigers [MYCAT]', year: '2022', title: 'Kenyir Wildlife Corridor Annual Report 2022', source: 'Kuala Lumpur: MYCAT' },
-    { authors: 'Malaysian Conservation Alliance for Tigers [MYCAT]', year: '2023', title: 'Community-based conservation initiatives in Peninsular Malaysia', source: 'Kuala Lumpur: MYCAT' },
-    { authors: 'Nyhus, P. J., & Tilson, R.', year: '2004', title: 'Characterizing human-tiger conflict in Sumatra, Indonesia: Implications for conservation', source: 'Oryx, 38(1), 68-74', url: 'https://doi.org/10.1017/S0030605304000110' },
-    { authors: 'TRAFFIC', year: '2023', title: 'Illegal wildlife trade in Southeast Asia: 2022 assessment', source: 'Cambridge, UK: TRAFFIC International' },
-    { authors: 'World Wide Fund for Nature Malaysia [WWF-Malaysia]', year: '2023', title: 'Malayan tiger conservation programme: 2023 report', source: 'Petaling Jaya: WWF-Malaysia' },
-    { authors: 'World Wide Fund for Nature Malaysia [WWF-Malaysia]', year: '2024', title: 'Ecotourism and tiger conservation in Taman Negara', source: 'Petaling Jaya: WWF-Malaysia' },
-    { authors: 'Global Tiger Forum', year: '2023', title: 'Global wild tiger population status 2023', source: 'Global Tiger Initiative', url: 'https://www.globaltigerinitiative.org' },
-    { authors: 'IUCN', year: '2023', title: 'Panthera tigris (Tiger) Red List assessment', source: 'IUCN Red List', url: 'https://www.iucnredlist.org' },
-    { authors: 'Khan, M. M. H.', year: '2022', title: 'Tigers of the Sundarbans: Climate change impacts', source: 'Journal of Threatened Taxa, 14(3), 20789–20798', url: 'https://doi.org/10.11609/jott.XXXX' },
-    { authors: 'National Tiger Conservation Authority [NTCA]', year: '2023', title: 'All India tiger estimation report 2022', source: 'Ministry of Environment, India' },
-    { authors: 'World Wide Fund for Nature [WWF]', year: '2023', title: 'Tigers alive initiative: 2023 report', source: 'World Wildlife Fund', url: 'https://www.worldwildlife.org' },
-    { authors: 'WWF-Russia', year: '2023', title: 'Amur tiger census 2023', source: 'WWF Russia', url: 'https://www.wwf.ru/en/resources/publications/' }
-  ];
+const references = [
+  { authors: 'Adnan, M.', year: '2020', title: 'Marine protected areas in Malaysia: Challenges and opportunities', source: 'Marine Policy, 45, 89-97', url: 'https://doi.org/xxxx' },
+  { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2021', title: 'National Tiger Conservation Action Plan for Malaysia', source: 'Putrajaya: Ministry of Energy and Natural Resources' },
+  { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2022', title: 'Annual wildlife conservation report 2022', source: 'Putrajaya: Ministry of Natural Resources and Environmental Sustainability' },
+  { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2023', title: 'Protected area management report 2023', source: 'Putrajaya: Ministry of Natural Resources and Environmental Sustainability' },
+  { authors: 'Estes, J. A., Terborgh, J., Brashares, J. S., Power, M. E., Berger, J., Bond, W. J., ... & Wardle, D. A.', year: '2011', title: 'Trophic downgrading of planet Earth', source: 'Science, 333(6040), 301-306', url: 'https://doi.org/10.1126/science.1205106' },
+  { authors: 'Global Forest Watch', year: '2023', title: 'Malaysia deforestation data 2001-2022', source: 'World Resources Institute', url: 'https://www.globalforestwatch.org' },
+  { authors: 'Global Tiger Forum', year: '2023', title: 'Global wild tiger population status 2023', source: 'Global Tiger Initiative', url: 'https://www.globaltigerinitiative.org' },
+  { authors: 'International Union for Conservation of Nature [IUCN]', year: '2023', title: 'The IUCN Red List of Threatened Species: Panthera tigris jacksoni', source: 'IUCN Red List', url: 'https://www.iucnredlist.org' },
+  { authors: 'IUCN', year: '2023', title: 'Panthera tigris (Tiger) Red List assessment', source: 'IUCN Red List', url: 'https://www.iucnredlist.org' },
+  { authors: 'Kawanishi, K., Sunquist, M. E., Eizirik, E., Lynam, A. J., Ngoprasert, D., Shahruddin, W. N. W., ... & Steinmetz, R.', year: '2010', title: 'Near fixation of melanism in leopards of the Malay Peninsula', source: 'Journal of Zoology, 282(3), 201-206', url: 'https://doi.org/10.1111/j.1469-7998.2010.00731.x' },
+  { authors: 'Khan, M. M. H.', year: '2022', title: 'Tigers of the Sundarbans: Climate change impacts', source: 'Journal of Threatened Taxa, 14(3), 20789–20798', url: 'https://doi.org/10.11609/jott.XXXX' },
+  { authors: 'Luo, S.-J., Kim, J.-H., Johnson, W. E., van der Walt, J., Martenson, J., Yuhki, N., ... & O\'Brien, S. J.', year: '2004', title: 'Phylogeography and genetic ancestry of tigers (Panthera tigris)', source: 'PLoS Biology, 2(12), e442', url: 'https://doi.org/10.1371/journal.pbio.0020442' },
+  { authors: 'Lynam, A. J., Rabinowitz, A., Myint, T., Maung, M., Latt, K. T., & Po, S. H. T.', year: '2012', title: 'Estimating abundance with sparse data: Tigers in northern Myanmar', source: 'Population Ecology, 54(1), 1-11', url: 'https://doi.org/10.1007/s10144-011-0309-y' },
+  { authors: 'Malaysian Conservation Alliance for Tigers [MYCAT]', year: '2022', title: 'Kenyir Wildlife Corridor Annual Report 2022', source: 'Kuala Lumpur: MYCAT' },
+  { authors: 'Malaysian Conservation Alliance for Tigers [MYCAT]', year: '2023', title: 'Community-based conservation initiatives in Peninsular Malaysia', source: 'Kuala Lumpur: MYCAT' },
+  { authors: 'National Tiger Conservation Authority [NTCA]', year: '2023', title: 'All India tiger estimation report 2022', source: 'Ministry of Environment, India' },
+  { authors: 'Nyhus, P. J., & Tilson, R.', year: '2004', title: 'Characterizing human-tiger conflict in Sumatra, Indonesia: Implications for conservation', source: 'Oryx, 38(1), 68-74', url: 'https://doi.org/10.1017/S0030605304000110' },
+  { authors: 'TRAFFIC', year: '2023', title: 'Illegal wildlife trade in Southeast Asia: 2022 assessment', source: 'Cambridge, UK: TRAFFIC International' },
+  { authors: 'World Wide Fund for Nature [WWF]', year: '2023', title: 'Tigers alive initiative: 2023 report', source: 'World Wildlife Fund', url: 'https://www.worldwildlife.org' },
+  { authors: 'World Wide Fund for Nature Malaysia [WWF-Malaysia]', year: '2023', title: 'Malayan tiger conservation programme: 2023 report', source: 'Petaling Jaya: WWF-Malaysia' },
+  { authors: 'World Wide Fund for Nature Malaysia [WWF-Malaysia]', year: '2024', title: 'Ecotourism and tiger conservation in Taman Negara', source: 'Petaling Jaya: WWF-Malaysia' },
+  { authors: 'WWF-Russia', year: '2023', title: 'Amur tiger census 2023', source: 'WWF Russia', url: 'https://www.wwf.ru/en/resources/publications/' }
+];
 
   function handlePress(ref) {
     if (ref.url) {

@@ -1,10 +1,10 @@
 // app/(main)/editProfile.jsx
 import React, { useState, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  ScrollView, 
-  TextInput, 
-  TouchableOpacity, 
+import {
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
   Alert,
   ActivityIndicator,
   Modal,
@@ -59,10 +59,13 @@ export default function EditProfileScreen() {
   
   const isOnboarding = onboarding === 'true';
   
+  // 🔥 NEW: Consent dialog state
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    preferred_language: 'en', // 🔥 NEW: Language preference
+    preferred_language: 'en',
     highest_education: '',
     city: '',
     state_province: '',
@@ -76,12 +79,19 @@ export default function EditProfileScreen() {
   const [formValid, setFormValid] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
 
+  // 🔥 NEW: Show consent dialog on mount if onboarding
+  useEffect(() => {
+    if (isOnboarding) {
+      setShowConsentDialog(true);
+    }
+  }, [isOnboarding]);
+
   useEffect(() => {
     if (supabaseData) {
       setFormData({
         name: supabaseData.name || '',
         email: supabaseData.email || '',
-        preferred_language: supabaseData.preferred_language || 'en', // 🔥 NEW: Set language preference
+        preferred_language: supabaseData.preferred_language || 'en',
         highest_education: supabaseData.highest_education || '',
         city: supabaseData.city || '',
         state_province: supabaseData.state_province || '',
@@ -107,7 +117,6 @@ export default function EditProfileScreen() {
     const age = parseInt(formData.age);
     const ageValid = !isNaN(age) && age >= 13 && age <= 120;
     
-    // Language preference should always be valid (has default)
     const languageValid = formData.preferred_language === 'en' || formData.preferred_language === 'ms';
     
     setFormValid(isValid && ageValid && languageValid);
@@ -115,8 +124,6 @@ export default function EditProfileScreen() {
 
   const handlePickImage = async () => {
     try {
-      console.log('📷 Requesting image picker permissions...');
-      
       const { status } = await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -126,8 +133,6 @@ export default function EditProfileScreen() {
         return;
       }
     
-      console.log('📱 Launching image picker...');
-      
       const result = await ExpoImagePicker.launchImageLibraryAsync({
         mediaTypes: ExpoImagePicker.MediaTypeOptions.Images,
         quality: 0.8,
@@ -135,27 +140,20 @@ export default function EditProfileScreen() {
         aspect: [1, 1],
       });
     
-      console.log('🎯 Image picker result:', result);
-      
       if (!result.canceled && result.assets?.length > 0) {
         const imageUri = result.assets[0].uri;
-        console.log('✅ Image selected:', imageUri);
-        
         setFormData(prev => ({
           ...prev,
           picture: imageUri
         }));
-      } else {
-        console.log('❌ Image selection cancelled');
       }
     } catch (error) {
-      console.error('💥 Error picking image:', error);
+      console.error('Error picking image:', error);
       Alert.alert("Error", "Failed to pick image. Please try again.");
     }
   };
 
   const handleRemoveImage = () => {
-    console.log('🗑️ Removing profile image');
     setFormData(prev => ({
       ...prev,
       picture: ''
@@ -169,18 +167,14 @@ export default function EditProfileScreen() {
     }));
   };
 
-  // 🔥 NEW: Language selection handler
   const handleLanguageSelect = (language) => {
-    console.log('🌐 Language selected:', language);
     setFormData(prev => ({
       ...prev,
       preferred_language: language
     }));
   };
 
-  // In app/(main)/editProfile.jsx - Update the handleSave function
-
-    const handleSave = async () => {
+  const handleSave = async () => {
     if (!formValid || !user?.sub) return;
 
     setLoading(true);
@@ -188,19 +182,14 @@ export default function EditProfileScreen() {
     try {
       let finalImageUrl = formData.picture;
 
-      // Handle image upload if there's a new image
       if (formData.picture && !formData.picture.startsWith('http')) {
-        console.log('📤 Uploading profile image...');
         setImageUploading(true);
         
         const uploadedImageUrl = await uploadImage(formData.picture);
         
         if (uploadedImageUrl) {
           finalImageUrl = uploadedImageUrl;
-          console.log('✅ Profile image uploaded successfully:', finalImageUrl);
         } else {
-          console.log('⚠️ Image upload failed, continuing without image');
-          
           const continueWithoutImage = await new Promise((resolve) => {
             Alert.alert(
               'Image Upload Failed',
@@ -224,7 +213,6 @@ export default function EditProfileScreen() {
         setImageUploading(false);
       }
 
-      // Prepare update data
       const updateData = {
         name: formData.name,
         email: formData.email,
@@ -234,22 +222,18 @@ export default function EditProfileScreen() {
         highest_education: formData.highest_education,
         city: formData.city,
         state_province: formData.state_province,
-        preferred_language: formData.preferred_language, // 🔥 Include language preference
+        preferred_language: formData.preferred_language,
         picture: finalImageUrl,
         updated_at: new Date().toISOString()
       };
 
-      // Add onboarding completion if this is the onboarding flow
       if (isOnboarding) {
         updateData.onboarding_completed = true;
       }
 
-      console.log('🔄 Updating user profile with data:', updateData);
-
       const success = await updateUserData(user.sub, updateData);
 
       if (success) {
-        console.log('✅ Profile updated successfully');
         await refreshUserData();
         
         if (isOnboarding) {
@@ -272,7 +256,7 @@ export default function EditProfileScreen() {
         Alert.alert('Error', 'Failed to update profile. Please try again.');
       }
     } catch (error) {
-      console.error('❌ Error updating profile:', error);
+      console.error('Error updating profile:', error);
       Alert.alert('Error', 'An error occurred while updating your profile.');
     } finally {
       setLoading(false);
@@ -309,10 +293,64 @@ export default function EditProfileScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      {/* 🔥 NEW: Consent Dialog */}
+      <Modal
+        visible={showConsentDialog}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {}}
+      >
+        <ThemedView style={styles.consentOverlay}>
+          <ThemedView style={[
+            styles.consentDialog,
+            { backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface }
+          ]}>
+            <ThemedView style={styles.consentHeader}>
+              <ThemedText style={[
+                styles.consentTitle,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                Privacy Notice
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView style={styles.consentBody}>
+              <ThemedText style={[
+                styles.consentText,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                This application has been developed for study purposes. All data will be stored anonymously and maintained in confidentiality.
+              </ThemedText>
+              
+              <ThemedText style={[
+                styles.consentSubtext,
+                { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+              ]}>
+                Your information is used solely for research and educational purposes.
+              </ThemedText>
+            </ThemedView>
+
+            <TouchableOpacity
+              style={[
+                styles.consentButton,
+                { backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint }
+              ]}
+              onPress={() => setShowConsentDialog(false)}
+              activeOpacity={0.8}
+            >
+              <ThemedText style={styles.consentButtonText}>
+                Continue
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
+
       <ScrollView 
         contentContainerStyle={styles.content} 
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        scrollEnabled={!showConsentDialog}
       >
         {/* Header */}
         <ThemedView style={styles.header}>
@@ -378,7 +416,7 @@ export default function EditProfileScreen() {
           </ThemedView>
         </FormSection>
 
-        {/* 🔥 NEW: Language Preference Section */}
+        {/* Language Preference Section */}
         <FormSection title="Language Preference" isDark={isDark}>
           <ThemedView style={styles.languageSection}>
             <ThemedText style={[
@@ -823,6 +861,63 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   
+  // 🔥 NEW: Consent Dialog Styles
+  consentOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  consentDialog: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 16,
+    padding: 24,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  consentHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  consentTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  consentBody: {
+    gap: 16,
+    marginBottom: 24,
+  },
+  consentText: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  consentSubtext: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  consentButton: {
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  consentButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  
   // Header
   header: {
     gap: 16,
@@ -862,7 +957,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // 🔥 NEW: Language Section Styles
+  // Language Section Styles
   languageSection: {
     gap: 16,
   },
