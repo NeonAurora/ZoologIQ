@@ -397,10 +397,6 @@ export default function QuizPlayPage() {
       if (type === 'pre-lesson') {
         // Save pre-assessment result and mark pre-assessment complete
         savedResult = await saveQuizResult(resultData);
-        if (savedResult && topic) {
-          await updatePreAssessmentStatus(user.sub, topic, true);
-          console.log('✅ Pre-assessment completed for topic:', topic);
-        }
       } else if (type === 'post-lesson') {
         // For post-tests, save with improvement calculation
         savedResult = await savePostTestResult(resultData);

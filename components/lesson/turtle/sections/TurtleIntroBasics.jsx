@@ -7,7 +7,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-// Lookup for category icons (unchanged)
 const getCategoryIcon = (category) => {
   switch (category.toLowerCase()) {
     case 'scientific name':
@@ -33,84 +32,64 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
   const isDark = colorScheme === 'dark';
   const { width } = useWindowDimensions();
 
-  // 🔥 NEW: Helper function to render text with scientific names in italic
-  const renderTextWithScientificNames = (text, style) => {
+  // Helper function to check if a taxonomy rank should have italic scientific name
+  const shouldItalicizeScientificName = (rank) => {
+    return rank === 'Species' || rank === 'Spesies';
+  };
+
+  // 🔥 FIXED: Helper function to render turtle scientific names with underlines
+  const renderTurtleScientificName = (text, style) => {
     if (!text || typeof text !== 'string') {
       return <ThemedText style={style}>{text}</ThemedText>;
     }
 
-    // Pattern to match scientific names (genus + species format)
-    // This will match "Chelonia mydas" and other turtle scientific names
-    const scientificNamePattern = /(Chelonia\s+mydas|Chelonia\s+\w+)/g;
-    const parts = text.split(scientificNamePattern);
+    // Pattern to match "Chelonia mydas"
+    const scientificPattern = /Chelonia mydas/g;
     
-    if (parts.length === 1) {
-      // No scientific names found, return normal text
+    if (!scientificPattern.test(text)) {
+      // No scientific name found, return as-is
       return <ThemedText style={style}>{text}</ThemedText>;
     }
+
+    // Reset regex
+    scientificPattern.lastIndex = 0;
+    const parts = text.split(scientificPattern);
     
     return (
       <ThemedText style={style}>
-        {parts.map((part, index) => {
-          // Check if this part is a scientific name
-          if (scientificNamePattern.test(part)) {
-            return (
-              <ThemedText
-                key={index}
-                style={[
+        {parts.map((part, index) => (
+          <React.Fragment key={index}>
+            {part}
+            {index < parts.length - 1 && (
+              <ThemedText>
+                <ThemedText style={[
                   style,
                   { 
                     fontStyle: 'italic',
-                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
                   }
-                ]}
-              >
-                {part}
+                ]}>
+                  Chelonia
+                </ThemedText>
+                <ThemedText style={style}> </ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  mydas
+                </ThemedText>
               </ThemedText>
-            );
-          }
-          return part;
-        })}
+            )}
+          </React.Fragment>
+        ))}
       </ThemedText>
     );
   };
-
-  // 🔥 NEW: Helper function to check if a taxonomy rank should have italic scientific name
-  const shouldItalicizeScientificName = (rank) => {
-    return rank === 'Species' || rank === 'Spesies';
-  };
-  
-  const renderSpeciesWithUnderlines = (text, style) => {
-  if (!shouldItalicizeScientificName) return <ThemedText style={style}>{text}</ThemedText>;
-  
-  // Split "Chelonia mydas" into parts
-  const parts = text.trim().split(/\s+/);
-  
-  if (parts.length < 2) {
-    // Not a proper species format, return as italic
-    return <ThemedText style={[style, { fontStyle: 'italic' }]}>{text}</ThemedText>;
-  }
-  
-  return (
-    <ThemedText style={style}>
-      {parts.map((part, index) => (
-        <React.Fragment key={index}>
-          <ThemedText style={[
-            style,
-            { 
-              fontStyle: 'italic',
-              textDecorationLine: 'underline',
-              textDecorationStyle: 'solid'
-            }
-          ]}>
-            {part}
-          </ThemedText>
-          {index < parts.length - 1 && ' '}
-        </React.Fragment>
-      ))}
-    </ThemedText>
-  );
-};
 
   const content = {
     en: {
@@ -196,8 +175,8 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
             style={styles.heroIcon}
           />
           
-          {/* 🔥 UPDATED: Hero title with scientific names in italic */}
-          {renderTextWithScientificNames(
+          {/* 🔥 FIXED: Hero title with scientific name formatting */}
+          {renderTurtleScientificName(
             text.heroTitle,
             [
               styles.heroTitle,
@@ -215,15 +194,11 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
             }]}>
               •
             </ThemedText>
-            
-            {/* 🔥 UPDATED: Bullet text with scientific names in italic */}
-            {renderTextWithScientificNames(
-              line,
-              [
-                styles.bulletText,
-                { color: isDark ? Colors.dark.text : Colors.light.text }
-              ]
-            )}
+            <ThemedText style={[styles.bulletText, {
+              color: isDark ? Colors.dark.text : Colors.light.text
+            }]}>
+              {line}
+            </ThemedText>
           </View>
         ))}
       </View>
@@ -237,8 +212,8 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
           
-          {/* 🔥 UPDATED: Section title with scientific names in italic */}
-          {renderTextWithScientificNames(
+          {/* 🔥 FIXED: Section title with scientific name formatting */}
+          {renderTurtleScientificName(
             text.basicInfoTitle,
             [
               styles.sectionTitle,
@@ -265,22 +240,20 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
                   {item.category}
                 </ThemedText>
                 
-                {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
-                {item.category === 'Scientific Name' || item.category === 'Nama Saintifik' ? 
-                  renderTextWithScientificNames(
+                {/* 🔥 FIXED: Scientific name with proper formatting */}
+                {(item.category === 'Scientific Name' || item.category === 'Nama Saintifik') ? 
+                  renderTurtleScientificName(
                     item.info,
                     [
                       styles.cardDescription,
                       { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                     ]
                   ) : (
-                    renderTextWithScientificNames(
-                      item.info,
-                      [
-                        styles.cardDescription,
-                        { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                      ]
-                    )
+                    <ThemedText style={[styles.cardDescription, {
+                      color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
+                    }]}>
+                      {item.info}
+                    </ThemedText>
                   )
                 }
               </View>
@@ -320,9 +293,9 @@ export default function TurtleIntroBasics({ currentLanguage = 'en' }) {
                 {row.rank}
               </ThemedText>
               
-              {/* 🔥 UPDATED: Conditional rendering for species vs other ranks */}
+              {/* 🔥 FIXED: Species classification with underlines */}
               {shouldItalicizeScientificName(row.rank) ? 
-                renderSpeciesWithUnderlines(
+                renderTurtleScientificName(
                   row.classification,
                   [
                     styles.tableCellValue,
@@ -397,15 +370,19 @@ const styles = StyleSheet.create({
 
   // Sections
   section:        { marginBottom: 24 },
-  sectionHeader:  {
-    flexDirection:   'row',
-    alignItems:      'center',
-    gap:             8,
-    marginBottom:    12
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+    flexWrap: 'wrap'  // Add this
   },
-  sectionTitle:   {
-    fontSize:        18,
-    fontWeight:      '600'
+  
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    flex: 1,          // Add this
+    flexShrink: 1     // Add this
   },
 
   // Cards grid

@@ -51,104 +51,103 @@ export default function TigerIntroduction({ currentLanguage = 'en' }) {
     return rank === 'Species' || rank === 'Subspecies';
   };
 
-  // 🔥 NEW: Helper function to render tiger scientific names with custom formatting
-// 🔥 NEW: Helper function to render tiger scientific names with custom formatting within larger text
-const renderTigerScientificName = (text, style) => {
-  if (!text || typeof text !== 'string') {
-    return <ThemedText style={style}>{text}</ThemedText>;
-  }
+  // 🔥 NEW: Helper function to render tiger scientific names with custom formatting within larger text
+  const renderTigerScientificName = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
 
-  // Check for full subspecies name first
-  const fullSubspeciesPattern = /Panthera tigris jacksoni/g;
-  if (fullSubspeciesPattern.test(text)) {
-    const parts = text.split(fullSubspeciesPattern);
+    // Check for full subspecies name first
+    const fullSubspeciesPattern = /Panthera tigris jacksoni/g;
+    if (fullSubspeciesPattern.test(text)) {
+      const parts = text.split(fullSubspeciesPattern);
+      
+      return (
+        <ThemedText style={style}>
+          {parts.map((part, index) => (
+            <React.Fragment key={index}>
+              {part}
+              {index < parts.length - 1 && (
+                <ThemedText>
+                  <ThemedText style={[
+                    style,
+                    { 
+                      fontStyle: 'italic',
+                      textDecorationLine: 'underline',
+                      textDecorationStyle: 'solid'
+                    }
+                  ]}>
+                    Panthera
+                  </ThemedText>
+                  <ThemedText style={style}> </ThemedText>
+                  <ThemedText style={[
+                    style,
+                    { 
+                      fontStyle: 'italic',
+                      textDecorationLine: 'underline',
+                      textDecorationStyle: 'solid'
+                    }
+                  ]}>
+                    tigris
+                  </ThemedText>
+                  <ThemedText style={[
+                    style,
+                    { fontStyle: 'italic' }
+                  ]}>
+                    {' (jacksoni)'}
+                  </ThemedText>
+                </ThemedText>
+              )}
+            </React.Fragment>
+          ))}
+        </ThemedText>
+      );
+    }
     
-    return (
-      <ThemedText style={style}>
-        {parts.map((part, index) => (
-          <React.Fragment key={index}>
-            {part}
-            {index < parts.length - 1 && (
-              <ThemedText>
-                <ThemedText style={[
-                  style,
-                  { 
-                    fontStyle: 'italic',
-                    textDecorationLine: 'underline',
-                    textDecorationStyle: 'solid'
-                  }
-                ]}>
-                  Panthera
+    // Check for species name only
+    const speciesPattern = /Panthera tigris(?!\s+jacksoni)/g;
+    if (speciesPattern.test(text)) {
+      const parts = text.split(speciesPattern);
+      
+      return (
+        <ThemedText style={style}>
+          {parts.map((part, index) => (
+            <React.Fragment key={index}>
+              {part}
+              {index < parts.length - 1 && (
+                <ThemedText>
+                  <ThemedText style={[
+                    style,
+                    { 
+                      fontStyle: 'italic',
+                      textDecorationLine: 'underline',
+                      textDecorationStyle: 'solid'
+                    }
+                  ]}>
+                    Panthera
+                  </ThemedText>
+                  <ThemedText style={style}> </ThemedText>
+                  <ThemedText style={[
+                    style,
+                    { 
+                      fontStyle: 'italic',
+                      textDecorationLine: 'underline',
+                      textDecorationStyle: 'solid'
+                    }
+                  ]}>
+                    tigris
+                  </ThemedText>
                 </ThemedText>
-                <ThemedText style={style}> </ThemedText>
-                <ThemedText style={[
-                  style,
-                  { 
-                    fontStyle: 'italic',
-                    textDecorationLine: 'underline',
-                    textDecorationStyle: 'solid'
-                  }
-                ]}>
-                  tigris
-                </ThemedText>
-                <ThemedText style={[
-                  style,
-                  { fontStyle: 'italic' }
-                ]}>
-                  {' (jacksoni)'}
-                </ThemedText>
-              </ThemedText>
-            )}
-          </React.Fragment>
-        ))}
-      </ThemedText>
-    );
-  }
-  
-  // Check for species name only
-  const speciesPattern = /Panthera tigris(?!\s+jacksoni)/g;
-  if (speciesPattern.test(text)) {
-    const parts = text.split(speciesPattern);
-    
-    return (
-      <ThemedText style={style}>
-        {parts.map((part, index) => (
-          <React.Fragment key={index}>
-            {part}
-            {index < parts.length - 1 && (
-              <ThemedText>
-                <ThemedText style={[
-                  style,
-                  { 
-                    fontStyle: 'italic',
-                    textDecorationLine: 'underline',
-                    textDecorationStyle: 'solid'
-                  }
-                ]}>
-                  Panthera
-                </ThemedText>
-                <ThemedText style={style}> </ThemedText>
-                <ThemedText style={[
-                  style,
-                  { 
-                    fontStyle: 'italic',
-                    textDecorationLine: 'underline',
-                    textDecorationStyle: 'solid'
-                  }
-                ]}>
-                  tigris
-                </ThemedText>
-              </ThemedText>
-            )}
-          </React.Fragment>
-        ))}
-      </ThemedText>
-    );
-  }
+              )}
+            </React.Fragment>
+          ))}
+        </ThemedText>
+      );
+    }
 
-  // For any other scientific names, use the original function
-  return renderTextWithScientificNames(text, style);
-};
+    // For any other scientific names, use the original function
+    return renderTextWithScientificNames(text, style);
+  };
 
   const content = {
     en: {
@@ -220,14 +219,14 @@ const renderTigerScientificName = (text, style) => {
           size={20}
           color={isDark ? Colors.dark.tint : Colors.light.tint}
         />
-        <ThemedText
-          style={[
+        {/* 🔥 FIXED: Apply tiger scientific name formatting to section titles */}
+        {renderTigerScientificName(
+          title,
+          [
             styles.headerText,
             { color: isDark ? Colors.dark.text : Colors.light.text }
-          ]}
-        >
-          {title}
-        </ThemedText>
+          ]
+        )}
       </View>
       {children}
     </View>
@@ -236,37 +235,36 @@ const renderTigerScientificName = (text, style) => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Hero */}
-      {/* Hero */}
-<View
-  style={[
-    styles.hero,
-    {
-      backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-      borderColor: isDark ? Colors.dark.border : Colors.light.border
-    }
-  ]}
->
-  <View style={styles.heroHeader}>
-    <ThemedText style={styles.heroEmoji}>🐅</ThemedText>
-    <ThemedText
-      style={[
-        styles.heroTitle,
-        { color: isDark ? Colors.dark.text : Colors.light.text }
-      ]}
-    >
-      {text.heroTitle}
-    </ThemedText>
-  </View>
-  
-  {/* 🔥 UPDATED: Hero description with custom tiger scientific names formatting */}
-  {renderTigerScientificName(
-    text.heroDescription,
-    [
-      styles.heroDesc,
-      { color: isDark ? Colors.dark.text : Colors.light.text }
-    ]
-  )}
-</View>
+      <View
+        style={[
+          styles.hero,
+          {
+            backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+            borderColor: isDark ? Colors.dark.border : Colors.light.border
+          }
+        ]}
+      >
+        <View style={styles.heroHeader}>
+          <ThemedText style={styles.heroEmoji}>🐅</ThemedText>
+          <ThemedText
+            style={[
+              styles.heroTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}
+          >
+            {text.heroTitle}
+          </ThemedText>
+        </View>
+        
+        {/* 🔥 UPDATED: Hero description with custom tiger scientific names formatting */}
+        {renderTigerScientificName(
+          text.heroDescription,
+          [
+            styles.heroDesc,
+            { color: isDark ? Colors.dark.text : Colors.light.text }
+          ]
+        )}
+      </View>
 
       {/* Fact Sheet */}
       <Section icon="info" title={text.factSheetTitle}>

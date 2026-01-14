@@ -2,28 +2,36 @@
   "expo": {
     "name": "WildguardMY",
     "slug": "WildguardMY",
-    "version": "1.0.0",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/wildguardmy_icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+
     "ios": {
       "supportsTablet": true
     },
+
     "android": {
+      "package": "com.neonaurora.WildguardMY",
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/wildguardmy_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.neonaurora.WildguardMY",
-      "versionCode": 1
+      "blockedPermissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
+
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/wildguardmy_icon.png"
     },
+
     "plugins": [
       "expo-router",
       [
@@ -35,11 +43,30 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "WildguardMY lets you set a profile picture and attach images to quiz questions.",
+          "cameraPermission": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
+          }
+        }
+      ]
     ],
+
     "experiments": {
       "typedRoutes": true
     },
+
     "extra": {
       "router": {
         "origin": false
@@ -48,7 +75,8 @@
         "projectId": "c794b9af-61d8-451a-9242-fa0d2c175b24"
       }
     },
-    "privacyPolicy": "https://yourwebsite.com/privacy-policy",
+
+    "privacyPolicy": "https://www.privacypolicies.com/live/3d009586-8fad-480d-bde0-c228ddf221b2",
     "owner": "neonaurora"
   }
 }

@@ -59,8 +59,11 @@ export default function EditProfileScreen() {
   
   const isOnboarding = onboarding === 'true';
   
-  // 🔥 NEW: Consent dialog state
+  // Consent dialog state
   const [showConsentDialog, setShowConsentDialog] = useState(false);
+  
+  // 🔥 NEW: Consent checkbox state
+  const [consentChecked, setConsentChecked] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -79,7 +82,7 @@ export default function EditProfileScreen() {
   const [formValid, setFormValid] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
 
-  // 🔥 NEW: Show consent dialog on mount if onboarding
+  // Show consent dialog on mount if onboarding
   useEffect(() => {
     if (isOnboarding) {
       setShowConsentDialog(true);
@@ -103,6 +106,7 @@ export default function EditProfileScreen() {
     }
   }, [supabaseData]);
 
+  // 🔥 UPDATED: Form validation now includes consent checkbox for onboarding
   useEffect(() => {
     const requiredFields = [
       'name', 'email', 'highest_education',
@@ -114,13 +118,17 @@ export default function EditProfileScreen() {
       return value && value.length > 0;
     });
     
+    // 🔥 UPDATED: Age validation changed to 18-120
     const age = parseInt(formData.age);
-    const ageValid = !isNaN(age) && age >= 13 && age <= 120;
+    const ageValid = !isNaN(age) && age >= 18 && age <= 120;
     
     const languageValid = formData.preferred_language === 'en' || formData.preferred_language === 'ms';
     
-    setFormValid(isValid && ageValid && languageValid);
-  }, [formData]);
+    // 🔥 NEW: For onboarding, also require consent checkbox to be checked
+    const consentValid = !isOnboarding || consentChecked;
+    
+    setFormValid(isValid && ageValid && languageValid && consentValid);
+  }, [formData, isOnboarding, consentChecked]);
 
   const handlePickImage = async () => {
     try {
@@ -293,7 +301,7 @@ export default function EditProfileScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* 🔥 NEW: Consent Dialog */}
+      {/* Consent Dialog */}
       <Modal
         visible={showConsentDialog}
         transparent={true}
@@ -522,7 +530,7 @@ export default function EditProfileScreen() {
             label="Age"
             value={formData.age}
             onChangeText={(value) => handleInputChange('age', value)}
-            placeholder="Enter your age (13-120)"
+            placeholder="Enter your age (18-120)"
             keyboardType="numeric"
             isDark={isDark}
             required
@@ -577,6 +585,44 @@ export default function EditProfileScreen() {
           />
         </FormSection>
 
+        {/* 🔥 NEW: Consent Checkbox Section (Only for onboarding) */}
+        {isOnboarding && (
+          <ThemedView style={[
+            styles.consentCheckboxSection,
+            { 
+              backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+              borderColor: isDark ? Colors.dark.border : Colors.light.border,
+            }
+          ]}>
+            <TouchableOpacity
+              style={styles.consentCheckboxContainer}
+              onPress={() => setConsentChecked(!consentChecked)}
+              activeOpacity={0.7}
+            >
+              <ThemedView style={[
+                styles.checkbox,
+                {
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border,
+                  backgroundColor: consentChecked
+                    ? (isDark ? Colors.dark.tint : Colors.light.tint)
+                    : 'transparent',
+                }
+              ]}>
+                {consentChecked && (
+                  <ThemedText style={styles.checkboxCheck}>✓</ThemedText>
+                )}
+              </ThemedView>
+              
+              <ThemedText style={[
+                styles.consentCheckboxText,
+                { color: isDark ? Colors.dark.text : Colors.light.text }
+              ]}>
+                I am 18 or older, OR I have my parent's permission to start
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+        )}
+
         {/* Form Validation Message */}
         {!formValid && (
           <ThemedView style={[
@@ -592,8 +638,9 @@ export default function EditProfileScreen() {
               styles.validationText,
               { color: isDark ? '#FF6B6B' : '#E74C3C' }
             ]}>
-              Please fill in all required fields. Age must be between 13-120.
+              Please fill in all required fields. Age must be between 18-120.
               {'\n'}Profile picture is optional and can be added later.
+              {isOnboarding && '\nYou must confirm age consent to continue.'}
             </ThemedText>
           </ThemedView>
         )}
@@ -861,7 +908,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   
-  // 🔥 NEW: Consent Dialog Styles
+  // Consent Dialog Styles
   consentOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
@@ -916,6 +963,41 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  
+  // 🔥 NEW: Consent Checkbox Styles
+  consentCheckboxSection: {
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  consentCheckboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxCheck: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  consentCheckboxText: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: '500',
   },
   
   // Header

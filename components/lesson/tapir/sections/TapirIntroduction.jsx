@@ -7,7 +7,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-// Lookup for category icons
 const getCategoryIcon = (category) => {
   switch (category.toLowerCase()) {
     case 'scientific name':
@@ -42,82 +41,55 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // 🔥 NEW: Helper function to render text with scientific names in italic
-  // 🔥 UPDATED: Helper function to render text with scientific names in italic
-  const renderTextWithScientificNames = (text, style) => {
-    if (!text || typeof text !== 'string') {
-      return <ThemedText style={style}>{text}</ThemedText>;
-    }
-
-    // Pattern to match scientific names (genus + species format)
-    // This will match "Tapirus indicus" and other binomial names
-    const scientificNamePattern = /(Tapirus\s+indicus|Tapirus\s+\w+)/g;
-    const parts = text.split(scientificNamePattern);
-    
-    if (parts.length === 1) {
-      // No scientific names found, return normal text
-      return <ThemedText style={style}>{text}</ThemedText>;
-    }
-    
-    return (
-      <ThemedText style={style}>
-        {parts.map((part, index) => {
-          // Check if this part is a scientific name
-          if (scientificNamePattern.test(part)) {
-            return (
-              <ThemedText
-                key={`scientific-${index}`}
-                style={[
-                  style,
-                  { 
-                    fontStyle: 'italic',
-                    color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary
-                  }
-                ]}
-              >
-                {part}
-              </ThemedText>
-            );
-          }
-          // 🔥 FIX: Wrap plain text parts in React.Fragment with key
-          return <React.Fragment key={`text-${index}`}>{part}</React.Fragment>;
-        })}
-      </ThemedText>
-    );
-  };
-
-  // 🔥 NEW: Helper function to check if a taxonomy rank should have italic scientific name
   const shouldItalicizeScientificName = (rank) => {
     return rank === 'Species' || rank === 'Spesies';
   };
 
-  // 🔥 UPDATED: Helper function to render species with separate underlines
-  const renderSpeciesWithUnderlines = (text, style) => {
-    if (!shouldItalicizeScientificName) return <ThemedText style={style}>{text}</ThemedText>;
-    
-    // Split "Tapirus indicus" into parts
-    const parts = text.trim().split(/\s+/);
-    
-    if (parts.length < 2) {
-      // Not a proper species format, return as italic
-      return <ThemedText style={[style, { fontStyle: 'italic' }]}>{text}</ThemedText>;
+  // 🔥 FIXED: Helper function to render tapir scientific names with underlines
+  const renderTapirScientificName = (text, style) => {
+    if (!text || typeof text !== 'string') {
+      return <ThemedText style={style}>{text}</ThemedText>;
     }
+
+    const scientificPattern = /Tapirus indicus/g;
+    
+    if (!scientificPattern.test(text)) {
+      return <ThemedText style={style}>{text}</ThemedText>;
+    }
+
+    scientificPattern.lastIndex = 0;
+    const parts = text.split(scientificPattern);
     
     return (
       <ThemedText style={style}>
         {parts.map((part, index) => (
-          <React.Fragment key={`species-${index}`}>
-            <ThemedText style={[
-              style,
-              { 
-                fontStyle: 'italic',
-                textDecorationLine: 'underline',
-                textDecorationStyle: 'solid'
-              }
-            ]}>
-              {part}
-            </ThemedText>
-            {index < parts.length - 1 && ' '}
+          <React.Fragment key={index}>
+            {part}
+            {index < parts.length - 1 && (
+              <ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  Tapirus
+                </ThemedText>
+                <ThemedText style={style}> </ThemedText>
+                <ThemedText style={[
+                  style,
+                  { 
+                    fontStyle: 'italic',
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid'
+                  }
+                ]}>
+                  indicus
+                </ThemedText>
+              </ThemedText>
+            )}
           </React.Fragment>
         ))}
       </ThemedText>
@@ -126,7 +98,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
 
   const content = {
     en: {
-      // Hero
       heroTitle: "Meet the Malayan Tapir: Malaysia's Gentle Forest Guardian:",
       heroDescription:
         "With its striking black-and-white \"panda-like\" coloring and shy personality, the Malayan tapir (Tapirus indicus) is one of Southeast Asia's most unique and ancient mammals. Often called the \"forest gardener\", this elusive creature plays a crucial role in maintaining healthy rainforests by spreading seeds as it roams quietly through the night.",
@@ -134,8 +105,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
         "Sadly, fewer than 2,500 individuals remain in the wild, with Malaysia being its stronghold. Habitat destruction, roadkills, and human encroachment are pushing this endangered species closer to extinction every year (Ng et al., 2022; IUCN, 2023).",
       goodNews:
         "But here's the good news: knowing more about the Malayan tapir can help save it. By learning and sharing, you're already part of the solution.",
-
-      // Basic Information cards
       basicInfoTitle: "Basic Information on the Malayan Tapir (Tapirus indicus):",
       basicInfoData: [
         { category: "Scientific Name", info: "Tapirus indicus" },
@@ -202,8 +171,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
             "Despite its pig-like body, the tapir is more closely related to horses and rhinoceroses!"
         }
       ],
-
-      // Taxonomy
       taxonomyTitle: "Taxonomic Classification of the Malayan Tapir:",
       taxonomyData: [
         { rank: "Kingdom", classification: "Animalia" },
@@ -217,7 +184,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
       ]
     },
     ms: {
-      // Hero (Malay)
       heroTitle:
         "Temuilah Tapir Malaya: Sang Penjaga Hutan Malaysia yang Lembut",
       heroDescription:
@@ -226,8 +192,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
         "Malangnya, kurang daripada 2,500 ekor tapir Malaya masih tinggal di alam liar, dengan Malaysia menjadi kubu terakhirnya. Kemusnahan habitat, kemalangan jalan raya, dan pencerobohan manusia semakin mendorong spesies terancam ini ke ambang kepupusan setiap tahun (Ng et al., 2022; IUCN, 2023).",
       goodNews:
         "Namun, ada berita baik: memahami tapir Malaya dengan lebih mendalam boleh membantu menyelamatkannya. Dengan belajar dan berkongsi pengetahuan, anda sudah menjadi sebahagian daripada penyelesaian.",
-
-      // Basic Information (Malay)
       basicInfoTitle: "MAKLUMAT ASAS TAPIR MALAYA (Tapirus indicus)",
       basicInfoData: [
         { category: "Nama Saintifik", info: "Tapirus indicus" },
@@ -294,8 +258,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
             "Walaupun badannya seperti babi, tapir sebenarnya lebih rapat hubungannya dengan kuda dan badak!"
         }
       ],
-
-      // Taxonomy (Malay)
       taxonomyTitle: "Klasifikasi Taksonomi Tapir Malaya:",
       taxonomyData: [
         { rank: "Kingdom", classification: "Animalia" },
@@ -324,7 +286,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
           }
         ]}>
         <View style={styles.heroHeader}>
-          {/* 🔥 UPDATED: Replace emoji with custom tapir image */}
           <Image 
             source={require('@/assets/images/tapir.png')} 
             style={styles.heroImage}
@@ -341,8 +302,8 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
           </View>
         </View>
         
-        {/* 🔥 UPDATED: Hero description with scientific names in italic */}
-        {renderTextWithScientificNames(
+        {/* 🔥 FIXED: Hero description with scientific name formatting */}
+        {renderTapirScientificName(
           text.heroDescription,
           [
             styles.heroDescription,
@@ -395,8 +356,8 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
           
-          {/* 🔥 UPDATED: Section title with scientific names in italic */}
-          {renderTextWithScientificNames(
+          {/* 🔥 FIXED: Section title with scientific name formatting */}
+          {renderTapirScientificName(
             text.basicInfoTitle,
             [
               styles.sectionTitle,
@@ -430,39 +391,33 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
                   {item.category}
                 </ThemedText>
                 
-                {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
-                {item.info
-                  .split('\n\n')
-                  .filter(line => line.trim())
-                  .map((line, bIdx) => {
-                    const cleanLine = line.replace(/^•\s*/, '');
-                    // Special handling for Scientific Name field
-                    if (item.category === 'Scientific Name' || item.category === 'Nama Saintifik') {
+                {/* 🔥 FIXED: Scientific name with proper formatting */}
+                {(item.category === 'Scientific Name' || item.category === 'Nama Saintifik') ? (
+                  renderTapirScientificName(
+                    item.info,
+                    [
+                      styles.cardDescription,
+                      { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                    ]
+                  )
+                ) : (
+                  item.info
+                    .split('\n\n')
+                    .filter(line => line.trim())
+                    .map((line, bIdx) => {
+                      const cleanLine = line.replace(/^•\s*/, '');
                       return (
-                        <View key={`${idx}-line-${bIdx}`}>
-                          {renderTextWithScientificNames(
-                            `• ${cleanLine}`,
-                            [
-                              styles.cardDescription,
-                              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                            ]
-                          )}
-                        </View>
+                        <ThemedText
+                          key={`${idx}-line-${bIdx}`}
+                          style={[
+                            styles.cardDescription,
+                            { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                          ]}>
+                          • {cleanLine}
+                        </ThemedText>
                       );
-                    } else {
-                      return (
-                        <View key={`${idx}-line-${bIdx}`}>
-                          {renderTextWithScientificNames(
-                            `• ${cleanLine}`,
-                            [
-                              styles.cardDescription,
-                              { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
-                            ]
-                          )}
-                        </View>
-                      );
-                    }
-                  })}
+                    })
+                )}
               </View>
             </View>
           ))}
@@ -511,17 +466,17 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
                 {tax.rank}
               </ThemedText>
               
-              {/* 🔥 UPDATED: Taxonomy classification with conditional italic styling */}
+              {/* 🔥 FIXED: Species classification with underlines */}
               {shouldItalicizeScientificName(tax.rank) ? 
-                renderSpeciesWithUnderlines(
+                renderTapirScientificName(
                   tax.classification,
                   [
-                    styles.tableCellValue,
+                    styles.taxonomyName,
                     { color: isDark ? Colors.dark.text : Colors.light.text }
                   ]
                 ) : (
                   <ThemedText style={[
-                    styles.tableCellValue, 
+                    styles.taxonomyName, 
                     {
                       color: isDark ? Colors.dark.text : Colors.light.text,
                       fontStyle: 'normal'
@@ -542,8 +497,6 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, paddingBottom: 32 },
-
-  // Hero styles
   heroCard: {
     borderRadius: 16,
     padding: 20,
@@ -581,13 +534,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4
   },
   goodNewsText: { fontSize: 14, lineHeight: 20, marginLeft: 8, flex: 1 },
-
-  // Section styles
   section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
   sectionTitle: { fontSize: 18, fontWeight: '600' },
-
-  // CardsGrid & Card
   cardsGrid: { gap: 12 },
   card: {
     flexDirection: 'row',
@@ -605,8 +554,6 @@ const styles = StyleSheet.create({
   cardContent: { flex: 1 },
   cardTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
   cardDescription: { fontSize: 14, lineHeight: 20, marginBottom: 4 },
-
-  // Taxonomy styles
   taxonomyTable: {
     borderRadius: 12,
     borderWidth: 1,

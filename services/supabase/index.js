@@ -12,6 +12,7 @@ export {
   getPreAssessmentStatus,
   hasCompletedPreAssessment,
   getCompletedTopics,
+  getTopicAccessibility
 } from './userService';
 
 // Quiz operations
@@ -32,7 +33,7 @@ export {
   getQuizResultsByType,
   getAllPostTestAttempts,
   getBestPostTestScore,
-  getImprovementData
+  getImprovementData,
 } from './quizResultService';
 
 // Categories

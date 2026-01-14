@@ -1,17 +1,18 @@
 // app/(main)/index.jsx
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useEffect } from 'react';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCertificate } from '@/contexts/CertificateContext';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { QUIZ_IDS } from '@/constants/QuizIds';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getTopicAccessibility } from '@/services/supabase';
 
 export default function HomePage() {
   const { user, supabaseData, loading } = useAuth();
@@ -22,6 +23,11 @@ export default function HomePage() {
 
   const preferredLanguage = supabaseData?.preferred_language || 'en';
   const isEnglish = preferredLanguage === 'en';
+  const [topicAccess, setTopicAccess] = useState({
+    tiger: true,
+    tapir: false,
+    turtle: false
+  });
 
   // INITIAL certificate check ONLY (when user data becomes available)
   useEffect(() => {
@@ -31,29 +37,63 @@ export default function HomePage() {
     }
   }, [user?.sub, supabaseData, initialized, checkCertificateEligibility]);
 
+  // Add useEffect to fetch accessibility:
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchTopicAccess = async () => {
+        if (user?.sub) {
+          try {
+            const access = await getTopicAccessibility(user.sub);
+            setTopicAccess(access);
+          } catch (error) {
+            console.error('Error fetching topic access:', error);
+          }
+        }
+      };
+      
+      fetchTopicAccess();
+    }, [user?.sub])
+  );
+  
   const learningTopics = [
     {
       topic: "tiger",
       title: isEnglish ? "Malayan Tiger" : "Harimau Malaya",
       icon: "pets",
       color: "#FF6B35",
-      quizId: QUIZ_IDS.tiger
+      quizId: QUIZ_IDS.tiger,
+      accessible: topicAccess.tiger
     },
     {
       topic: "tapir",
       title: isEnglish ? "Malayan Tapir" : "Tapir Malaya",
       icon: "forest",
       color: "#4CAF50",
-      quizId: QUIZ_IDS.tapir
+      quizId: QUIZ_IDS.tapir,
+      accessible: topicAccess.tapir
     },
     {
       topic: "turtle",
       title: isEnglish ? "Green Sea Turtle" : "Penyu Agar",
       icon: "waves",
       color: "#2196F3",
-      quizId: QUIZ_IDS.turtle
+      quizId: QUIZ_IDS.turtle,
+      accessible: topicAccess.turtle
     }
   ];
+
+  const handleTopicPress = (topic) => {
+    if (!topic.accessible) {
+      Alert.alert(
+        isEnglish ? "Topic Locked" : "Topik Dikunci",
+        isEnglish 
+          ? "Please complete previous topics first" 
+          : "Sila lengkapkan topik sebelumnya terlebih dahulu"
+      );
+      return;
+    }
+    router.push(`/startLearning?topic=${topic.topic}&quizId=${topic.quizId}`);
+  };
 
   const content = {
     en: {
@@ -210,11 +250,13 @@ export default function HomePage() {
                     styles.topicCard,
                     { 
                       backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                      borderColor: isDark ? Colors.dark.border : Colors.light.border
+                      borderColor: isDark ? Colors.dark.border : Colors.light.border,
+                      opacity: topic.accessible ? 1 : 0.5
                     }
                   ]}
-                  onPress={() => router.push(`/startLearning?topic=${topic.topic}&quizId=${topic.quizId}`)}
-                  activeOpacity={0.8}
+                  onPress={() => handleTopicPress(topic)}
+                  activeOpacity={topic.accessible ? 0.8 : 1}
+                  disabled={!topic.accessible}
                 >
                   <View style={[styles.topicIcon, { backgroundColor: `${topic.color}20` }]}>
                     <MaterialIcons 
@@ -230,9 +272,17 @@ export default function HomePage() {
                     ]}>
                       {topic.title}
                     </ThemedText>
+                    {!topic.accessible && (
+                      <View style={styles.lockedBadge}>
+                        <MaterialIcons name="lock" size={12} color="#999" />
+                        <ThemedText style={styles.lockedText}>
+                          {isEnglish ? "Locked" : "Dikunci"}
+                        </ThemedText>
+                      </View>
+                    )}
                   </View>
                   <MaterialIcons 
-                    name="chevron-right" 
+                    name={topic.accessible ? "chevron-right" : "lock"} 
                     size={20} 
                     color={isDark ? Colors.dark.textMuted : Colors.light.textMuted} 
                   />
@@ -578,5 +628,15 @@ const styles = StyleSheet.create({
   ctaDescription: {
     fontSize: 15,
     lineHeight: 22,
+  },
+  lockedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  lockedText: {
+    fontSize: 12,
+    color: '#999',
   },
 });

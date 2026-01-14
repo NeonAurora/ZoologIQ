@@ -1,6 +1,6 @@
 // Services/supabase/quizResultService.js
 import { supabase } from './config';
-import { updatePreAssessmentStatus } from './userService';
+import { updatePreAssessmentStatus, updatePostAssessmentStatus } from './userService';
 
 // ==================================
 // QUIZ RESULTS OPERATIONS
@@ -61,6 +61,14 @@ export const saveQuizResult = async (resultData) => {
       if (topicSlug && ['tiger', 'tapir', 'turtle'].includes(topicSlug)) {
         console.log(`🎯 Marking pre-assessment completed for topic: ${topicSlug}`);
         await updatePreAssessmentStatus(resultData.user_id, topicSlug, true);
+      }
+    }
+
+    if (resultData.session_type === 'post-lesson') {
+      const topicSlug = quiz?.quiz_categories?.slug;
+      if (topicSlug && ['tiger', 'tapir', 'turtle'].includes(topicSlug)) {
+        console.log(`🎯 Marking post-assessment completed for topic: ${topicSlug}`);
+        await updatePostAssessmentStatus(resultData.user_id, topicSlug, true);
       }
     }
     

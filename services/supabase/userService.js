@@ -232,3 +232,91 @@ export const getCompletedTopics = async (userId) => {
     return [];
   }
 };
+
+// ==================================
+// POST-ASSESSMENT OPERATIONS
+// ==================================
+
+/**
+ * Mark post-assessment as completed for a specific topic
+ */
+export const updatePostAssessmentStatus = async (userId, topic, completed = true) => {
+  try {
+    console.log(`🎯 Marking post-assessment ${completed ? 'completed' : 'incomplete'} for topic: ${topic}`);
+    
+    const { data: user, error: fetchError } = await supabase
+      .from('users')
+      .select('post_assessment_completed')
+      .eq('auth0_user_id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching user post-assessments:', fetchError);
+      return false;
+    }
+
+    const currentData = user.post_assessment_completed || {};
+    const updatedData = {
+      ...currentData,
+      [topic]: completed
+    };
+
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ 
+        post_assessment_completed: updatedData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('auth0_user_id', userId);
+
+    if (updateError) {
+      console.error('Error updating post-assessment status:', updateError);
+      return false;
+    }
+
+    console.log(`✅ Post-assessment ${completed ? 'completed' : 'reset'} for topic: ${topic}`);
+    return true;
+  } catch (error) {
+    console.error('Error in updatePostAssessmentStatus:', error);
+    return false;
+  }
+};
+
+/**
+ * Check topic accessibility based on completion sequence
+ */
+export const getTopicAccessibility = async (userId) => {
+  try {
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('pre_assessment_completed, post_assessment_completed')
+      .eq('auth0_user_id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error checking topic accessibility:', error);
+      return { tiger: true, tapir: false, turtle: false };
+    }
+
+    const preCompleted = user.pre_assessment_completed || {};
+    const postCompleted = user.post_assessment_completed || {};
+
+    // Tiger is always accessible
+    const tigerAccessible = true;
+    
+    // Tapir accessible if tiger fully completed
+    const tapirAccessible = preCompleted.tiger === true && postCompleted.tiger === true;
+    
+    // Turtle accessible if tapir fully completed
+    const turtleAccessible = preCompleted.tapir === true && postCompleted.tapir === true;
+
+    return {
+      tiger: tigerAccessible,
+      tapir: tapirAccessible,
+      turtle: turtleAccessible
+    };
+  } catch (error) {
+    console.error('Error in getTopicAccessibility:', error);
+    return { tiger: true, tapir: false, turtle: false };
+  }
+};
