@@ -12,64 +12,121 @@ export default function TigerBehavior({ currentLanguage = 'en' }) {
 
   const content = {
     en: {
-      funFactsTitle:     'Fun Facts About Malayan Tigers',
-      funFactsCards:     [
-        { title: 'Striped Uniqueness', description: 'No two Malayan tigers have the same stripe pattern—just like human fingerprints!', icon: 'fingerprint' },
-        { title: 'Mini but Mighty',      description: 'Smallest mainland tiger subspecies yet can leap over 5 meters in one jump',        icon: 'speed' },
-        { title: 'Night Vision Pros',    description: 'Eyes glow in the dark due to a reflective layer, helping them hunt at night',     icon: 'visibility' },
-        { title: 'Chatty Cats',          description: 'Communicate with roars, growls, and \'chuffing\' sounds for friendly greeting',    icon: 'mic' }
+      funFactsTitle: 'Fun Facts About Malayan Tigers',
+      funFactsCards: [
+        { 
+          title: 'Striped Uniqueness', 
+          description: 'No two tigers have the same stripe pattern, so researchers can identify individual Malayan tigers from their stripes, like using fingerprints for people (EndangeredTigers.org, 2021)', 
+          icon: 'fingerprint' 
+        },
+        { 
+          title: 'Mini but Mighty', 
+          description: 'Malayan tigers are the smallest of the mainland tiger subspecies, yet they are still powerful cats capable of making long jumps when chasing prey (MyBIS, 2021; EndangeredTigers.org, 2021)', 
+          icon: 'speed' 
+        },
+        { 
+          title: 'Night Vision Pros', 
+          description: 'Their eyes seem to glow in the dark because of a reflective layer called the tapetum lucidum, which helps them see better and hunt in low light', 
+          icon: 'visibility' 
+        }
       ],
       reproductionTitle: 'Reproduction & Family Life',
       reproductionCards: [
-        { title: 'Slow Breeders', description: 'Females give birth to 2–4 cubs every 2–3 years after 3–4 month pregnancy', icon: 'schedule' },
-        { title: 'Super Moms',     description: 'Cubs stay with mothers for 18–24 months to learn hunting skills',                 icon: 'school' },
-        { title: 'Dad\'s Role',    description: 'Males don\'t raise cubs but protect territory from rival tigers',                  icon: 'security' }
+        { 
+          title: 'Slow Reproduction', 
+          description: 'Female tigers reproduce slowly: they usually have 2-4 cubs after a pregnancy of about 3-3½ months, and they usually only have one new litter every 2-3 years as the cubs remain with their mothers for two years (Myers et al., 2025)', 
+          icon: 'child-care' 
+        }
       ],
-      physiologyTitle:   'Physiology & Adaptations',
-      physiologyCards:   [
-        { title: 'Powerful Bite',    description: 'Jaw strength of 1,000 psi can crush bones with ease',                           icon: 'fitness-center' },
-        { title: 'Swimming Stars',   description: 'Unlike most cats, they love water and swim to cool off or hunt',                 icon: 'pool' },
-        { title: 'Camouflage Kings', description: 'Orange-and-black stripes blend perfectly with sunlight and forest shadows',     icon: 'palette' }
-      ],
-      behaviorTitle:     'Behavior & Intelligence',
-      behaviorCards:     [
-        { title: 'Territorial Markers', description: 'Spray urine and scratch trees to mark their territory',         icon: 'place' },
-        { title: 'Solo Travelers',       description: 'Adults live alone, needing 50–150 km² of territory',            icon: 'person' },
-        { title: 'Smart Hunters',        description: 'Mimic prey calls like deer sounds to lure them closer',           icon: 'psychology' }
+      behaviorTitle: 'Behavior & Intelligence',
+      behaviorCards: [
+        { 
+          title: 'Territorial Markers', 
+          description: 'Tigers mark their territory by spraying urine and scratching trees, leaving both scent and visual signs for other tigers', 
+          icon: 'place' 
+        },
+        { 
+          title: 'Solitary Lifestyle', 
+          description: 'They generally live and hunt alone, except when the mother is raising cubs', 
+          icon: 'person' 
+        },
+        { 
+          title: 'Active Hours', 
+          description: 'They are most active at night or in cool mornings and late evenings', 
+          icon: 'schedule' 
+        },
+        { 
+          title: 'Stealth Hunters', 
+          description: 'They move silently on soft paws and use cover to hide before attacking their prey', 
+          icon: 'visibility-off' 
+        },
+        { 
+          title: 'Teaching Young', 
+          description: 'Mother tigers teach their cubs to hunt, which shows that young tigers learn skills over time', 
+          icon: 'school' 
+        }
       ]
     },
     ms: {
-      funFactsTitle:     'Fakta Menarik Tentang Harimau Malaya', 
-      funFactsCards:     [
-        { title: 'Belang Unik',           description: 'Tiada dua harimau Malaya yang mempunyai corak belang yang sama - seperti cap jari manusia!', icon: 'fingerprint' },
-        { title: 'Kecil tapi Gagah',       description: 'Subspesies harimau terkecil tetapi mampu melompat lebih 5 meter dalam satu lompatan',    icon: 'speed' },
-        { title: 'Pakar Penglihatan Malam',description: 'Mata bersinar dalam gelap membantu mereka memburu pada waktu malam',                    icon: 'visibility' },
-        { title: 'Kucing Bercakap-cakap',  description: 'Berkomunikasi dengan raungan, geraman, dan bunyi \'chuffing\' untuk sapaan mesra',     icon: 'mic' }
+      funFactsTitle: 'Fakta Menarik Tentang Harimau Malaya',
+      funFactsCards: [
+        { 
+          title: 'Belang Unik', 
+          description: 'Tiada dua harimau yang mempunyai corak belang yang sama, jadi penyelidik boleh mengenal pasti harimau Malaya individu daripada belang mereka, seperti menggunakan cap jari untuk manusia (EndangeredTigers.org, 2021)', 
+          icon: 'fingerprint' 
+        },
+        { 
+          title: 'Kecil tapi Gagah', 
+          description: 'Harimau Malaya adalah yang terkecil daripada subspesies harimau daratan, namun mereka masih kucing yang kuat yang mampu membuat lompatan jauh ketika mengejar mangsa (MyBIS, 2021; EndangeredTigers.org, 2021)', 
+          icon: 'speed' 
+        },
+        { 
+          title: 'Pakar Penglihatan Malam', 
+          description: 'Mata mereka kelihatan bercahaya dalam gelap kerana lapisan reflektif yang dipanggil tapetum lucidum, yang membantu mereka melihat dengan lebih baik dan memburu dalam cahaya rendah', 
+          icon: 'visibility' 
+        }
       ],
       reproductionTitle: 'Pembiakan & Kehidupan Keluarga',
       reproductionCards: [
-        { title: 'Pembiak Lambat', description: 'Betina melahirkan 2-4 anak setiap 2-3 tahun selepas mengandung 3-4 bulan',  icon: 'schedule' },
-        { title: 'Ibu yang Hebat',  description: 'Anak harimau tinggal dengan ibu 18-24 bulan untuk belajar memburu',          icon: 'school' },
-        { title: 'Peranan Bapa',     description: 'Jantan tidak membesarkan anak tetapi melindungi wilayah dari saingan',    icon: 'security' }
+        { 
+          title: 'Pembiakan Perlahan', 
+          description: 'Harimau betina membiak dengan perlahan: mereka biasanya mempunyai 2-4 anak selepas mengandung kira-kira 3-3½ bulan, dan mereka biasanya hanya mempunyai satu kelahiran baru setiap 2-3 tahun kerana anak kekal dengan ibu mereka selama dua tahun (Myers et al., 2025)', 
+          icon: 'child-care' 
+        }
       ],
-      physiologyTitle:   'Fisiologi & Adaptasi',
-      physiologyCards:   [
-        { title: 'Gigitan Kuat',    description: 'Kekuatan rahang 1,000 psi mampu mematahkan tulang dengan mudah',    icon: 'fitness-center' },
-        { title: 'Perenang Handal', description: 'Tidak seperti kebanyakan kucing, mereka suka air dan berenang',    icon: 'pool' },
-        { title: 'Raja Penyamaran', description: 'Belang oren-hitam menyamai sempurna dengan cahaya dan bayang hutan', icon: 'palette' }
-      ],
-      behaviorTitle:     'Tingkah Laku & Kecerdasan',
-      behaviorCards:     [
-        { title: 'Penanda Wilayah', description: 'Menyembur air kencing dan mencakar pokok untuk menanda wilayah', icon: 'place' },
-        { title: 'Pengembara Solo', description: 'Harimau dewasa hidup bersendirian, memerlukan wilayah 50-150 km²',   icon: 'person' },
-        { title: 'Pemburu Bijak',   description: 'Meniru panggilan mangsa seperti bunyi rusa untuk memikat mangsa', icon: 'psychology' }
+      behaviorTitle: 'Tingkah Laku & Kecerdasan',
+      behaviorCards: [
+        { 
+          title: 'Penanda Wilayah', 
+          description: 'Harimau menandakan wilayah mereka dengan menyembur air kencing dan mencakar pokok, meninggalkan tanda bau dan visual untuk harimau lain', 
+          icon: 'place' 
+        },
+        { 
+          title: 'Gaya Hidup Bersendirian', 
+          description: 'Mereka umumnya hidup dan memburu bersendirian, kecuali ketika ibu sedang membesarkan anak', 
+          icon: 'person' 
+        },
+        { 
+          title: 'Waktu Aktif', 
+          description: 'Mereka paling aktif pada waktu malam atau pada pagi yang sejuk dan petang lewat', 
+          icon: 'schedule' 
+        },
+        { 
+          title: 'Pemburu Senyap', 
+          description: 'Mereka bergerak secara senyap dengan tapak yang lembut dan menggunakan perlindungan untuk bersembunyi sebelum menyerang mangsa mereka', 
+          icon: 'visibility-off' 
+        },
+        { 
+          title: 'Mengajar Anak', 
+          description: 'Ibu harimau mengajar anak mereka untuk memburu, yang menunjukkan bahawa harimau muda belajar kemahiran dari masa ke masa', 
+          icon: 'school' 
+        }
       ]
     }
   };
 
   const text = content[currentLanguage] || content.en;
 
-  // Define each section’s header icon, title, cards array, and an optional card‐icon color override:
   const sections = [
     {
       title: text.funFactsTitle,
@@ -82,12 +139,6 @@ export default function TigerBehavior({ currentLanguage = 'en' }) {
       headerIcon: 'child-care',
       cards: text.reproductionCards,
       cardColor: '#E91E63'
-    },
-    {
-      title: text.physiologyTitle,
-      headerIcon: 'science',
-      cards: text.physiologyCards,
-      cardColor: '#2196F3'
     },
     {
       title: text.behaviorTitle,
@@ -124,7 +175,7 @@ export default function TigerBehavior({ currentLanguage = 'en' }) {
                   styles.card,
                   {
                     backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                    borderColor:    isDark ? Colors.dark.border  : Colors.light.border
+                    borderColor: isDark ? Colors.dark.border : Colors.light.border
                   }
                 ]}>
                 <MaterialIcons
@@ -159,27 +210,28 @@ export default function TigerBehavior({ currentLanguage = 'en' }) {
 }
 
 const styles = StyleSheet.create({
-  container:     { flex: 1 },
-  content:       { padding: 16, paddingBottom: 32 },
+  container: { flex: 1 },
+  content: { padding: 16, paddingBottom: 32 },
 
-  section:       { marginBottom: 24 },
+  section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
-  sectionTitle:  { fontSize: 18, fontWeight: '600' },
+  sectionTitle: { fontSize: 18, fontWeight: '600' },
 
-  cardsGrid:     { gap: 12 },
-  card:          {
+  cardsGrid: { gap: 12 },
+  card: {
     flexDirection: 'row',
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
+    alignItems: 'flex-start',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2
   },
-  cardIcon:      { marginRight: 16 },
-  cardContent:   { flex: 1 },
-  cardTitle:     { fontSize: 15, fontWeight: '600', marginBottom: 4 },
-  cardDescription:{ fontSize: 13, lineHeight: 18 }
+  cardIcon: { marginRight: 16, marginTop: 2 },
+  cardContent: { flex: 1 },
+  cardTitle: { fontSize: 15, fontWeight: '600', marginBottom: 4 },
+  cardDescription: { fontSize: 13, lineHeight: 18 }
 });

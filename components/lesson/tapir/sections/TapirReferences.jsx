@@ -23,45 +23,36 @@ export default function TapirReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // 🔥 NEW: Notice dismissal state
   const [showNotice, setShowNotice] = useState(true);
 
-  // 🔥 NEW: Auto-dismiss notice after 5 seconds
   useEffect(() => {
     if (showNotice) {
       const timer = setTimeout(() => {
         setShowNotice(false);
-      }, 5000); // 5 seconds
-
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [showNotice]);
 
-  // 🔥 NEW: Manual dismiss function
   const dismissNotice = () => {
     setShowNotice(false);
   };
 
-  // 🔥 NEW: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
     if (!text || typeof text !== 'string') {
       return <ThemedText style={style}>{text}</ThemedText>;
     }
 
-    // Pattern to match scientific names (genus + species format)
-    // This will match "Tapirus indicus" and other binomial names
-    const scientificNamePattern = /(Tapirus\s+indicus|Tapirus\s+\w+)/g;
+    const scientificNamePattern = /(Tapirus\s+indicus|Tapirus\s+pinchaque|Tapirus\s+\w+)/g;
     const parts = text.split(scientificNamePattern);
     
     if (parts.length === 1) {
-      // No scientific names found, return normal text
       return <ThemedText style={style}>{text}</ThemedText>;
     }
     
     return (
       <ThemedText style={style}>
         {parts.map((part, index) => {
-          // Check if this part is a scientific name
           if (scientificNamePattern.test(part)) {
             return (
               <ThemedText
@@ -84,7 +75,6 @@ export default function TapirReferences() {
     );
   };
 
-  // 🔥 NEW: PDF Download Handler (extracted from TapirPopulation)
   const handleDownloadPDF = async () => {
     try {
       if (Platform.OS === 'web') {
@@ -129,293 +119,377 @@ export default function TapirReferences() {
     }
   };
 
-const references = [
-  {
-    authors: 'Adila, N., Ahmad, A. H., & Abdul-Patah, P.',
-    year: '2017',
-    title: 'Status and conservation of the Malayan tapir in Peninsular Malaysia',
-    source: 'Journal of Wildlife and Parks, 32, 55–62'
-  },
-  {
-    authors: 'Animal Behaviour',
-    year: '2021',
-    title: 'Parental roles and solitary behaviors in tapirs',
-    source: 'Animal Behaviour, 175, 112–119'
-  },
-  {
-    authors: 'Animal Behaviour',
-    year: '2023',
-    title: 'Scent marking strategies in solitary mammals',
-    source: 'Animal Behaviour, 191, 89–97'
-  },
-  {
-    authors: 'ASEAN Centre for Biodiversity',
-    year: '2022',
-    title: 'Wildlife corridors and eco-bridges in Southeast Asia',
-    source: 'ASEAN Biodiversity Outlook, 3, 92–104'
-  },
-  {
-    authors: 'Bank Negara Malaysia',
-    year: '2021',
-    title: 'Commemorative currency notes featuring Malaysian wildlife',
-    source: 'Bank Negara Malaysia',
-    url: 'https://www.bnm.gov.my'
-  },
-  {
-    authors: 'FFI (Fauna & Flora International)',
-    year: '2023',
-    title: 'Reducing illegal wildlife hunting in Sumatra',
-    source: 'Fauna & Flora International',
-    url: 'https://www.fauna-flora.org'
-  },
-  {
-    authors: 'Foerster, C. R., Lynam, A. J., & Bernads, H.',
-    year: '2020',
-    title: 'Tapir population distribution in Kaeng Krachan National Park, Thailand',
-    source: 'Wildlife Conservation Journal, 42(1), 11–20'
-  },
-  {
-    authors: 'Hughes, A.',
-    year: '2021',
-    title: 'Palm oil and its ecological impact on Sumatran biodiversity',
-    source: 'Biodiversity Watch, 16(3), 202–218'
-  },
-  {
-    authors: 'ICMBio (Chico Mendes Institute for Biodiversity Conservation)',
-    year: '2021',
-    title: 'Sustainable agriculture for tapir habitat protection in Brazil',
-    source: 'ICMBio',
-    url: 'https://www.icmbio.gov.br'
-  },
-  {
-    authors: 'Journal of Mammalogy',
-    year: '2023',
-    title: 'Tapir calf development and diet',
-    source: 'Journal of Mammalogy, 104(2), 350–362'
-  },
-  {
-    authors: 'Journal of Zoology',
-    year: '2022',
-    title: 'Coloration and camouflage in Malayan tapirs',
-    source: 'Journal of Zoology, 316(2), 150–164'
-  },
-  {
-    authors: 'Malaysian Conservation Alliance for Tigers (MYCAT)',
-    year: '2023',
-    title: 'Public awareness campaigns on nighttime driving to reduce tapir roadkill',
-    source: 'MYCAT',
-    url: 'https://nussavewrites.wordpress.com/2023/07/27/a-walk-to-remember-mycat-walk/'
-  },
-  {
-    authors: 'Malaysian Wildlife Department',
-    year: '2022',
-    title: 'Public education initiatives on endangered species',
-    source: 'PERHILITAN',
-    url: 'https://www.wildlife.gov.my'
-  },
-  {
-    authors: 'MYCAT',
-    year: '2022',
-    title: 'Tapir-inclusive conservation planning',
-    source: 'MYCAT',
-    url: 'https://www.malayantiger.net'
-  },
-  {
-    authors: 'MYCAT',
-    year: '2023',
-    title: 'Road awareness campaigns for wildlife protection',
-    source: 'Conservation Impact Report'
-  },
-  {
-    authors: 'National Geographic',
-    year: '2021',
-    title: 'Tapirs: Ancient creatures of the Asian jungle',
-    source: 'National Geographic',
-    url: 'https://www.nationalgeographic.com'
-  },
-  {
-    authors: 'National Geographic',
-    year: '2022',
-    title: 'Marina Rivero: Bringing visibility to the endangered Baird\'s tapir',
-    source: 'National Geographic Impact',
-    url: 'https://www.nationalgeographic.com/impact/article/marina-rivero-bringing-visibility-to-the-endangered-bairds-tapir'
-  },
-  {
-    authors: 'Panthera',
-    year: '2022',
-    title: 'AI-assisted wildlife monitoring in tropical forests',
-    source: 'Panthera Research Bulletin, 11(1), 36–44'
-  },
-  {
-    authors: 'ProCAT',
-    year: '2023',
-    title: 'Using drones for tapir monitoring in South America',
-    source: 'ProCAT Conservation',
-    url: 'https://www.procat-conservation.org'
-  },
-  {
-    authors: 'RSPO',
-    year: '2023',
-    title: 'Collaborations for forest restoration with palm oil companies',
-    source: 'Roundtable on Sustainable Palm Oil'
-  },
-  {
-    authors: 'San Diego Zoo',
-    year: '2022',
-    title: 'Tapir conservation projects in Southeast Asia',
-    source: 'San Diego Zoo',
-    url: 'https://www.sdzoo.org'
-  },
-  {
-    authors: 'San Diego Zoo',
-    year: '2023',
-    title: 'Tapir breeding and behavior updates',
-    source: 'Annual Wildlife Report'
-  },
-  {
-    authors: 'ScienceDaily',
-    year: '2021',
-    title: 'Camouflage in baby animals: New research on tapir calves',
-    source: 'ScienceDaily',
-    url: 'https://www.sciencedaily.com'
-  },
-  {
-    authors: 'Smithsonian',
-    year: '2019',
-    title: 'Wildlife conflicts in Malaysia: The case of the tapir',
-    source: 'Smithsonian Magazine, 49(3), 18–24'
-  },
-  {
-    authors: 'Smithsonian',
-    year: '2020',
-    title: 'Ancient survivors: Evolutionary history of tapirs',
-    source: 'Smithsonian Institution',
-    url: 'https://www.si.edu'
-  },
-  {
-    authors: 'Smithsonian',
-    year: '2021',
-    title: 'Tapir adaptations and aquatic life',
-    source: 'Smithsonian Institution',
-    url: 'https://www.si.edu'
-  },
-  {
-    authors: 'Smithsonian',
-    year: '2022',
-    title: 'Living fossils: Tapirs through time',
-    source: 'Smithsonian Institution Archives'
-  },
-  {
-    authors: 'Tapir Conservation',
-    year: '2023',
-    title: 'Tapir communication and mating behavior',
-    source: 'Tapir Conservation, 32(1), 13–18'
-  },
-  {
-    authors: 'Tapir Specialist Group',
-    year: '2023',
-    title: 'Myanmar tapir population: A disappearing species',
-    source: 'IUCN Tapir Specialist Group',
-    url: 'https://tapirs.org'
-  },
-  {
-    authors: 'Tourism Malaysia',
-    year: '2023',
-    title: 'Sustainable ecotourism initiatives benefiting tapir conservation at Endau-Rompin National Park',
-    source: 'Tourism Malaysia',
-    url: 'https://www.tourism.gov.my/media/view/tourism-malaysia-highlights-sustainable-tourism-at-world-travel-market-2023'
-  },
-  {
-    authors: 'Town and Country Planning Dept.',
-    year: '2022',
-    title: 'Land use policies for wildlife conservation',
-    source: 'Malaysia Planning Journal, 36(2), 73–84'
-  },
-  {
-    authors: 'TRAFFIC',
-    year: '2020',
-    title: 'Poaching and wildlife trade in Southeast Asia',
-    source: 'TRAFFIC',
-    url: 'https://www.traffic.org'
-  },
-  {
-    authors: 'TRAFFIC',
-    year: '2023',
-    title: 'ASEAN-WEN and efforts to combat illegal tapir trade',
-    source: 'Wildlife Trade Monitor'
-  },
-  {
-    authors: 'UM (University of Malaya)',
-    year: '2023',
-    title: 'Tracking Malayan tapirs: GPS and camera trap data',
-    source: 'Conservation Research Highlights'
-  },
-  {
-    authors: 'Universiti Putra Malaysia',
-    year: '2022',
-    title: 'Conservation of Malayan Tapir',
-    source: 'Universiti Putra Malaysia',
-    url: 'https://forenv.upm.edu.my/upload/dokumen/20221207163559E-book_-_Conservation_of_Malayan_Tapir_-_UPM.pdf'
-  },
-  {
-    authors: 'Wildlife Research',
-    year: '2023',
-    title: 'Spatial navigation and memory in tropical mammals',
-    source: 'Wildlife Research, 50(2), 118–126'
-  },
-  {
-    authors: 'WWF',
-    year: '2021',
-    title: 'The tapir as a flagship species',
-    source: 'World Wildlife Fund',
-    url: 'https://www.worldwildlife.org'
-  },
-  {
-    authors: 'WWF',
-    year: '2022',
-    title: 'Roadkill data and mitigation strategies for Malayan tapirs',
-    source: 'WWF Malaysia',
-    url: 'https://www.wwf.org.my'
-  },
-  {
-    authors: 'WWF',
-    year: '2023',
-    title: 'Get involved in tapir conservation',
-    source: 'WWF Malaysia',
-    url: 'https://www.wwf.org.my'
-  },
-  {
-    authors: 'WWF Malaysia',
-    year: '2022',
-    title: 'Camera trap data and population monitoring of tapirs',
-    source: 'WWF Field Report'
-  },
-  {
-    authors: 'WWF Malaysia',
-    year: '2023',
-    title: 'Human-wildlife conflict solutions in Peninsular Malaysia',
-    source: 'Conservation Report Series, 7'
-  },
-  {
-    authors: 'Yayasan Badak',
-    year: '2022',
-    title: 'Environmental education in Indonesian schools',
-    source: 'Yayasan Badak',
-    url: 'https://www.yayasanbadak.org'
-  },
-  {
-    authors: 'Zoo Biology',
-    year: '2020',
-    title: 'Maturity and reproduction rates of tapirs in captivity',
-    source: 'Zoo Biology, 39(4), 310–318'
-  },
-  {
-    authors: 'Zoo Biology',
-    year: '2021',
-    title: 'Tapir-human interaction in captive environments',
-    source: 'Zoo Biology, 40(1), 90–98'
-  }
-];
+  const references = [
+    {
+      authors: 'Abdul Kadir, A. H., Magintan, D., Manimaran, S., & Mohd Azahar, M. I.',
+      year: '2024',
+      title: 'Malayan Tapir Conservation Initiatives and Its Challenges in Peninsular Malaysia',
+      source: 'Journal of Wildlife and Parks, 39, 1-20',
+      url: 'https://jwp.wildlife.gov.my/index.php/jwp/article/view/90'
+    },
+    {
+      authors: 'Ariffin, N. A. T., Mustapha, M. A., Lihan, T., Khodri, N. F., Taher, T. M., Abdullah, N. I., & Md Nor, S.',
+      year: '2025',
+      title: 'Habitat suitability of Malayan tapir (Tapirus indicus) in a fragmented forest of Greater Taman Negara complex',
+      source: 'Sains Malaysiana, 54(1), 5-18',
+      url: 'https://www.ukm.my/jsm/english_journals/vol54num1_2025/vol54num1_2025pg%205.html'
+    },
+    {
+      authors: 'Ariffin, N., Mahmud, F., & co-authors',
+      year: '2025',
+      title: 'Kesesuaian habitat Tapir Malaya (Tapirus indicus) di kawasan hutan Taman Negara',
+      source: 'Sains Malaysiana, 54(1), 47-58',
+      url: 'https://www.ukm.my/jsm/pdf_files/SM-PDF-54-1-2025/5.pdf'
+    },
+    {
+      authors: 'Association of Zoos and Aquariums Tapir Taxon Advisory Group',
+      year: '2014',
+      title: 'Tapir tracks: A curriculum guide for educators',
+      source: 'Association of Zoos and Aquariums',
+      url: 'http://azaungulates.squarespace.com/s/TAPIR-TRACKS-A-Curriculum-Guide-for-Educators.pdf'
+    },
+    {
+      authors: "Baird's Tapir Survival Alliance",
+      year: '2018',
+      title: 'Donate',
+      source: "Baird's Tapir Survival Alliance",
+      url: 'https://www.bairdstapir.org/donate'
+    },
+    {
+      authors: 'Campbell, K., & co-authors',
+      year: '2019',
+      title: 'Analysing snare usage and the impacts of tiger poaching on a non-target species, the Malayan tapir',
+      source: 'Biological Conservation, 234, 164-172',
+      url: 'https://www.sciencedirect.com/science/article/abs/pii/S0006320718305640'
+    },
+    {
+      authors: 'Convention on Biological Diversity (CBD) & United Nations World Tourism Organisation (UNWTO)',
+      year: '2015',
+      title: 'Tourism Supporting Biodiversity: A Manual on Applying the CBD Guidelines on Biodiversity and Tourism Development',
+      source: 'Montreal: CBD & UNWTO',
+      url: 'https://www.cbd.int/tourism/doc/tourism-manual-2015-en.pdf'
+    },
+    {
+      authors: 'Department of Wildlife and National Parks (DWNP)',
+      year: '2022',
+      title: 'Conservation of Malayan tapir (includes Malayan Tapir Conservation Action Plan 2021-2030)',
+      source: 'Universiti Putra Malaysia',
+      url: 'https://forenv.upm.edu.my/upload/dokumen/20221207163559E-book_-_Conservation_of_Malayan_Tapir_-_UPM.pdf'
+    },
+    {
+      authors: 'Department of Wildlife and National Parks (DWNP)',
+      year: '2024',
+      title: 'Malayan tapir conservation initiatives and its challenges in Peninsular Malaysia',
+      source: 'Journal of Wildlife and Parks, 21, 1-18',
+      url: 'https://jwp.wildlife.gov.my/index.php/jwp/article/view/90'
+    },
+    {
+      authors: 'Eagles, P. F. J., McCool, S. F., & Haynes, C. D.',
+      year: '2002',
+      title: 'Sustainable tourism in protected areas: Guidelines for planning and management',
+      source: 'IUCN',
+      url: 'https://digitallibrary.un.org/record/488792'
+    },
+    {
+      authors: 'Earth.org',
+      year: '2025',
+      title: 'Malayan tapir: Threats and conservation efforts',
+      source: 'Earth.org',
+      url: 'https://earth.org/?endangered-species=endangered-species-spotlight-malayan-tapir'
+    },
+    {
+      authors: 'EAZA',
+      year: '2023',
+      title: 'Malayan tapir EAZA Ex situ Programme (EEP)',
+      source: 'EAZA',
+      url: 'https://strapi.eaza.net/uploads/Malayan_tapir_EEP_EAZA_10_29_2024_3_02_14_PM_e1a80c4dd8.html'
+    },
+    {
+      authors: 'Fauna & Flora',
+      year: '2025',
+      title: 'Please help save tapirs',
+      source: 'Fauna & Flora',
+      url: 'https://www.fauna-flora.org/appeals/save-tapirs/'
+    },
+    {
+      authors: 'Holst, B., Beckmann, J., Zimmermann, M., Leus, K., & Voorham, M. (Eds.)',
+      year: '2021',
+      title: 'Regional collection plan for the EAZA Tapir and Suiform Taxon Advisory Group (1st ed.)',
+      source: 'EAZA Executive Office',
+      url: 'https://iucn.org/sites/default/files/2023-04/2021-iucn-ssc-peccary-sg-report_publication.pdf'
+    },
+    {
+      authors: 'IUCN',
+      year: '2017',
+      title: 'Tapirus indicus',
+      source: 'The IUCN Red List of Threatened Species 2017: e.T21472A45174127',
+      url: 'https://www.iucnredlist.org/search?query=malayan%20tapir&searchType=species'
+    },
+    {
+      authors: 'IUCN SSC Tapir Specialist Group',
+      year: '2017',
+      title: 'All about the terrific tapir',
+      source: 'IUCN SSC Tapir Specialist Group',
+      url: 'https://tapirs.org/tapirs/'
+    },
+    {
+      authors: 'IUCN SSC Tapir Specialist Group',
+      year: '2022',
+      title: 'IUCN SSC Tapir Specialist Group -- Mission and activities',
+      source: 'IUCN',
+      url: 'https://www.iucn.org/our-union/commissions/group/iucn-ssc-tapir-specialist-group'
+    },
+    {
+      authors: 'IUCN/SSC Tapir Specialist Group',
+      year: '2011',
+      title: 'Fifth International Tapir Symposium: Symposium program & book of abstracts',
+      source: 'Fifth International Tapir Symposium, Kuala Lumpur, Malaysia',
+      url: 'https://tapirs.org/wp-content/uploads/2017/03/5th-Intl-Tapir-Sympos-Abstracts.pdf'
+    },
+    {
+      authors: 'IUCN/SSC Tapir Specialist Group (TSG) & AZA Tapir Taxon Advisory Group (TAG)',
+      year: '2014',
+      title: 'Tapir Tracks: A Curriculum Guide for Educators',
+      source: 'IUCN/SSC TSG & AZA TAG',
+      url: 'https://tapirs.org/wp-content/uploads/2018/06/TAPIR-TRACKS-A-Curriculum-Guide-for-Educators.pdf'
+    },
+    {
+      authors: 'Kuehn, G.',
+      year: '1978',
+      title: 'Gestation period of Malayan tapir',
+      source: 'Zoo Biology (referenced in Pukazhenthi et al., 2013)'
+    },
+    {
+      authors: 'Kuswanda, W., Antoko, B., Novarino, W., & Siregar, R.',
+      year: '2023',
+      title: 'Species distribution model for the Asian tapir and vegetation characteristics of Batang Gadis National Park, North Sumatra, Indonesia',
+      source: 'Tropical Life Sciences Research, 34(2), 203-225',
+      url: 'https://ejournal.usm.my/tlsr/article/view/tlsr_vol34-no-2-2023_4'
+    },
+    {
+      authors: 'Lim, Q. L., Kartono, A. P., Md-Zain, B. M., & Abdul-Patah, P.',
+      year: '2022',
+      title: 'Population genetic structure of wild Malayan tapirs (Tapirus indicus)',
+      source: 'Global Ecology and Conservation, 38, e02206',
+      url: 'https://www.sciencedirect.com/science/article/pii/S2351989422003237'
+    },
+    {
+      authors: 'Magintan, D., Traeholt, C., Karuppannan, K. V., & Saaban, S.',
+      year: '2021',
+      title: 'Malayan tapir roadkill in Peninsular Malaysia from 2006 to 2019',
+      source: 'Jurnal Hidupan Liar dan Taman Negara, 35, 57-68',
+      url: 'https://jwp.wildlife.gov.my/index.php/jwp/article/view/59'
+    },
+    {
+      authors: 'Magintan, D., Donny, Y., Enos, G., Rahmat, T., & Abdul-Kadir, A. H.',
+      year: '2024',
+      title: 'Malayan tapir conservation initiatives and its challenges in Peninsular Malaysia',
+      source: 'Jurnal Hidupan Liar dan Taman Negara, 37, 1-18',
+      url: 'https://jwp.wildlife.gov.my/index.php/jwp/article/view/90'
+    },
+    {
+      authors: 'Malaysian Nature Society',
+      year: '2025',
+      title: 'Belum Temengor & MNS',
+      source: 'Malaysian Nature Society',
+      url: 'https://mns.my/belum-temengor-mns/'
+    },
+    {
+      authors: 'Mohamad, M., & co-authors',
+      year: '2019',
+      title: 'Habitat utilization of a translocated Malayan tapir in a human-modified landscape',
+      source: 'Journal of Sustainability Science and Management, 14(4), 77-92',
+      url: 'https://jssm.umt.edu.my/wp-content/uploads/sites/51/2019/08/6.pdf'
+    },
+    {
+      authors: 'Morrison, T.',
+      year: '2025',
+      title: 'Resilience and sustainability of a community: The story of Orang Asli of Royal Belum-Temengor Forest Complex, Malaysia',
+      source: 'Academia.edu',
+      url: 'https://www.academia.edu/12235244/Resilience_and_Sustainability_of_a_Community_the_Story_of_Orang_Asli_of_Royal_Belum_Temengor_Forest_Complex_Malaysia'
+    },
+    {
+      authors: "O'Farrill, G., Galetti, M., & Campos-Arceiz, A.",
+      year: '2013',
+      title: 'Frugivory and seed dispersal by tapirs: An insight on their ecological role',
+      source: 'Integrative Zoology, 8(1), 4-17',
+      url: 'https://pubmed.ncbi.nlm.nih.gov/23586556/'
+    },
+    {
+      authors: 'Pérez-Flores, J., Reyna-Hurtado, R., & Calmé, S.',
+      year: '2021',
+      title: 'Human-wildlife conflicts and drought in the greater Calakmul region, Mexico: Implications for tapir conservation',
+      source: 'Neotropical Biology and Conservation, 16(4), 687-707',
+      url: 'https://neotropical.pensoft.net/article/71032/'
+    },
+    {
+      authors: 'Pukazhenthi, B., Quse, V., Hoyer, M., van Engeldorp Gastelaars, H., Sanjur, O., & Brown, J. L.',
+      year: '2013',
+      title: 'A review of the reproductive biology and breeding management of tapirs',
+      source: 'Integrative Zoology, 8(1), 18-34',
+      url: 'https://doi.org/10.1111/j.1749-4877.2012.12008.x'
+    },
+    {
+      authors: 'Pukazhenthi, B., & co-authors',
+      year: '2013',
+      title: 'A review of the reproductive biology and breeding management of tapirs',
+      source: 'Reproduction in Domestic Animals, 48(Suppl. 1), 25-37',
+      url: 'https://pubmed.ncbi.nlm.nih.gov/23586557/'
+    },
+    {
+      authors: 'Re:wild',
+      year: '2022',
+      title: 'Tapirs',
+      source: 'Re:wild',
+      url: 'https://www.rewild.org/get-to-know/tapirs'
+    },
+    {
+      authors: 'Rose, P. E., & Roffey, R.',
+      year: '2011',
+      title: 'Adaptation of captive tapirs to zookeeping routines',
+      source: 'Zoo Biology (referenced in behavior studies)'
+    },
+    {
+      authors: 'San Diego Zoo Wildlife Alliance',
+      year: '2019',
+      title: 'Tapir',
+      source: 'San Diego Zoo Wildlife Alliance',
+      url: 'https://animals.sandiegozoo.org/animals/tapir'
+    },
+    {
+      authors: 'Shabuddin, N. H. M., Kasmuri, N., Jalal, A. S. A., Nayono, S. E., & Ahmad, R.',
+      year: '2025',
+      title: 'Malayan tapir roadkill: Assessment towards road user awareness and mitigation strategies in Peninsular Malaysia',
+      source: 'International Journal of Conservation Science, 16(1), 313-324',
+      url: 'https://ijcs.ro/public/IJCS-25-01_22_Shabbudin.pdf'
+    },
+    {
+      authors: 'Shwe, N. M., & Lynam, A. J.',
+      year: '2012',
+      title: 'A preliminary investigation of the status and threats to Malayan tapir Tapirus indicus in the Taninthayi Nature Reserve, Myanmar',
+      source: 'Tapir Conservation, 21(29), 18-22',
+      url: 'https://www.tapirconservation.org/index.php/tc/article/view/139'
+    },
+    {
+      authors: 'Shwe, N. M., & co-authors',
+      year: '2012',
+      title: 'A preliminary investigation of the status and threats to tapirs in part of their Asian range',
+      source: 'Tapir Conservation, 21(30), 19-24',
+      url: 'https://www.tapirconservation.org/index.php/tc/article/download/139/128'
+    },
+    {
+      authors: 'Suárez, C., & Lizcano, D. J.',
+      year: '2002',
+      title: 'Conflicts between subsistence farmers and crop-raiding mountain tapirs in Colombia',
+      source: 'Tapir Conservation (IUCN/SSC Tapir Specialist Group newsletter)',
+      url: 'https://tapirs.org/wp-content/uploads/2017/03/Tapir-Conservation-News-July-2015.pdf'
+    },
+    {
+      authors: 'Suárez, J. A., & Lizcano, D. J.',
+      year: '2002',
+      title: 'Conflict between mountain tapirs (Tapirus pinchaque) and farmers in the Colombian Central Andes',
+      source: 'Tapir Conservation, 11(2), 18-20',
+      url: 'https://www.tapirconservation.org/index.php/tc/article/view/33'
+    },
+    {
+      authors: 'Suwannaphong, N., Pattanavibool, A., Gale, G. A., & Rayan, D. M.',
+      year: '2024',
+      title: 'The effect of habitat fragmentation on Malay tapir (Tapirus indicus) occurrence in the Western Forest Complex of Thailand',
+      source: 'Global Ecology and Conservation, 52, e03245',
+      url: 'https://silvis.forest.wisc.edu/wp-content/uploads/sites/379/2024/12/Suwannaphong-s2.0-S2351989424003901-main.pdf'
+    },
+    {
+      authors: 'Suwannaphong, S., & co-authors',
+      year: '2024',
+      title: 'The effect of habitat fragmentation on Malay tapir abundances in Thailand\'s protected areas',
+      source: 'Global Ecology and Conservation, 54, e03186',
+      url: 'https://www.sciencedirect.com/science/article/pii/S2351989424003901'
+    },
+    {
+      authors: 'Tapir Valley Nature Reserve',
+      year: '2023',
+      title: 'Tapir Valley Nature Reserve -- Bijagua, Costa Rica',
+      source: 'Tapir Valley Nature Reserve',
+      url: 'https://www.tapirvalley.net'
+    },
+    {
+      authors: 'The Straits Times',
+      year: '2025',
+      title: 'Tapirs top roadkill list in Malaysia',
+      source: 'The Straits Times',
+      url: 'https://www.straitstimes.com/asia/se-asia/tapirs-top-roadkill-list-in-malaysia'
+    },
+    {
+      authors: 'Thongtip, N., & co-authors',
+      year: '2010',
+      title: 'Ejaculate characteristics of captive Malayan tapirs (Tapirus indicus)',
+      source: 'Thai Journal of Veterinary Medicine, 40(4), 377-383',
+      url: 'https://digital.car.chula.ac.th/cgi/viewcontent.cgi?article=2343&context=tjvm'
+    },
+    {
+      authors: 'Traeholt, C., Kamal, N., Rayan, D. M., & Zaw, K. M.',
+      year: '2016',
+      title: 'Tapirus indicus',
+      source: 'The IUCN Red List of Threatened Species 2016: e.T21472A45173636',
+      url: 'https://www.iucnredlist.org/species/21472/45173636'
+    },
+    {
+      authors: 'UNDP, SCBD, & UNEP-WCMC',
+      year: '2021',
+      title: 'Creating a nature-positive future: The contribution of protected areas and other effective area-based conservation measures',
+      source: 'UNDP',
+      url: 'https://www.undp.org/sites/g/files/zskgke326/files/2021-11/UNDP-UNEP-Creating-a-Nature-Positive-Future-EN.pdf'
+    },
+    {
+      authors: 'United Nations Environment Programme',
+      year: '2021',
+      title: '2020 Asia Environmental Enforcement Awards: Malaysia\'s Operasi Bersepadu Khazanah (OBK) taskforce for tiger and wildlife protection',
+      source: 'United Nations Malaysia',
+      url: 'https://malaysia.un.org/en/113011-2020-asia-environmental-enforcement-awards'
+    },
+    {
+      authors: 'Walb, R., & co-authors',
+      year: '2021',
+      title: 'Individual differences in the vocal communication of Malayan tapirs (Tapirus indicus) considering familiarity and relatedness',
+      source: 'Animals, 11(4), 1026',
+      url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8065771/'
+    },
+    {
+      authors: 'Waters, S. S.',
+      year: '2007',
+      title: 'Crop-raiding Baird\'s tapir provoke diverse reactions from subsistence farmers',
+      source: 'Tapir Conservation, 16(1), 18-23',
+      url: 'https://www.tapirconservation.org/index.php/tc/article/download/2/5/7'
+    },
+    {
+      authors: 'Wong, C. W. C. T.',
+      year: '2021',
+      title: 'Malayan tapir behaviour, habitat use and density in Belum, Perak (Master\'s thesis)',
+      source: 'Universiti Sains Malaysia',
+      url: 'http://eprints.usm.my/55081/1/CHRISTOPHER%20WONG%20CHAI%20THIAM%20-%20TESIS.pdf'
+    },
+    {
+      authors: 'World Wide Fund for Nature',
+      year: '2021',
+      title: 'Protect the Malayan tiger at all cost',
+      source: 'WWF-Malaysia',
+      url: 'https://www.wwf.org.my/?28605%2FProtect-the-Malayan-tiger-at-all-cost'
+    },
+    {
+      authors: 'World Wide Fund for Nature',
+      year: '2024',
+      title: 'How wildlife help combat climate change',
+      source: 'WWF',
+      url: 'https://www.worldwildlife.org/resources/explainers/how-wildlife-help-combat-climate-change'
+    },
+    {
+      authors: 'Zemanova, M. A., & co-authors',
+      year: '2020',
+      title: 'Comparing the impact of nutritional and sensory enrichment on the behaviour of zoo ungulates, including tapirs',
+      source: 'Journal of Zoo and Aquarium Research, 8(2), 65-73',
+      url: 'https://jzar.org/jzar/article/download/729/458/6031'
+    }
+  ];
 
   const handleReferencePress = (ref) => {
     if (ref.url) {
@@ -445,7 +519,6 @@ const references = [
 
   return (
     <ThemedView style={styles.container}>
-      {/* Header */}
       <ThemedView
         style={[
           styles.headerSection,
@@ -470,7 +543,6 @@ const references = [
         </ThemedText>
       </ThemedView>
 
-      {/* 🔥 UPDATED: Dismissible Notice */}
       {showNotice && (
         <ThemedView
           style={[
@@ -491,7 +563,7 @@ const references = [
               styles.noticeText,
               { 
                 color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary,
-                paddingRight: 40 // 🔥 NEW: Add right padding to make room for close button
+                paddingRight: 40
               }
             ]}
           >
@@ -512,7 +584,6 @@ const references = [
         </ThemedView>
       )}
 
-      {/* List */}
       <ScrollView
         style={styles.referencesScrollView}
         contentContainerStyle={styles.referencesContent}
@@ -540,7 +611,6 @@ const references = [
                 />
               </ThemedView>
               <ThemedView style={styles.referenceInfo}>
-                {/* 🔥 UPDATED: Reference title with scientific names in italic */}
                 {renderTextWithScientificNames(
                   ref.title,
                   [
@@ -580,7 +650,6 @@ const references = [
         ))}
       </ScrollView>
 
-      {/* 🔥 NEW: Download PDF Section (extracted from TapirPopulation) */}
       <ThemedView style={styles.downloadSection}>
         <TouchableOpacity
           style={[
@@ -613,7 +682,6 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
 
-  // 🔥 UPDATED: Notice styles with dismiss button
   noticeCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -685,7 +753,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'
   },
   
-  // 🔥 NEW: Download styles (extracted from TapirPopulation)
   downloadSection: { 
     alignItems: 'center', 
     marginTop: 16, 

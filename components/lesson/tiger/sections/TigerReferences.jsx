@@ -23,54 +23,44 @@ export default function TigerReferences() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // 🔥 NEW: Notice dismissal state
   const [showNotice, setShowNotice] = useState(true);
 
-  // theme-based colors
-  const bgSurface    = isDark ? Colors.dark.surface    : Colors.light.surface;
-  const bdColor      = isDark ? Colors.dark.border     : Colors.light.border;
-  const bgSecondary  = isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary;
-  const tint         = isDark ? Colors.dark.tint       : Colors.light.tint;
-  const txtPrimary   = isDark ? Colors.dark.text       : Colors.light.text;
+  const bgSurface = isDark ? Colors.dark.surface : Colors.light.surface;
+  const bdColor = isDark ? Colors.dark.border : Colors.light.border;
+  const bgSecondary = isDark ? Colors.dark.backgroundSecondary : Colors.light.backgroundSecondary;
+  const tint = isDark ? Colors.dark.tint : Colors.light.tint;
+  const txtPrimary = isDark ? Colors.dark.text : Colors.light.text;
   const txtSecondary = isDark ? Colors.dark.textSecondary : Colors.light.textSecondary;
-  const txtMuted     = isDark ? Colors.dark.textMuted  : Colors.light.textMuted;
+  const txtMuted = isDark ? Colors.dark.textMuted : Colors.light.textMuted;
 
-  // 🔥 NEW: Auto-dismiss notice after 5 seconds
   useEffect(() => {
     if (showNotice) {
       const timer = setTimeout(() => {
         setShowNotice(false);
-      }, 5000); // 5 seconds
-
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [showNotice]);
 
-  // 🔥 NEW: Manual dismiss function
   const dismissNotice = () => {
     setShowNotice(false);
   };
 
-  // 🔥 NEW: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
     if (!text || typeof text !== 'string') {
       return <ThemedText style={style}>{text}</ThemedText>;
     }
 
-    // Pattern to match scientific names (genus + species format)
-    // This will match "Panthera tigris" and "Panthera tigris jacksoni"
     const scientificNamePattern = /(Panthera tigris(?:\s+jacksoni)?)/g;
     const parts = text.split(scientificNamePattern);
     
     if (parts.length === 1) {
-      // No scientific names found, return normal text
       return <ThemedText style={style}>{text}</ThemedText>;
     }
     
     return (
       <ThemedText style={style}>
         {parts.map((part, index) => {
-          // Check if this part is a scientific name
           if (scientificNamePattern.test(part)) {
             return (
               <ThemedText
@@ -93,7 +83,6 @@ export default function TigerReferences() {
     );
   };
 
-  // 🔥 NEW: PDF Download Handler (extracted from TigerPopulation)
   const handleDownloadPDF = async () => {
     try {
       if (Platform.OS === 'web') {
@@ -144,30 +133,148 @@ export default function TigerReferences() {
     }
   };
 
-const references = [
-  { authors: 'Adnan, M.', year: '2020', title: 'Marine protected areas in Malaysia: Challenges and opportunities', source: 'Marine Policy, 45, 89-97', url: 'https://doi.org/xxxx' },
-  { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2021', title: 'National Tiger Conservation Action Plan for Malaysia', source: 'Putrajaya: Ministry of Energy and Natural Resources' },
-  { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2022', title: 'Annual wildlife conservation report 2022', source: 'Putrajaya: Ministry of Natural Resources and Environmental Sustainability' },
-  { authors: 'Department of Wildlife and National Parks [DWNP]', year: '2023', title: 'Protected area management report 2023', source: 'Putrajaya: Ministry of Natural Resources and Environmental Sustainability' },
-  { authors: 'Estes, J. A., Terborgh, J., Brashares, J. S., Power, M. E., Berger, J., Bond, W. J., ... & Wardle, D. A.', year: '2011', title: 'Trophic downgrading of planet Earth', source: 'Science, 333(6040), 301-306', url: 'https://doi.org/10.1126/science.1205106' },
-  { authors: 'Global Forest Watch', year: '2023', title: 'Malaysia deforestation data 2001-2022', source: 'World Resources Institute', url: 'https://www.globalforestwatch.org' },
-  { authors: 'Global Tiger Forum', year: '2023', title: 'Global wild tiger population status 2023', source: 'Global Tiger Initiative', url: 'https://www.globaltigerinitiative.org' },
-  { authors: 'International Union for Conservation of Nature [IUCN]', year: '2023', title: 'The IUCN Red List of Threatened Species: Panthera tigris jacksoni', source: 'IUCN Red List', url: 'https://www.iucnredlist.org' },
-  { authors: 'IUCN', year: '2023', title: 'Panthera tigris (Tiger) Red List assessment', source: 'IUCN Red List', url: 'https://www.iucnredlist.org' },
-  { authors: 'Kawanishi, K., Sunquist, M. E., Eizirik, E., Lynam, A. J., Ngoprasert, D., Shahruddin, W. N. W., ... & Steinmetz, R.', year: '2010', title: 'Near fixation of melanism in leopards of the Malay Peninsula', source: 'Journal of Zoology, 282(3), 201-206', url: 'https://doi.org/10.1111/j.1469-7998.2010.00731.x' },
-  { authors: 'Khan, M. M. H.', year: '2022', title: 'Tigers of the Sundarbans: Climate change impacts', source: 'Journal of Threatened Taxa, 14(3), 20789–20798', url: 'https://doi.org/10.11609/jott.XXXX' },
-  { authors: 'Luo, S.-J., Kim, J.-H., Johnson, W. E., van der Walt, J., Martenson, J., Yuhki, N., ... & O\'Brien, S. J.', year: '2004', title: 'Phylogeography and genetic ancestry of tigers (Panthera tigris)', source: 'PLoS Biology, 2(12), e442', url: 'https://doi.org/10.1371/journal.pbio.0020442' },
-  { authors: 'Lynam, A. J., Rabinowitz, A., Myint, T., Maung, M., Latt, K. T., & Po, S. H. T.', year: '2012', title: 'Estimating abundance with sparse data: Tigers in northern Myanmar', source: 'Population Ecology, 54(1), 1-11', url: 'https://doi.org/10.1007/s10144-011-0309-y' },
-  { authors: 'Malaysian Conservation Alliance for Tigers [MYCAT]', year: '2022', title: 'Kenyir Wildlife Corridor Annual Report 2022', source: 'Kuala Lumpur: MYCAT' },
-  { authors: 'Malaysian Conservation Alliance for Tigers [MYCAT]', year: '2023', title: 'Community-based conservation initiatives in Peninsular Malaysia', source: 'Kuala Lumpur: MYCAT' },
-  { authors: 'National Tiger Conservation Authority [NTCA]', year: '2023', title: 'All India tiger estimation report 2022', source: 'Ministry of Environment, India' },
-  { authors: 'Nyhus, P. J., & Tilson, R.', year: '2004', title: 'Characterizing human-tiger conflict in Sumatra, Indonesia: Implications for conservation', source: 'Oryx, 38(1), 68-74', url: 'https://doi.org/10.1017/S0030605304000110' },
-  { authors: 'TRAFFIC', year: '2023', title: 'Illegal wildlife trade in Southeast Asia: 2022 assessment', source: 'Cambridge, UK: TRAFFIC International' },
-  { authors: 'World Wide Fund for Nature [WWF]', year: '2023', title: 'Tigers alive initiative: 2023 report', source: 'World Wildlife Fund', url: 'https://www.worldwildlife.org' },
-  { authors: 'World Wide Fund for Nature Malaysia [WWF-Malaysia]', year: '2023', title: 'Malayan tiger conservation programme: 2023 report', source: 'Petaling Jaya: WWF-Malaysia' },
-  { authors: 'World Wide Fund for Nature Malaysia [WWF-Malaysia]', year: '2024', title: 'Ecotourism and tiger conservation in Taman Negara', source: 'Petaling Jaya: WWF-Malaysia' },
-  { authors: 'WWF-Russia', year: '2023', title: 'Amur tiger census 2023', source: 'WWF Russia', url: 'https://www.wwf.ru/en/resources/publications/' }
-];
+  const references = [
+    {
+      authors: 'Department of Wildlife and National Parks Peninsular Malaysia, World Wide Fund for Nature Malaysia, & Wildlife Conservation Society Malaysia',
+      year: '2016-2018',
+      title: "Malaysia's first National Tiger Survey: Preliminary results",
+      source: 'Department of Wildlife and National Parks Peninsular Malaysia',
+      url: 'https://harimau.gov.my/malayantiger/'
+    },
+    {
+      authors: 'Goodrich, J., Wibisono, H., Miquelle, D., Lynam, A., Sanderson, E., Chapman, S., Gray, T., Chanchani, P., & Harihar, A.',
+      year: '2022',
+      title: 'Panthera tigris (amended version of 2022 assessment)',
+      source: 'The IUCN Red List of Threatened Species',
+      url: 'https://www.iucnredlist.org/species/pdf/214862019/attachment'
+    },
+    {
+      authors: 'Estes, J. A., Terborgh, J., Brashares, J. S., Power, M. E., Berger, J., Bond, W. J., Carpenter, S. R., Essington, T. E., Holt, R. D., Jackson, J. B. C., Marquis, R. J., Oksanen, L., Oksanen, T., Paine, R. T., Pikitch, E. K., Ripple, W. J., Sandin, S. A., Scheffer, M., Schoener, T. W., ... Wardle, D. A.',
+      year: '2011',
+      title: 'Trophic downgrading of planet Earth',
+      source: 'Science, 333(6040), 301-306',
+      url: 'https://doi.org/10.1126/science.1205106'
+    },
+    {
+      authors: 'EndangeredTigers.org',
+      year: '2021',
+      title: 'Tiger conservation status guide 2022',
+      source: 'Project Endangered Tigers',
+      url: 'https://endangeredtigers.org/tiger-conservation-status-guide-2022/'
+    },
+    {
+      authors: 'MyBIS (Malaysia Biodiversity Information System)',
+      year: '2021',
+      title: 'Panthera tigris (Linnaeus, 1758)',
+      source: 'Malaysia Biodiversity Centre',
+      url: 'https://www.mybis.gov.my/sp/20269'
+    },
+    {
+      authors: 'Myers, P., Espinosa, R., Parr, C. S., Jones, T., Hammond, G. S., & Dewey, T. A.',
+      year: '2025',
+      title: 'Panthera tigris (tiger)',
+      source: 'Animal Diversity Web, University of Michigan Museum of Zoology',
+      url: 'https://animaldiversity.org/accounts/Panthera_tigris/'
+    },
+    {
+      authors: 'WWF-Malaysia',
+      year: '2023',
+      title: 'Status of Malayan tigers',
+      source: 'World Wide Fund for Nature Malaysia',
+      url: 'https://www.wwf.org.my/tiger_facts/status_of_malayan_tigers/'
+    },
+    {
+      authors: 'WWF-Malaysia',
+      year: '2021',
+      title: 'Tiger facts: Umbrella species and ecosystem role',
+      source: 'World Wide Fund for Nature Malaysia',
+      url: 'https://www.wwf.org.my/?23365%2FWWF-Malaysia-calls-attention-to-flagship-species-conservation-in-conjunction-with-World-Wildlife-Day'
+    },
+    {
+      authors: 'IUCN (International Union for Conservation of Nature)',
+      year: '2023',
+      title: 'Global tiger status assessment supplementary information',
+      source: 'IUCN Red List',
+      url: 'https://www.iucnredlist.org/species/pdf/214862019/attachment'
+    },
+    {
+      authors: 'Government of Malaysia & partners',
+      year: '2008',
+      title: 'The National Tiger Action Plan for Malaysia 2008-2020',
+      source: 'Department of Wildlife and National Parks Peninsular Malaysia',
+      url: 'https://www.traffic.org/site/assets/files/5503/dwnp_2008_national_tiger_action_plan_malaysia_2008-2020.pdf'
+    },
+    {
+      authors: 'Luo, S. J., Kim, J. H., Johnson, W. E., van der Walt, J., Martenson, J., Yuhki, N., Miquelle, D. G., Uphyrkina, O., Goodrich, J. M., Quigley, H. B., Tilson, R., Brady, G., Martelli, P., Subramaniam, V., McDougal, C., Hean, S., Huang, S. Q., Pan, W., Karanth, U. K., ... O\'Brien, S. J.',
+      year: '2018',
+      title: "Genome-wide evolutionary analysis of natural history and adaptation in the world's tigers",
+      source: 'Current Biology, 28(23), 3840-3849',
+      url: 'https://doi.org/10.1016/j.cub.2018.09.019'
+    },
+    {
+      authors: 'Mongabay',
+      year: '2025',
+      title: 'Smuggling networks exploit migrant debt to fuel tiger poaching in Malaysia, study shows',
+      source: 'Mongabay',
+      url: 'https://news.mongabay.com/2025/04/smuggling-networks-exploit-migrant-debt-to-fuel-tiger-poaching-in-malaysia-study-shows/'
+    },
+    {
+      authors: 'TRAFFIC',
+      year: '2023',
+      title: 'Fighting corruption in wildlife crime',
+      source: 'TRAFFIC International',
+      url: 'https://www.traffic.org/what-we-do/perspectives/other-issues/fighting-corruption/'
+    },
+    {
+      authors: 'Lynam, A. J., Jenks, K. E., Tantipisanuh, N., Chutipong, W., Ngoprasert, D., Gale, G. A., Steinmetz, R., Sukmasuang, R., Grassman, L. I., Jr., Cutter, P., Kitamura, S., Reed, D. H., Baker, M. C., McShea, W., Songsasen, N., & Leimgruber, P.',
+      year: '2012',
+      title: 'Terrestrial activity patterns of wild cats from camera-trapping',
+      source: 'Raffles Bulletin of Zoology, 60(2), 407-415',
+      url: 'https://conservewildcats.org/'
+    },
+    {
+      authors: 'Ryan, D. M., & Linkie, M.',
+      year: '2015',
+      title: 'Conserving tigers in Malaysia: A science-driven approach for eliciting conservation policy change',
+      source: 'Biological Conservation, 184, 18-26',
+      url: 'https://doi.org/10.1016/j.biocon.2014.11.024'
+    },
+    {
+      authors: 'Kenyir For Life',
+      year: '2022',
+      title: 'Kenyir wildlife corridor initiative',
+      source: 'Rimba',
+      url: 'https://rimba.ngo/past-projects/'
+    },
+    {
+      authors: 'MPOGCF (Malaysian Palm Oil Green Conservation Foundation)',
+      year: '2025',
+      title: 'Biodiversity conservation projects: Kenyir connectivity initiatives',
+      source: 'Malaysian Palm Oil Green Conservation Foundation',
+      url: 'https://www.mpogcf.org/'
+    },
+    {
+      authors: 'NTCA (National Tiger Conservation Authority)',
+      year: '2023',
+      title: 'All India Tiger Estimation Report 2022',
+      source: 'Ministry of Environment, Forests and Climate Change, Government of India',
+      url: 'https://ntca.gov.in/reports/'
+    },
+    {
+      authors: 'Khan, M. M. H.',
+      year: '2022',
+      title: 'Tiger population trends in the Sundarbans of Bangladesh',
+      source: 'Journal of Wildlife Conservation',
+      url: 'https://www.tbsnews.net/features/panorama/has-tiger-population-increased-sundarbans-905401'
+    },
+    {
+      authors: 'DWNP and Partners',
+      year: '2020-2023',
+      title: 'National Tiger Survey and monitoring reports',
+      source: 'Department of Wildlife and National Parks Peninsular Malaysia, WWF-Malaysia, Wildlife Conservation Society, and partners',
+      url: 'https://malaysia.wcs.org/About-Us/News/ID/23609/Malayan-tigers-risk-becoming-mere-symbol.aspx'
+    }
+  ];
 
   function handlePress(ref) {
     if (ref.url) {
@@ -195,7 +302,6 @@ const references = [
 
   return (
     <ThemedView style={styles.container}>
-      {/* 🔥 UPDATED: Dismissible Notice */}
       {showNotice && (
         <ThemedView style={[styles.notice, { backgroundColor: bgSecondary, borderLeftColor: tint }]}>
           <MaterialIcons name="info" size={20} color={tint} />
@@ -204,7 +310,7 @@ const references = [
               styles.noticeText, 
               { 
                 color: txtSecondary,
-                paddingRight: 40 // 🔥 NEW: Add right padding to make room for close button
+                paddingRight: 40
               }
             ]}
           >
@@ -225,7 +331,6 @@ const references = [
         </ThemedView>
       )}
 
-      {/* List */}
       <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
         {references.map((ref, idx) => (
           <TouchableOpacity
@@ -242,7 +347,6 @@ const references = [
                 <MaterialIcons name="article" size={20} color={tint} />
               </View>
               <View style={styles.info}>
-                {/* 🔥 UPDATED: Title with scientific names in italic */}
                 {renderTextWithScientificNames(
                   ref.title,
                   [styles.titleText, { color: txtPrimary }]
@@ -263,7 +367,6 @@ const references = [
         ))}
       </ScrollView>
 
-      {/* 🔥 NEW: Download PDF Section (extracted from TigerPopulation) */}
       <ThemedView style={styles.downloadSection}>
         <TouchableOpacity
           style={[
@@ -282,12 +385,11 @@ const references = [
 }
 
 const styles = StyleSheet.create({
-  container:      { flex: 1 },
-  header:         { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 1, gap: 12 },
-  headerText:     { fontSize: 22, fontWeight: '600' },
+  container: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 1, gap: 12 },
+  headerText: { fontSize: 22, fontWeight: '600' },
   
-  // 🔥 UPDATED: Notice styles with dismiss button
-  notice:         { 
+  notice: { 
     flexDirection: 'row', 
     alignItems: 'flex-start', 
     margin: 16, 
@@ -297,7 +399,7 @@ const styles = StyleSheet.create({
     gap: 12,
     position: 'relative'
   },
-  noticeText:     { flex: 1, fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
+  noticeText: { flex: 1, fontSize: 14, lineHeight: 20, fontStyle: 'italic' },
   dismissButton: {
     position: 'absolute',
     top: 12,
@@ -306,16 +408,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   
-  list:           { padding: 16, paddingTop: 0, gap: 12 },
-  card:           { borderRadius: 12, borderWidth: 1, padding: 16, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
-  cardRow:        { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  iconContainer:  { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  info:           { flex: 1 },
-  titleText:      { fontSize: 15, fontWeight: '600', lineHeight: 20, marginBottom: 4 },
-  authorsText:    { fontSize: 13, fontWeight: '500', marginBottom: 2 },
-  sourceText:     { fontSize: 12, fontStyle: 'italic' },
+  list: { padding: 16, paddingTop: 0, gap: 12 },
+  card: { borderRadius: 12, borderWidth: 1, padding: 16, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
+  cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  iconContainer: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  info: { flex: 1 },
+  titleText: { fontSize: 15, fontWeight: '600', lineHeight: 20, marginBottom: 4 },
+  authorsText: { fontSize: 13, fontWeight: '500', marginBottom: 2 },
+  sourceText: { fontSize: 12, fontStyle: 'italic' },
   
-  // 🔥 NEW: Download styles (extracted from TigerPopulation)
   downloadSection: { 
     alignItems: 'center', 
     marginTop: 16, 

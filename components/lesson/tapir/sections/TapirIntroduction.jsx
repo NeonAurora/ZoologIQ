@@ -98,11 +98,15 @@ export default function TapirIntroduction({ currentLanguage = 'en' }) {
 
   const content = {
     en: {
-      heroTitle: "Meet the Malayan Tapir: Malaysia's Gentle Forest Guardian:",
+      // ==================== HERO SECTION (EN) ====================
+      heroTitle: "Meet the Malayan Tapir: Malaysia's Gentle Forest Guardian",
+
       heroDescription:
         "With its striking black-and-white \"panda-like\" coloring and shy personality, the Malayan tapir (Tapirus indicus) is one of Southeast Asia's most unique and ancient mammals. Often called the \"forest gardener\", this elusive creature plays a crucial role in maintaining healthy rainforests by spreading seeds as it roams quietly through the night.",
+
       criticalStatus:
-        "Sadly, fewer than 2,500 individuals remain in the wild, with Malaysia being its stronghold. Habitat destruction, roadkills, and human encroachment are pushing this endangered species closer to extinction every year (Ng et al., 2022; IUCN, 2023).",
+        "Less than 2,500 mature Malayan tapirs remain in the wild, with the largest population in Peninsular Malaysia, where habitat loss, fragmentation and increasing road kills due to human encroachment are pushing this endangered species closer to extinction (Traeholt et al., 2016; Lim et al., 2022; Maginton et al., 2024; Shabbudin et al., 2025).",
+
       goodNews:
         "But here's the good news: knowing more about the Malayan tapir can help save it. By learning and sharing, you're already part of the solution.",
       basicInfoTitle: "Basic Information on the Malayan Tapir (Tapirus indicus):",

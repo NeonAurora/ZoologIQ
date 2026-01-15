@@ -7,55 +7,36 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 
-// Icon lookup for biodiversity aspects
 const getBiodiversityIcon = (aspect) => {
   const t = aspect.toLowerCase();
-  if (t.includes('seagrass maintenance')    || t.includes('penyelenggaraan rumpai laut'))       return 'spa';
-  if (t.includes('coral reef health')       || t.includes('kesihatan terumbu karang'))         return 'water';
-  if (t.includes('nutrient cycling')        || t.includes('kitaran nutrien'))                  return 'autorenew';
-  if (t.includes('food web dynamics')       || t.includes('dinamik rangkaian makanan'))        return 'restaurant';
-  if (t.includes('biodiversity support')    || t.includes('sokongan kepelbagaian biologi'))    return 'groups';
-  if (t.includes('indicator species')       || t.includes('spesies penunjuk'))                  return 'analytics';
+  if (t.includes('seagrass maintenance') || t.includes('penyelenggaraan rumpai laut')) return 'spa';
+  if (t.includes('coral reef health') || t.includes('kesihatan terumbu karang')) return 'water';
+  if (t.includes('nutrient cycling') || t.includes('kitaran nutrien')) return 'autorenew';
+  if (t.includes('food web dynamics') || t.includes('dinamik rangkaian makanan')) return 'restaurant';
+  if (t.includes('biodiversity support') || t.includes('sokongan biodiversiti')) return 'groups';
+  if (t.includes('indicator species') || t.includes('spesies penunjuk')) return 'analytics';
   return 'eco';
-};
-
-// Icons for the "Why … Matters" cards
-const getWhyIcon = (index) => {
-  switch (index) {
-    case 0: return 'spa';          // seagrass
-    case 1: return 'water';        // coral reef
-    case 2: return 'autorenew';    // nutrient cycling
-    case 3: return 'restaurant';   // food web
-    case 4: return 'park';         // seagrass beds habitat
-    case 5: return 'analytics';    // indicator species
-    default: return 'lightbulb';
-  }
 };
 
 export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // 🔥 NEW: Helper function to render text with scientific names in italic
   const renderTextWithScientificNames = (text, style) => {
     if (!text || typeof text !== 'string') {
       return <ThemedText style={style}>{text}</ThemedText>;
     }
 
-    // Pattern to match scientific names (genus + species format)
-    // This will match "Chelonia mydas" and other turtle scientific names
-    const scientificNamePattern = /(Chelonia\s+mydas|Chelonia\s+\w+)/g;
+    const scientificNamePattern = /(Chelonia\s+mydas)/g;
     const parts = text.split(scientificNamePattern);
     
     if (parts.length === 1) {
-      // No scientific names found, return normal text
       return <ThemedText style={style}>{text}</ThemedText>;
     }
     
     return (
       <ThemedText style={style}>
         {parts.map((part, index) => {
-          // Check if this part is a scientific name
           if (scientificNamePattern.test(part)) {
             return (
               <ThemedText
@@ -80,43 +61,61 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
 
   const content = {
     en: {
-      roleTitle: 'Role of Chelonia mydas in Biodiversity',
+      roleTitle: 'Role of Chelonia mydas (Green Sea turtle) in Biodiversity',
       roleData: [
-        { aspect: 'Seagrass Maintenance',  description: 'Grazing keeps seagrass meadows healthy, promoting growth and preventing overgrowth.' },
-        { aspect: 'Coral Reef Health',     description: 'Controls algae on coral reefs, letting corals thrive and maintain reef ecosystems.' },
-        { aspect: 'Nutrient Cycling',      description: 'Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems.' },
-        { aspect: 'Food Web Dynamics',     description: 'Eggs and hatchlings serve as food for predators like crabs, birds, and fish.' },
-        { aspect: 'Biodiversity Support',  description: 'Seagrass beds and coral reefs, supported by turtles, provide habitats for diverse marine life.' },
-        { aspect: 'Indicator Species',     description: 'Acts as a biological indicator of ocean health due to sensitivity to habitat changes.' }
-      ],
-      whyTitle: 'Why the Green Sea Turtle Matters',
-      whyData: [
-        'Keeps seagrass meadows healthy, preventing overgrowth and fostering biodiversity. (Bjorndal, 1997)',
-        'Controls algae on coral reefs, promoting balanced environments for corals and marine life. (Lutz & Musick, 1997)',
-        'Transports nutrients between nesting and feeding sites, enriching distant ecosystems. (NOAA, 2023)',
-        'Provides vital food for predators through eggs and hatchlings. (Spotila, 2004)',
-        'Maintains seagrass beds that serve as habitats for numerous marine organisms. (IUCN, 2023)',
-        'Reflects marine ecosystem health as an indicator species. (NOAA, 2023)'
+        { 
+          aspect: 'Seagrass Maintenance', 
+          description: 'Grazing helps maintain healthy seagrass meadows, promoting growth and preventing overgrowth.' 
+        },
+        { 
+          aspect: 'Coral Reef Health', 
+          description: 'Controls algae on coral reefs, allowing corals to thrive and maintain reef ecosystems.' 
+        },
+        { 
+          aspect: 'Nutrient Cycling', 
+          description: 'Movement between nesting beaches and feeding grounds distributes nutrients, enriching ecosystems.' 
+        },
+        { 
+          aspect: 'Food Web Dynamics', 
+          description: 'Eggs and hatchlings are a food source for predators like crabs, birds, and fish.' 
+        },
+        { 
+          aspect: 'Biodiversity Support', 
+          description: 'Seagrass meadows and coral reefs, supported by turtles, provide habitats for diverse marine life.' 
+        },
+        { 
+          aspect: 'Indicator Species', 
+          description: 'Acts as a biological indicator of ocean health due to its sensitivity to habitat changes.' 
+        }
       ]
     },
     ms: {
-      roleTitle: 'Peranan Chelonia mydas dalam Kepelbagaian Biologi',
+      roleTitle: 'Peranan Chelonia mydas (Penyu Agar) dalam Biodiversiti',
       roleData: [
-        { aspect: 'Penyelenggaraan Rumpai Laut',   description: 'Pemakanan mengekalkan padang rumpai laut yang sihat, menggalakkan pertumbuhan dan mencegah pertumbuhan berlebihan.' },
-        { aspect: 'Kesihatan Terumbu Karang',      description: 'Mengawal alga di terumbu karang, membolehkan karang hidup subur dan mengekalkan ekosistem terumbu.' },
-        { aspect: 'Kitaran Nutrien',               description: 'Pergerakan antara pantai penetasan dan kawasan makan mengedarkan nutrien, memperkayakan ekosistem.' },
-        { aspect: 'Dinamik Rangkaian Makanan',      description: 'Telur dan anak penyu menjadi sumber makanan kepada pemangsa seperti ketam, burung, dan ikan.' },
-        { aspect: 'Sokongan Kepelbagaian Biologi',  description: 'Padang rumpai laut dan terumbu karang yang disokong penyu menyediakan habitat untuk pelbagai hidupan marin.' },
-        { aspect: 'Spesies Penunjuk',               description: 'Bertindak sebagai penunjuk biologi terhadap kesihatan laut kerana kepekaannya terhadap perubahan habitat.' }
-      ],
-      whyTitle: 'Mengapa Penyu Agar Penting',
-      whyData: [
-        'Mengekalkan padang rumpai laut yang sihat, mencegah pertumbuhan berlebihan dan menyokong biodiversiti. (Bjorndal, 1997)',
-        'Mengawal alga di terumbu karang, mewujudkan persekitaran seimbang untuk karang dan hidupan laut. (Lutz & Musick, 1997)',
-        'Mengangkut nutrien di antara tapak penetasan dan kawasan makan, memperkayakan ekosistem. (NOAA, 2023)',
-        'Menjadi sumber makanan penting melalui telur dan anak penyu. (Spotila, 2004)',
-        'Mengekalkan padang rumpai laut yang menjadi habitat pelbagai organisma marin. (IUCN, 2023)',
-        'Mencerminkan kesihatan ekosistem marin sebagai spesies penunjuk. (NOAA, 2023)'
+        { 
+          aspect: 'Penyelenggaraan Rumpai Laut', 
+          description: 'Ragut membantu mengekalkan padang rumpai laut yang sihat, menggalakkan pertumbuhan dan mencegah pertumbuhan berlebihan.' 
+        },
+        { 
+          aspect: 'Kesihatan Terumbu Karang', 
+          description: 'Mengawal alga pada terumbu karang, membolehkan karang berkembang maju dan mengekalkan ekosistem terumbu.' 
+        },
+        { 
+          aspect: 'Kitaran Nutrien', 
+          description: 'Pergerakan antara pantai bersarang dan tempat makan mengagihkan nutrien, memperkaya ekosistem.' 
+        },
+        { 
+          aspect: 'Dinamik Rangkaian Makanan', 
+          description: 'Telur dan anak penyu adalah sumber makanan untuk pemangsa seperti ketam, burung dan ikan.' 
+        },
+        { 
+          aspect: 'Sokongan Biodiversiti', 
+          description: 'Padang rumpai laut dan terumbu karang, disokong oleh penyu, menyediakan habitat untuk hidupan marin yang pelbagai.' 
+        },
+        { 
+          aspect: 'Spesies Penunjuk', 
+          description: 'Bertindak sebagai penunjuk biologi kesihatan lautan kerana kepekaannya terhadap perubahan habitat.' 
+        }
       ]
     }
   };
@@ -125,7 +124,6 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Role in Biodiversity */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons
@@ -133,8 +131,6 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
             size={20}
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
-          
-          {/* 🔥 UPDATED: Section title with scientific names in italic */}
           {renderTextWithScientificNames(
             text.roleTitle,
             [styles.sectionTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]
@@ -147,7 +143,7 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
               styles.card,
               {
                 backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor:      isDark ? Colors.dark.border  : Colors.light.border
+                borderColor: isDark ? Colors.dark.border : Colors.light.border
               }
             ]}
           >
@@ -161,51 +157,9 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
               <ThemedText style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
                 {item.aspect}
               </ThemedText>
-              
-              {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
               {renderTextWithScientificNames(
                 item.description,
                 [styles.cardDescription, { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }]
-              )}
-            </View>
-          </View>
-        ))}
-      </View>
-
-      {/* Why It Matters */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <MaterialIcons
-            name="lightbulb"
-            size={20}
-            color={isDark ? Colors.dark.tint : Colors.light.tint}
-          />
-          <ThemedText style={[styles.sectionTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}>
-            {text.whyTitle}
-          </ThemedText>
-        </View>
-        {text.whyData.map((line, i) => (
-          <View
-            key={`why-${i}`}
-            style={[
-              styles.card,
-              {
-                backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                borderColor:      isDark ? Colors.dark.border  : Colors.light.border
-              }
-            ]}
-          >
-            <MaterialIcons
-              name={getWhyIcon(i)}
-              size={24}
-              color={isDark ? Colors.dark.tint : Colors.light.tint}
-              style={styles.cardIcon}
-            />
-            <View style={styles.cardContent}>
-              {/* 🔥 UPDATED: Card descriptions with scientific names in italic */}
-              {renderTextWithScientificNames(
-                line,
-                [styles.cardDescription, { color: isDark ? Colors.dark.text : Colors.light.text }]
               )}
             </View>
           </View>
@@ -217,18 +171,19 @@ export default function TurtleBiodiversity({ currentLanguage = 'en' }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content:   { padding: 16, paddingBottom: 32 },
+  content: { padding: 16, paddingBottom: 32 },
 
-  section: {},
+  section: { marginBottom: 24 },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 16   // extra gap before cards
+    marginBottom: 16
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600'
+    fontWeight: '600',
+    flex: 1
   },
 
   card: {
@@ -244,8 +199,8 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2
   },
-  cardIcon:       { marginRight: 16, marginTop: 4 },
-  cardContent:    { flex: 1 },
-  cardTitle:      { fontSize: 16, fontWeight: '600', marginBottom: 4 },
-  cardDescription:{ fontSize: 14, lineHeight: 20 }
+  cardIcon: { marginRight: 16, marginTop: 4 },
+  cardContent: { flex: 1 },
+  cardTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  cardDescription: { fontSize: 14, lineHeight: 20 }
 });

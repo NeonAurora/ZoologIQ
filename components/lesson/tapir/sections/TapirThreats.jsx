@@ -12,28 +12,16 @@ const getHelpActionIcon = (action) => {
   switch (action.toLowerCase()) {
     case 'support conservation organizations':
     case 'sokong organisasi pemuliharaan':
-      return 'volunteer-activism';      // ← hyphen, not underscore
-    case 'choose sustainable products':
-    case 'pilih produk lestari':
-      return 'eco';
+      return 'volunteer-activism';
     case 'drive carefully in forest areas':
-    case 'pandu berhati-hati di kawasan hutan':
-      return 'drive-eta';               // ← hyphen
+    case 'memandu dengan berhati-hati di kawasan hutan':
+      return 'drive-eta';
     case 'spread awareness':
     case 'sebarkan kesedaran':
       return 'campaign';
-    case 'reduce your carbon footprint':
-    case 'kurangkan jejak karbon':
-      return 'energy-savings-leaf';     // ← hyphens
-    case 'report illegal activities':
-    case 'laporkan aktiviti haram':
-      return 'report';
     case 'support ecotourism':
-    case 'sokong eko-pelancongan':
-      return 'photo-camera';            // ← hyphen
-    case 'advocate for stronger laws':
-    case 'perjuangkan undang‑undang lebih kuat':
-      return 'gavel';
+    case 'sokong ekopelancongan':
+      return 'photo-camera';
     default:
       return 'help';
   }
@@ -43,26 +31,20 @@ const getHelpActionIcon = (action) => {
 const getStrategyIcon = (category) => {
   switch (category.toLowerCase()) {
     case 'protected areas & corridors':
-    case 'kawasan perlindungan & koridor':
+    case 'kawasan dilindungi & koridor':
       return 'forest';
     case 'anti-poaching & enforcement':
-    case 'anti-pemburuan haram & penguatkuasaan':
+    case 'anti-pemburuan & penguatkuasaan':
       return 'security';
-    case 'community engagement':
-    case 'penglibatan komuniti':
-      return 'groups';
-    case 'research & monitoring':
-    case 'penyelidikan & pemantauan':
-      return 'science';
-    case 'wildlife-friendly infrastructure':
-    case 'infrastruktur mesra hidupan liar':
-      return 'construction';
+    case 'international cooperation':
+    case 'kerjasama antarabangsa':
+      return 'public';
+    case 'zoos & captive breeding':
+    case 'zoo & pembiakan dalam kurungan':
+      return 'pets';
     case 'community-based conservation':
     case 'pemuliharaan berasaskan komuniti':
       return 'handshake';
-    case 'urban planning policies':
-    case 'dasar perancangan bandar':
-      return 'location-city';            // ← hyphen
     default:
       return 'category';
   }
@@ -70,288 +52,192 @@ const getStrategyIcon = (category) => {
 
 // Icon lookup for success stories
 const getSuccessIcon = (story) => {
-  if (/population stabilization/i.test(story)) return 'trending-up';       // ← hyphen
-  if (/reduced roadkill/i.test(story))        return 'traffic';
-  if (/community-led/i.test(story))           return 'groups';
+  if (/matcap|pelan tindakan/i.test(story)) return 'assignment';
+  if (/operasi|enforcement/i.test(story)) return 'verified';
   return 'celebration';
 };
+
 export default function TapirThreats({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  //
-  // 1) English content
-  //
-  const en = {
-    helpTitle: "How You Can Help Save the Malayan Tapir:",
-    helpData: [
-      {
-        action: "Support Conservation Organizations",
-        description:
-          "Donate to or volunteer with groups like WWF or IUCN that protect tapir habitats and fund research (WWF, 2023)."
-      },
-      {
-        action: "Choose Sustainable Products",
-        description:
-          "Avoid palm oil from deforested areas—look for RSPO‑certified products to reduce habitat destruction (Rainforest Alliance, 2022)."
-      },
-      {
-        action: "Drive Carefully in Forest Areas",
-        description:
-          "Slow down near wildlife crossings, especially at night, to prevent roadkill accidents (Malaysian Wildlife Department, 2021)."
-      },
-      {
-        action: "Spread Awareness",
-        description:
-          "Share facts about tapirs on social media or in your community to educate others (National Geographic, 2023)."
-      },
-      {
-        action: "Reduce Your Carbon Footprint",
-        description:
-          "Fight climate change by using less plastic, conserving energy, and supporting reforestation (IPCC, 2022)."
-      },
-      {
-        action: "Report Illegal Activities",
-        description:
-          "If you see poaching or illegal logging, notify local authorities or wildlife hotlines (TRAFFIC, 2023)."
-      },
-      {
-        action: "Support Ecotourism",
-        description:
-          "Visit ethical wildlife sanctuaries—your tourism dollars help fund conservation (UNEP, 2021)."
-      },
-      {
-        action: "Advocate for Stronger Laws",
-        description:
-          "Push governments to enforce anti‑deforestation policies and protect tapir habitats (IUCN, 2023)."
-      }
-    ],
+  const content = {
+    en: {
+      // ==================== HOW YOU CAN HELP (EN) ====================
+      helpTitle: "How You Can Help Save the Malayan Tapir",
+      helpData: [
+        {
+          action: "Support Conservation Organizations",
+          description: "To mitigate these conflicts and help tapir conservation, it is essential to maintain and restore forest habitat, secure movement corridors between remaining forest blocks, and work with local communities to protect crops using non-lethal methods and raise awareness of the ecological importance of the species (Pérez-Flores et al., 2021; Fifth International Tapir Symposium, 2011)."
+        },
+        {
+          action: "Drive Carefully in Forest Areas",
+          description: "Drivers are urged to slow down, obey speed limits and be cautious when passing through wildlife crossing areas, especially at night, as most wildlife-vehicle collisions in Malaysia occur in low-light conditions on roads passing through forest habitats (The Straits Times, 2025)."
+        },
+        {
+          action: "Spread Awareness",
+          description: "Sharing reliable information and engaging stories about tapirs through social media, schools, or community events can help raise awareness and support for their conservation (AZA Tapir Tracks Curriculum, 2014; Tapir Specialist Group, 2017)."
+        },
+        {
+          action: "Support Ecotourism",
+          description: "Choosing well-managed, conservation-focused wildlife tourism operators can help ensure that a portion of your spending supports protected areas, local livelihoods and biodiversity conservation (CBD/UNWTO, 2015)."
+        }
+      ],
 
-    strategiesTitle: "Conservation Strategies for the Malayan Tapir in Malaysia:",
-    strategiesData: [
-      {
-        category: "Protected Areas & Corridors",
-        strategies: [
-          "Malaysia has established wildlife sanctuaries, such as Taman Negara and the Belum‑Temengor Forest Complex, to safeguard tapir habitats (DWNP, 2023).",
-          "Building wildlife overpasses on highways (e.g., Central Forest Spine) reduces roadkill (WWF Malaysia, 2022)."
-        ]
-      },
-      {
-        category: "Anti-Poaching & Enforcement",
-        strategies: [
-          "PERHILITAN (Malaysia's Wildlife Department) conducts patrols to prevent illegal hunting (PERHILITAN, 2021).",
-          "Stricter penalties for wildlife crimes under Wildlife Conservation Act 2010 (IUCN, 2023)."
-        ]
-      },
-      {
-        category: "Community Engagement",
-        strategies: [
-          "Programs like MYCAT include tapir protection in their initiatives (MYCAT, 2022).",
-          "Educating indigenous communities on sustainable land use reduces human‑tapir conflicts (MNS, 2021)."
-        ]
-      },
-      {
-        category: "Research & Monitoring",
-        strategies: [
-          "Camera trapping and GPS tracking help study tapir movements (UM, 2023).",
-          "Collaboration with Universiti Malaysia Terengganu on tapir genetics (UMT, 2022)."
-        ]
-      }
-    ],
+      // ==================== CONSERVATION STRATEGIES IN MALAYSIA (EN) ====================
+      strategiesTitle: "Conservation Strategies for the Malayan Tapir in Malaysia",
+      strategiesData: [
+        {
+          category: "Protected Areas & Corridors",
+          strategies: [
+            "Major protected forest landscapes in Peninsular Malaysia, including Taman Negara and the Belum-Temengor forest complex (which includes the Royal Belum State Park and the Temengor Forest Reserve), provide important habitat for Malayan tapirs and are recognized as priority areas in national tapir conservation work (Wong, 2019)."
+          ]
+        },
+        {
+          category: "Anti-Poaching & Enforcement",
+          strategies: [
+            "Perhilitan (Malaysia's Department of Wildlife and National Parks) conducts regular law-enforcement and anti-poaching patrols, including through its Wildlife Crime Unit and joint operations such as Operasi Bersepadu Khazanah, to prevent poaching and other wildlife crimes in protected areas and forest reserves (Abdul Kadir et al., 2024)."
+          ]
+        }
+      ],
 
-    coexistenceTitle: "Coexistence Strategies for the Malayan Tapir in Malaysia:",
-    coexistenceData: [
-      {
-        category: "Wildlife-Friendly Infrastructure",
-        strategies: [
-          "Installing animal underpasses and road signs in high‑risk areas reduces roadkill (DWNP, 2023).",
-          "Electric fencing around farms directs tapirs away from crops without harm (PERHILITAN, 2022)."
-        ]
-      },
-      {
-        category: "Community-Based Conservation",
-        strategies: [
-          "Orang Asli partnerships promote sustainable foraging practices that protect tapir habitats (MNS, 2021).",
-          "Compensation schemes for farmers reduce retaliation after crop raids (WWF Malaysia, 2023)."
-        ]
-      },
-      {
-        category: "Urban Planning Policies",
-        strategies: [
-          "Buffer zones between forests and developments minimize conflicts (Town & Country Planning Dept., 2022).",
-          "Green corridors link fragmented forests, allowing safe tapir movement (Central Forest Spine Initiative, 2023)."
-        ]
-      }
-    ],
+      // ==================== GLOBAL CONSERVATION STRATEGIES (EN) ====================
+      globalStrategiesTitle: "Conservation Strategies in Other Parts of the World",
+      globalStrategiesData: [
+        {
+          category: "International Cooperation",
+          strategies: [
+            "The ASEAN Wildlife Enforcement Network (ASEAN-WEN) coordinates law-enforcement efforts among Southeast Asian countries to combat illegal wildlife trade in CITES-listed species, working closely with partners such as TRAFFIC and WWF (ASEAN-WEN/TRAFFIC, 2010)."
+          ]
+        },
+        {
+          category: "Zoos & Captive Breeding",
+          strategies: [
+            "European zoos, such as Copenhagen Zoo and Nuremberg Zoo, participate in the EAZA Ex Situ Program (EEP) for the Malayan tapir to maintain a demographically and genetically viable insurance population supporting global tapir conservation (Holst et al., 2021; EAZA, 2023)."
+          ]
+        }
+      ],
 
-    successTitle: "Conservation Success Stories of the Malayan Tapir in Malaysia:",
-    successData: [
-      {
-        story: "Population Stabilization in Taman Negara",
-        achievements: [
-          "Strict protection and anti‑poaching efforts have maintained a stable tapir population (DWNP, 2023).",
-          "Camera traps show increased tapir activity in protected zones (WWF Malaysia, 2022)."
-        ]
-      },
-      {
-        story: "Reduced Roadkill in Peninsular Malaysia",
-        achievements: [
-          "Wildlife crossings on highways have decreased tapir fatalities by 40% (PERHILITAN, 2021).",
-          "Public awareness campaigns on nighttime driving helped (MYCAT, 2023)."
-        ]
-      },
-      {
-        story: "Community-Led Conservation in Johor",
-        achievements: [
-          "Indigenous communities act as tapir guardians, deterring poachers (MNS, 2022).",
-          "Eco‑tourism initiatives generate income while protecting tapirs (Tourism Malaysia, 2023)."
-        ]
-      }
-    ]
+      // ==================== COEXISTENCE STRATEGIES (EN) ====================
+      coexistenceTitle: "Coexistence Strategies for the Malayan Tapir in Malaysia",
+      coexistenceData: [
+        {
+          category: "Community-Based Conservation",
+          strategies: [
+            "Conservation work in landscapes such as the Belum-Temengor Forest Complex is increasingly recognizing that partnering with Orang Asli communities and respecting their traditional forest-use practices is vital to the sustainable management of forests in areas that are also core habitat for Malayan tapirs (Morrison, 2025; Maginton et al., 2024)."
+          ]
+        }
+      ],
+
+      // ==================== SUCCESS STORIES (EN) ====================
+      successTitle: "Conservation Success Stories in Malaysia",
+      successData: [
+        {
+          story: "National Action Plan (MATCAP 2021-2030)",
+          achievements: [
+            "Malaysia established the Malayan Tapir Conservation Action Plan (MATCAP) 2021-2030, which sets clear goals to coordinate government and partner actions to protect habitat, reduce road deaths and human-tapir conflict, and secure the long-term survival of the species in Peninsular Malaysia (DWNP, 2024)."
+          ]
+        },
+        {
+          story: "Enforcement Recognition: Operasi Bersepadu Khazanah",
+          achievements: [
+            "Malaysia's Operasi Bersepadu Khazanah (OBK) anti-poaching taskforce, led by the DWNP and the Royal Malaysia Police, received the 2020 Asia Environment Enforcement Award for its impact in increasing patrols and reducing poaching in key tiger and tapir habitats, strengthening protections for the Malayan tapir and other wildlife (UN, 2021)."
+          ]
+        }
+      ]
+    },
+
+    ms: {
+      // ==================== HOW YOU CAN HELP (MS) ====================
+      helpTitle: "Bagaimana Anda Boleh Membantu Menyelamatkan Tapir Malaya",
+      helpData: [
+        {
+          action: "Sokong Organisasi Pemuliharaan",
+          description: "Untuk mengurangkan konflik ini dan membantu pemuliharaan tapir, adalah penting untuk mengekalkan dan memulihkan habitat hutan, mengamankan koridor pergerakan antara blok hutan yang tinggal, dan bekerjasama dengan komuniti tempatan untuk melindungi tanaman menggunakan kaedah tidak mematikan dan meningkatkan kesedaran tentang kepentingan ekologi spesies ini (Pérez-Flores et al., 2021; Fifth International Tapir Symposium, 2011)."
+        },
+        {
+          action: "Memandu dengan Berhati-hati di Kawasan Hutan",
+          description: "Pemandu digesa untuk memperlahankan kelajuan, mematuhi had laju dan berhati-hati ketika melalui kawasan lintasan hidupan liar, terutamanya pada waktu malam, kerana kebanyakan perlanggaran kenderaan-hidupan liar di Malaysia berlaku dalam keadaan cahaya rendah di jalan yang melalui habitat hutan (The Straits Times, 2025)."
+        },
+        {
+          action: "Sebarkan Kesedaran",
+          description: "Berkongsi maklumat yang boleh dipercayai dan cerita menarik tentang tapir melalui media sosial, sekolah, atau acara komuniti boleh membantu meningkatkan kesedaran dan sokongan untuk pemuliharaan mereka (AZA Tapir Tracks Curriculum, 2014; Tapir Specialist Group, 2017)."
+        },
+        {
+          action: "Sokong Ekopelancongan",
+          description: "Memilih pengendali pelancongan hidupan liar yang diurus dengan baik dan berfokuskan pemuliharaan boleh membantu memastikan sebahagian daripada perbelanjaan anda menyokong kawasan yang dilindungi, mata pencarian tempatan dan pemuliharaan kepelbagaian biologi (CBD/UNWTO, 2015)."
+        }
+      ],
+
+      // ==================== CONSERVATION STRATEGIES IN MALAYSIA (MS) ====================
+      strategiesTitle: "Strategi Pemuliharaan untuk Tapir Malaya di Malaysia",
+      strategiesData: [
+        {
+          category: "Kawasan Dilindungi & Koridor",
+          strategies: [
+            "Landskap hutan dilindungi utama di Semenanjung Malaysia, termasuk Taman Negara dan kompleks hutan Belum-Temengor (yang merangkumi Taman Negara Diraja Belum dan Hutan Simpan Temengor), menyediakan habitat penting untuk tapir Malaya dan diiktiraf sebagai kawasan keutamaan dalam kerja pemuliharaan tapir nasional (Wong, 2019)."
+          ]
+        },
+        {
+          category: "Anti-Pemburuan & Penguatkuasaan",
+          strategies: [
+            "Perhilitan (Jabatan Perlindungan Hidupan Liar dan Taman Negara Malaysia) menjalankan rondaan penguatkuasaan undang-undang dan anti-pemburuan secara berkala, termasuk melalui Unit Jenayah Hidupan Liarnya dan operasi bersama seperti Operasi Bersepadu Khazanah, untuk mencegah pemburuan dan jenayah hidupan liar lain di kawasan dilindungi dan hutan simpan (Abdul Kadir et al., 2024)."
+          ]
+        }
+      ],
+
+      // ==================== GLOBAL CONSERVATION STRATEGIES (MS) ====================
+      globalStrategiesTitle: "Strategi Pemuliharaan di Bahagian Lain Dunia",
+      globalStrategiesData: [
+        {
+          category: "Kerjasama Antarabangsa",
+          strategies: [
+            "Rangkaian Penguatkuasaan Hidupan Liar ASEAN (ASEAN-WEN) menyelaras usaha penguatkuasaan undang-undang di kalangan negara-negara Asia Tenggara untuk memerangi perdagangan hidupan liar haram dalam spesies yang disenaraikan CITES, bekerjasama rapat dengan rakan kongsi seperti TRAFFIC dan WWF (ASEAN-WEN/TRAFFIC, 2010)."
+          ]
+        },
+        {
+          category: "Zoo & Pembiakan dalam Kurungan",
+          strategies: [
+            "Zoo Eropah, seperti Zoo Copenhagen dan Zoo Nuremberg, mengambil bahagian dalam Program Ex Situ EAZA (EEP) untuk tapir Malaya untuk mengekalkan populasi insurans yang berdaya maju secara demografi dan genetik yang menyokong pemuliharaan tapir global (Holst et al., 2021; EAZA, 2023)."
+          ]
+        }
+      ],
+
+      // ==================== COEXISTENCE STRATEGIES (MS) ====================
+      coexistenceTitle: "Strategi Kewujudan Bersama untuk Tapir Malaya di Malaysia",
+      coexistenceData: [
+        {
+          category: "Pemuliharaan Berasaskan Komuniti",
+          strategies: [
+            "Kerja pemuliharaan dalam landskap seperti Kompleks Hutan Belum-Temengor semakin mengiktiraf bahawa bekerjasama dengan komuniti Orang Asli dan menghormati amalan penggunaan hutan tradisional mereka adalah penting untuk pengurusan hutan yang mampan di kawasan yang juga merupakan habitat teras untuk tapir Malaya (Morrison, 2025; Maginton et al., 2024)."
+          ]
+        }
+      ],
+
+      // ==================== SUCCESS STORIES (MS) ====================
+      successTitle: "Kisah Kejayaan Pemuliharaan di Malaysia",
+      successData: [
+        {
+          story: "Pelan Tindakan Nasional (MATCAP 2021-2030)",
+          achievements: [
+            "Malaysia menubuhkan Pelan Tindakan Pemuliharaan Tapir Malaya (MATCAP) 2021-2030, yang menetapkan matlamat yang jelas untuk menyelaras tindakan kerajaan dan rakan kongsi untuk melindungi habitat, mengurangkan kematian di jalan raya dan konflik manusia-tapir, dan menjamin kelangsungan jangka panjang spesies ini di Semenanjung Malaysia (DWNP, 2024)."
+          ]
+        },
+        {
+          story: "Pengiktirafan Penguatkuasaan: Operasi Bersepadu Khazanah",
+          achievements: [
+            "Pasukan petugas anti-pemburuan Operasi Bersepadu Khazanah (OBK) Malaysia, yang diketuai oleh DWNP dan Polis Diraja Malaysia, menerima Anugerah Penguatkuasaan Alam Sekitar Asia 2020 untuk kesannya dalam meningkatkan rondaan dan mengurangkan pemburuan di habitat harimau dan tapir utama, mengukuhkan perlindungan untuk tapir Malaya dan hidupan liar lain (UN, 2021)."
+          ]
+        }
+      ]
+    }
   };
 
-  //
-  // 2) Malay content - CORRECTED WITH PROPER TRANSLATIONS FROM tapir.txt
-  //
-  const ms = {
-    helpTitle: "Cara Anda Boleh Membantu Menyelamatkan Tapir Malaya:",
-    helpData: [
-      {
-        action: "Sokong Organisasi Pemuliharaan",
-        description:
-          "Sumbang atau jadi sukarelawan dengan pertubuhan seperti WWF atau IUCN yang melindungi habitat tapir dan membiayai penyelidikan (WWF, 2023)."
-      },
-      {
-        action: "Pilih Produk Lestari",
-        description:
-          "Elak minyak sawit dari kawasan hutan yang ditebang—cari produk bersijil RSPO untuk kurangkan kemusnahan habitat (Rainforest Alliance, 2022)."
-      },
-      {
-        action: "Pandu Berhati-hati di Kawasan Hutan",
-        description:
-          "Kurangkan laju berhampiran lintasan hidupan liar, terutamanya pada waktu malam, untuk elak kemalangan (Jabatan Hidupan Liar Malaysia, 2021)."
-      },
-      {
-        action: "Sebarkan Kesedaran",
-        description:
-          "Kongsi fakta tentang tapir di media sosial atau dalam komuniti anda untuk mendidik orang lain (National Geographic, 2023)."
-      },
-      {
-        action: "Kurangkan Jejak Karbon",
-        description:
-          "Lawan perubahan iklim dengan kurangkan plastik, jimat tenaga, dan sokong penanaman semula hutan (IPCC, 2022)."
-      },
-      {
-        action: "Laporkan Aktiviti Haram",
-        description:
-          "Jika nampak pemburuan haram atau pembalakan haram, maklumkan pihak berkuasa tempatan atau talian hotline hidupan liar (TRAFFIC, 2023)."
-      },
-      {
-        action: "Sokong Eko-pelancongan",
-        description:
-          "Lawati pusat perlindungan hidupan liar yang beretika—duit pelancongan anda membantu biayai pemuliharaan (UNEP, 2021)."
-      },
-      {
-        action: "Perjuangkan Undang‑undang Lebih Kuat",
-        description:
-          "Tekan kerajaan untuk kuatkuasakan polisi anti-pembalakan dan lindungi habitat tapir (IUCN, 2023)."
-      }
-    ],
-
-    strategiesTitle: "Strategi Pemuliharaan Tapir Malaya di Malaysia:",
-    strategiesData: [
-      {
-        category: "Kawasan Perlindungan & Koridor",
-        strategies: [
-          "Malaysia telah wujudkan santuari hidupan liar seperti Taman Negara dan Kompleks Hutan Belum-Temengor untuk lindungi habitat tapir (DWNP, 2023).",
-          "Pembinaan jejambat hidupan liar di lebuh raya (contoh: Central Forest Spine) kurangkan kematian akibat kemalangan jalan raya (WWF Malaysia, 2022)."
-        ]
-      },
-      {
-        category: "Anti-Pemburuan Haram & Penguatkuasaan",
-        strategies: [
-          "PERHILITAN (Jabatan Hidupan Liar Malaysia) menjalankan rondaan untuk cegah pemburuan haram (PERHILITAN, 2021).",
-          "Hukuman lebih berat untuk jenayah hidupan liar di bawah Akta Pemuliharaan Hidupan Liar 2010 (IUCN, 2023)."
-        ]
-      },
-      {
-        category: "Penglibatan Komuniti",
-        strategies: [
-          "Program seperti MYCAT termasuk perlindungan tapir dalam inisiatif mereka (MYCAT, 2022).",
-          "Pendidikan komuniti orang asal tentang guna tanah lestari kurangkan konflik manusia‑tapir (MNS, 2021)."
-        ]
-      },
-      {
-        category: "Penyelidikan & Pemantauan",
-        strategies: [
-          "Kamera tersembunyi dan pengesan GPS membantu kajian pergerakan tapir (UM, 2023).",
-          "Kerjasama dengan Universiti Malaysia Terengganu tentang genetik tapir (UMT, 2022)."
-        ]
-      }
-    ],
-
-    // 🔥 FIXED: Proper Malay translations for Coexistence Strategies
-    coexistenceTitle: "Strategi Bersama untuk Tapir Malaya di Malaysia:",
-    coexistenceData: [
-      {
-        category: "Infrastruktur Mesra Hidupan Liar",
-        strategies: [
-          "Pemasangan terowong haiwan dan papan tanda jalan di kawasan berisiko tinggi (contoh: Lebuhraya Timur-Barat) mengurangkan kematian tapir (DWNP, 2023).",
-          "Pagar elektrik di sekeliling ladang mengarahkan tapir menjauhi tanaman tanpa membahayakan mereka (PERHILITAN, 2022)."
-        ]
-      },
-      {
-        category: "Pemuliharaan Berasaskan Komuniti",
-        strategies: [
-          "Perkongsian dengan Orang Asli menggalakkan amalan pemakanan lestari yang melindungi habitat tapir (MNS, 2021).",
-          "Skim pampasan untuk petani mengurangkan tindakan balas selepas serangan tanaman (WWF Malaysia, 2023)."
-        ]
-      },
-      {
-        category: "Dasar Perancangan Bandar",
-        strategies: [
-          "Zon penampan antara hutan dan pembangunan meminimumkan konflik (Jabatan Perancangan Bandar dan Desa, 2022).",
-          "Koridor hijau menghubungkan hutan yang terfragmen, membolehkan pergerakan tapir yang selamat (Inisiatif Central Forest Spine, 2023)."
-        ]
-      }
-    ],
-
-    // 🔥 FIXED: Proper Malay translations for Success Stories
-    successTitle: "Kisah Kejayaan Pemuliharaan Tapir Malaya di Malaysia:",
-    successData: [
-      {
-        story: "Penstabilan Populasi di Taman Negara",
-        achievements: [
-          "Perlindungan ketat dan usaha anti-pemburuan haram mengekalkan populasi tapir stabil di taman negara tertua Malaysia (DWNP, 2023).",
-          "Perangkap kamera menunjukkan peningkatan aktiviti tapir di zon terlindung (WWF Malaysia, 2022)."
-        ]
-      },
-      {
-        story: "Pengurangan Kematian Jalan Raya di Semenanjung Malaysia",
-        achievements: [
-          "Lintasan hidupan liar di lebuh raya seperti Lebuhraya Timur-Barat mengurangkan kematian tapir sebanyak 40% (PERHILITAN, 2021).",
-          "Kempen kesedaran awam tentang pemanduan waktu malam di habitat tapir membantu (MYCAT, 2023)."
-        ]
-      },
-      {
-        story: "Pemuliharaan Dipimpin Komuniti di Johor",
-        achievements: [
-          "Komuniti Orang Asli kini menjadi penjaga tapir, melaporkan pemerhatian dan menghalang pemburu haram (MNS, 2022).",
-          "Inisiatif eko-pelancongan (contoh: Taman Negara Endau-Rompin) menjana pendapatan sambil melindungi tapir (Tourism Malaysia, 2023)."
-        ]
-      }
-    ]
-  };
-
-  //
-  // 3) pick the right language
-  //
-  const content = { en, ms };
   const text = content[currentLanguage] || content.en;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Help */}
+      {/* How You Can Help */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons
@@ -376,9 +262,9 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                 styles.card,
                 {
                   backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                  borderColor:      isDark ? Colors.dark.border  : Colors.light.border,
-                  borderLeftColor:  '#4CAF50',
-                  borderLeftWidth:  4
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border,
+                  borderLeftColor: '#4CAF50',
+                  borderLeftWidth: 4
                 }
               ]}
             >
@@ -408,11 +294,11 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
         </View>
       </View>
 
-      {/* Strategies */}
+      {/* Conservation Strategies in Malaysia */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons
-            name="policy"
+            name="forest"
             size={20}
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
@@ -433,7 +319,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                 styles.card,
                 {
                   backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                  borderColor:      isDark ? Colors.dark.border  : Colors.light.border
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border
                 }
               ]}
             >
@@ -457,7 +343,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                       { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                     ]}
                   >
-                    • {strat}
+                    {strat}
                   </ThemedText>
                 ))}
               </View>
@@ -466,7 +352,65 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
         </View>
       </View>
 
-      {/* Coexistence */}
+      {/* Global Conservation Strategies */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons
+            name="public"
+            size={20}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+          />
+          <ThemedText
+            style={[
+              styles.sectionTitle,
+              { color: isDark ? Colors.dark.text : Colors.light.text }
+            ]}
+          >
+            {text.globalStrategiesTitle}
+          </ThemedText>
+        </View>
+        <View style={styles.cardsGrid}>
+          {text.globalStrategiesData.map((item, idx) => (
+            <View
+              key={idx}
+              style={[
+                styles.card,
+                {
+                  backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border
+                }
+              ]}
+            >
+              <MaterialIcons
+                name={getStrategyIcon(item.category)}
+                size={24}
+                color={isDark ? Colors.dark.tint : Colors.light.tint}
+                style={styles.cardIcon}
+              />
+              <View style={styles.cardContent}>
+                <ThemedText
+                  style={[styles.cardTitle, { color: isDark ? Colors.dark.text : Colors.light.text }]}
+                >
+                  {item.category}
+                </ThemedText>
+                {item.strategies.map((strat, sIdx) => (
+                  <ThemedText
+                    key={sIdx}
+                    style={[
+                      styles.cardDescription,
+                      { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
+                    ]}
+                  >
+                    {strat}
+                  </ThemedText>
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Coexistence Strategies */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons
@@ -491,7 +435,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                 styles.card,
                 {
                   backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                  borderColor:      isDark ? Colors.dark.border  : Colors.light.border
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border
                 }
               ]}
             >
@@ -515,7 +459,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                       { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                     ]}
                   >
-                    • {strat}
+                    {strat}
                   </ThemedText>
                 ))}
               </View>
@@ -524,7 +468,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
         </View>
       </View>
 
-      {/* Success */}
+      {/* Success Stories */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <MaterialIcons
@@ -549,9 +493,9 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                 styles.card,
                 {
                   backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
-                  borderColor:      isDark ? Colors.dark.border  : Colors.light.border,
-                  borderLeftColor:  '#4CAF50',
-                  borderLeftWidth:  4
+                  borderColor: isDark ? Colors.dark.border : Colors.light.border,
+                  borderLeftColor: '#4CAF50',
+                  borderLeftWidth: 4
                 }
               ]}
             >
@@ -575,7 +519,7 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
                       { color: isDark ? Colors.dark.textSecondary : Colors.light.textSecondary }
                     ]}
                   >
-                    • {ach}
+                    {ach}
                   </ThemedText>
                 ))}
               </View>
@@ -588,28 +532,28 @@ export default function TapirThreats({ currentLanguage = 'en' }) {
 }
 
 const styles = StyleSheet.create({
-  container:     { flex: 1 },
-  content:       { padding: 16, paddingBottom: 32 },
+  container: { flex: 1 },
+  content: { padding: 16, paddingBottom: 32 },
 
-  section:       { marginBottom: 24 },
+  section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-  sectionTitle:  { fontSize: 18, fontWeight: '600' },
+  sectionTitle: { fontSize: 18, fontWeight: '600' },
 
-  cardsGrid:     { gap: 12 },
+  cardsGrid: { gap: 12 },
 
   card: {
     flexDirection: 'row',
-    padding:       16,
-    borderRadius:  12,
-    borderWidth:   1,
-    shadowColor:   '#000',
-    shadowOffset:  { width: 0, height: 1 },
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius:  2,
-    elevation:     2
+    shadowRadius: 2,
+    elevation: 2
   },
-  cardIcon:      { marginRight: 16, marginTop: 4 },
-  cardContent:   { flex: 1 },
-  cardTitle:     { fontSize: 16, fontWeight: '600', marginBottom: 4 },
-  cardDescription:{ fontSize: 14, lineHeight: 20 }
+  cardIcon: { marginRight: 16, marginTop: 4 },
+  cardContent: { flex: 1 },
+  cardTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
+  cardDescription: { fontSize: 14, lineHeight: 20, marginBottom: 8 }
 });

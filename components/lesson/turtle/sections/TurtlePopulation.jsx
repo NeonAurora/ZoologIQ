@@ -18,8 +18,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 
-const PDF_URL =
-  'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751086680717.pdf';
+const PDF_URL = 'https://ttzwlqozaglnczfdjhnl.supabase.co/storage/v1/object/public/lesson-materials/pdfs/1751086680717.pdf';
 
 export default function TurtlePopulation({ currentLanguage = 'en' }) {
   const { colorScheme } = useColorScheme();
@@ -33,35 +32,35 @@ export default function TurtlePopulation({ currentLanguage = 'en' }) {
 
   const content = {
     en: {
-      title: 'Green Sea Turtle Population Trends (2019–2025)',
+      title: 'Green Sea Turtle Population Trend (2019–2025)',
       downloadText: 'Download PDF',
-      years: ['2019','2020','2021','2022','2023','2024','2025'],
-      malaysia:    [3900,4500,5200,6700,10100,9200,null],
-      global:      [450000,460000,475000,490000,510000,520000,530000],
+      years: ['2019', '2020', '2021', '2022', '2023', '2024', '2025'],
+      malaysia: [3900, 4500, 5200, 6700, 10100, 9200, null],
+      global: [450000, 460000, 475000, 490000, 510000, 520000, 530000],
       rows: [
-        ['2019','Baseline: steady nesting activity globally'],
-        ['2020','Slight increase amid pandemic restrictions'],
-        ['2021','Continued recovery and nesting success'],
-        ['2022','Positive trend from conservation efforts'],
-        ['2023','Significant jump in Malaysia; global growth'],
-        ['2024','Slight dip in Malaysia; global increase steady'],
-        ['2025','Awaiting Malaysia data; global positive trend']
+        ['2019', 'Baseline: steady nesting activity globally'],
+        ['2020', 'Slight increase amid pandemic restrictions'],
+        ['2021', 'Continued recovery and nesting success'],
+        ['2022', 'Positive trend from conservation efforts'],
+        ['2023', 'Significant jump in Malaysia; global growth'],
+        ['2024', 'Slight dip in Malaysia (provisional); global increase steady'],
+        ['2025', 'Awaiting Malaysia data; global positive trend']
       ]
     },
     ms: {
       title: 'Trend Populasi Penyu Agar (2019–2025)',
       downloadText: 'Muat Turun PDF',
-      years: ['2019','2020','2021','2022','2023','2024','2025'],
-      malaysia:    [3900,4500,5200,6700,10100,9200,null],
-      global:      [450000,460000,475000,490000,510000,520000,530000],
+      years: ['2019', '2020', '2021', '2022', '2023', '2024', '2025'],
+      malaysia: [3900, 4500, 5200, 6700, 10100, 9200, null],
+      global: [450000, 460000, 475000, 490000, 510000, 520000, 530000],
       rows: [
-        ['2019','Asas: aktiviti penetasan stabil global'],
-        ['2020','Peningkatan kecil semasa sekatan pandemik'],
-        ['2021','Pemulihan berterusan dan kejayaan penetasan'],
-        ['2022','Trend positif hasil usaha pemuliharaan'],
-        ['2023','Lonjakan ketara di Malaysia; pertumbuhan global'],
-        ['2024','Penurunan sedikit di Malaysia; peningkatan global berterusan'],
-        ['2025','Menunggu data Malaysia; trend global positif']
+        ['2019', 'Garis dasar: aktiviti bersarang stabil di peringkat global'],
+        ['2020', 'Peningkatan sedikit semasa sekatan pandemik'],
+        ['2021', 'Pemulihan berterusan dan kejayaan bersarang'],
+        ['2022', 'Trend positif daripada usaha pemuliharaan'],
+        ['2023', 'Lonjakan ketara di Malaysia; pertumbuhan global'],
+        ['2024', 'Penurunan sedikit di Malaysia (sementara); peningkatan global stabil'],
+        ['2025', 'Menunggu data Malaysia; trend global positif']
       ]
     }
   };
@@ -69,25 +68,25 @@ export default function TurtlePopulation({ currentLanguage = 'en' }) {
 
   // Omit the null 2025 point for Malaysia
   const malaysiaLabels = text.years.slice(0, 6);
-  const malaysiaData   = text.malaysia.slice(0, 6);
+  const malaysiaData = text.malaysia.slice(0, 6);
 
-  const labels     = showMalaysia ? malaysiaLabels : text.years;
-  const dataset    = showMalaysia ? malaysiaData   : text.global;
-  const lineColor  = showMalaysia ? '#FF6B35'      : '#00A896';
+  const labels = showMalaysia ? malaysiaLabels : text.years;
+  const dataset = showMalaysia ? malaysiaData : text.global;
+  const lineColor = showMalaysia ? '#FF6B35' : '#00A896';
   const legendText = showMalaysia
-    ? (currentLanguage === 'ms' ? 'Malaysia' : 'Malaysia Nesting Females')
-    : (currentLanguage === 'ms' ? 'Global'   : 'Global Nesting Females');
+    ? (currentLanguage === 'ms' ? 'Malaysia (Betina Bersarang)' : 'Malaysia Nesting Females')
+    : (currentLanguage === 'ms' ? 'Global (Betina Bersarang)' : 'Global Nesting Females');
 
-  const activeColor   = isDark ? Colors.dark.tint : Colors.light.tint;
+  const activeColor = isDark ? Colors.dark.tint : Colors.light.tint;
   const inactiveColor = isDark ? Colors.dark.textSecondary : Colors.light.textSecondary;
 
-  const containerWidth = screenWidth - 32; // account for horizontal padding
-  const maxScroll      = Math.max(0, contentWidth - containerWidth);
+  const containerWidth = screenWidth - 32;
+  const maxScroll = Math.max(0, contentWidth - containerWidth);
 
   const handleScroll = e => setScrollX(e.nativeEvent.contentOffset.x);
   const handleContentSizeChange = w => setContentWidth(w);
-  const scrollToStart = () => scrollRef.current?.scrollTo({ x: 0,       animated: true });
-  const scrollToEnd   = () => scrollRef.current?.scrollTo({ x: maxScroll, animated: true });
+  const scrollToStart = () => scrollRef.current?.scrollTo({ x: 0, animated: true });
+  const scrollToEnd = () => scrollRef.current?.scrollTo({ x: maxScroll, animated: true });
 
   const handleDownload = () => {
     if (Platform.OS === 'web') {
@@ -178,14 +177,14 @@ export default function TurtlePopulation({ currentLanguage = 'en' }) {
               chartConfig={{
                 backgroundColor: isDark ? Colors.dark.surface : Colors.light.surface,
                 backgroundGradientFrom: isDark ? Colors.dark.surface : Colors.light.surface,
-                backgroundGradientTo:   isDark ? Colors.dark.surface : Colors.light.surface,
+                backgroundGradientTo: isDark ? Colors.dark.surface : Colors.light.surface,
                 decimalPlaces: 0,
                 color: (opacity = 1) =>
                   isDark ? `rgba(255,255,255,${opacity})` : `rgba(0,0,0,${opacity})`,
                 labelColor: (opacity = 1) =>
                   isDark ? `rgba(200,200,200,${opacity})` : `rgba(50,50,50,${opacity})`,
                 propsForDots: { r: '6' },
-                getDotColor:   () => lineColor
+                getDotColor: () => lineColor
               }}
               style={styles.chart}
               withDots
@@ -221,6 +220,18 @@ export default function TurtlePopulation({ currentLanguage = 'en' }) {
             </View>
           ))}
         </View>
+
+        {/* Download PDF Section */}
+        <View style={styles.downloadSection}>
+          <TouchableOpacity
+            style={[styles.downloadButton, { backgroundColor: activeColor }]}
+            onPress={handleDownload}
+            activeOpacity={0.8}
+          >
+            <MaterialIcons name="file-download" size={18} color="#fff" />
+            <ThemedText style={styles.downloadText}>{text.downloadText}</ThemedText>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -228,12 +239,12 @@ export default function TurtlePopulation({ currentLanguage = 'en' }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content:   { padding: 16, paddingBottom: 32 },
+  content: { padding: 16, paddingBottom: 32 },
 
-  section:   { marginBottom: 24 },
+  section: { marginBottom: 24 },
 
-  header:    { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
-  title:     { fontSize: 18, fontWeight: '600', flexShrink: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 8 },
+  title: { fontSize: 18, fontWeight: '600', flexShrink: 1 },
 
   toggleRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   toggleBtn: {
@@ -256,7 +267,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 6
   },
-  leftArrow:  { left: 4 },
+  leftArrow: { left: 4 },
   rightArrow: { right: 4 },
 
   chart: {

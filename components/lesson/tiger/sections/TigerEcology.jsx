@@ -12,47 +12,79 @@ export default function TigerEcology({ currentLanguage = 'en' }) {
 
   const content = {
     en: {
-      ecologyTitle: "Malayan Tiger's Role in Biodiversity:",
+      ecologyTitle: "Malayan Tiger's Role in Biodiversity",
       biodiversityCards: [
-        { title: "Ecosystem Balance",      description: "Controls prey populations, preventing overgrazing and habitat degradation", icon: "balance" },
-        { title: "Species Protection",     description: "Safeguards countless other species that share its rainforest ecosystem", icon: "forest" },
-        { title: "Health Indicator",       description: "Their presence signals intact, biodiverse forests; decline reflects ecosystem stress", icon: "health-and-safety" },
-        { title: "Forest Regeneration",    description: "Influences herbivore behavior, which shapes plant distribution", icon: "nature" },
-        { title: "National Symbol",        description: "Ecotourism centered on tigers supports local livelihoods", icon: "flag" },
-        { title: "Climate Action",         description: "Preserving tiger habitats mitigates climate change by storing carbon", icon: "cloud" }
+        { 
+          title: "Ecosystem Balance", 
+          description: "Maintains ecosystem balance by controlling prey populations (e.g., deer, wild boar), preventing overgrazing and habitat degradation (WWF-Malaysia, 2023)", 
+          icon: "balance" 
+        },
+        { 
+          title: "Umbrella Species", 
+          description: "Tigers are an umbrella species, which means they protect many other species that live in the same rainforest ecosystem, such as birds, insects, and plants (WWF-Malaysia, 2021)", 
+          icon: "forest" 
+        },
+        { 
+          title: "Health Indicator", 
+          description: "Their presence signals intact, biodiverse forests; decline reflects ecosystem stress (Goodrich et al., 2022)", 
+          icon: "health-and-safety" 
+        }
       ],
-      importanceTitle: "Why Malayan Tigers Matter:",
+      importanceTitle: "Why Malayan Tigers Matter",
       importanceCards: [
-        { title: "Apex Predator Role",      description: "Regulate prey populations, prevent overgrazing, maintain forest health", icon: "restaurant" },
-        { title: "Biodiversity Indicator",  description: "Their presence indicates a thriving, biodiverse ecosystem", icon: "nature" },
-        { title: "Cultural Heritage",       description: "Featured on Malaysia's coat of arms and currency, representing strength and heritage", icon: "museum" },
-        { title: "Indigenous Folklore",     description: "Deeply rooted in Indigenous tales of Harimau Jadian—were-tigers", icon: "book" },
-        { title: "Economic Value",          description: "Ecotourism generates income for local communities", icon: "payments" },
-        { title: "Environmental Services",  description: "Healthy tiger habitats support agriculture and clean water sources", icon: "opacity" },
-        { title: "Climate Storage",         description: "Tiger forests store carbon—Malaysia's rainforests absorb ~1.2 billion tons annually", icon: "forest" },
-        { title: "Evolutionary Uniqueness",description: "1 of 6 surviving tiger subspecies, with distinct DNA. Losing them erases a unique lineage", icon: "biotech" }
+        { 
+          title: "National Symbol", 
+          description: "Malayan tigers are prominently featured on Malaysia's coat of arms and other national insignia, symbolizing strength and national heritage, and they are widely recognized as the country's national animal (Government of Malaysia & partners, 2008)", 
+          icon: "flag" 
+        },
+        { 
+          title: "Economic Value", 
+          description: "Malayan tigers help the Ecotourism sector to generate income for local communities", 
+          icon: "payments" 
+        },
+        { 
+          title: "Evolutionary Uniqueness", 
+          description: "Malayan tigers are one of six surviving tiger subspecies, defined by distinct genetic differences, so losing them would erase a unique evolutionary lineage (Luo et al., 2018)", 
+          icon: "biotech" 
+        }
       ]
     },
     ms: {
-      ecologyTitle: "Peranan Harimau Malaya dalam Kepelbagaian Biologi:",
+      ecologyTitle: "Peranan Harimau Malaya dalam Biodiversiti",
       biodiversityCards: [
-        { title: "Keseimbangan Ekosistem", description: "Mengawal populasi mangsa, mengelakkan overgrazing dan kemerosotan habitat", icon: "balance" },
-        { title: "Perlindungan Spesies",   description: "Menyelamatkan banyak spesies lain yang berkongsi ekosistem hutan hujan", icon: "forest" },
-        { title: "Petunjuk Kesihatan",     description: "Kehadiran mereka menandakan hutan yang sihat dan biodiversiti yang kaya", icon: "health-and-safety" },
-        { title: "Pemulihan Hutan",        description: "Mempengaruhi tingkah laku haiwan herbivor, membentuk taburan tumbuhan", icon: "nature" },
-        { title: "Simbol Kebangsaan",      description: "Ekopelancongan berpusatkan harimau menyokong pendapatan komuniti tempatan", icon: "flag" },
-        { title: "Tindakan Iklim",         description: "Habitat harimau menyimpan karbon, membantu mitigasi perubahan iklim", icon: "cloud" }
+        { 
+          title: "Keseimbangan Ekosistem", 
+          description: "Mengekalkan keseimbangan ekosistem dengan mengawal populasi mangsa (cth., rusa, babi hutan), mencegah ragut berlebihan dan kemerosotan habitat (WWF-Malaysia, 2023)", 
+          icon: "balance" 
+        },
+        { 
+          title: "Spesies Payung", 
+          description: "Harimau adalah spesies payung, yang bermaksud mereka melindungi banyak spesies lain yang hidup dalam ekosistem hutan hujan yang sama, seperti burung, serangga, dan tumbuhan (WWF-Malaysia, 2021)", 
+          icon: "forest" 
+        },
+        { 
+          title: "Petunjuk Kesihatan", 
+          description: "Kehadiran mereka menandakan hutan biodiversiti yang utuh; penurunan mencerminkan tekanan ekosistem (Goodrich et al., 2022)", 
+          icon: "health-and-safety" 
+        }
       ],
-      importanceTitle: "Mengapa Harimau Malaya Penting:",
+      importanceTitle: "Mengapa Harimau Malaya Penting",
       importanceCards: [
-        { title: "Peranan Pemangsa Puncak",description: "Mengawal populasi mangsa, mencegah overgrazing, mengekalkan kesihatan hutan", icon: "restaurant" },
-        { title: "Petunjuk Biodiversiti", description: "Kehadiran mereka menandakan ekosistem yang sihat dan kaya dengan biodiversiti", icon: "nature" },
-        { title: "Warisan Budaya",        description: "Dipaparkan pada jata negara dan mata wang Malaysia, melambangkan kekuatan", icon: "museum" },
-        { title: "Cerita Rakyat Tempatan",description: "Berakar umbi dalam cerita rakyat tempatan seperti legenda Harimau Jadian", icon: "book" },
-        { title: "Nilai Ekonomi",         description: "Ekopelancongan menjana pendapatan untuk komuniti tempatan", icon: "payments" },
-        { title: "Perkhidmatan Alam",     description: "Habitat harimau yang sihat menyokong pertanian dan sumber air bersih", icon: "opacity" },
-        { title: "Penyimpanan Iklim",     description: "Hutan harimau menyimpan karbon - hutan hujan Malaysia menyerap ~1.2 bilion tan setiap tahun", icon: "forest" },
-        { title: "Keunikan Evolusi",      description: "Salah satu daripada 6 subspesies harimau yang masih wujud, dengan DNA unik", icon: "biotech" }
+        { 
+          title: "Simbol Kebangsaan", 
+          description: "Harimau Malaya dipaparkan dengan ketara pada jata negara Malaysia dan lambang kebangsaan lain, melambangkan kekuatan dan warisan negara, dan mereka diiktiraf secara meluas sebagai haiwan kebangsaan negara (Kerajaan Malaysia & rakan kongsi, 2008)", 
+          icon: "flag" 
+        },
+        { 
+          title: "Nilai Ekonomi", 
+          description: "Harimau Malaya membantu sektor Ekopelancongan menjana pendapatan untuk komuniti tempatan", 
+          icon: "payments" 
+        },
+        { 
+          title: "Keunikan Evolusi", 
+          description: "Harimau Malaya adalah salah satu daripada enam subspesies harimau yang masih hidup, ditakrifkan oleh perbezaan genetik yang berbeza, jadi kehilangan mereka akan memadamkan keturunan evolusi yang unik (Luo et al., 2018)", 
+          icon: "biotech" 
+        }
       ]
     }
   };
@@ -150,14 +182,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2
   },
-  cardIcon: { marginRight: 16 },
+  cardIcon: { marginRight: 16, marginTop: 2 },
   cardContent: { flex: 1 },
   cardTitle: { fontSize: 15, fontWeight: '600', marginBottom: 4 },
   cardDescription: { fontSize: 13, lineHeight: 18 }
